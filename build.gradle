@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+    id "application"
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.KaptainWutax:SEED:6f0a91d7911f2bd9806192ce52e49f23b082b5c0'
+    implementation 'com.github.WearBlackAllDay:JavaUtils:6a25684fb4b9c620f59836e5b0c0843cb142e5eb'
+    implementation "com.formdev:flatlaf:0.38"
+    implementation "org.swinglabs.swingx:swingx-core:1.6.5-1"
+}
+application {
+    mainClassName = "gui.SeedCandy"
+}
+version "1.4"
+task fatJar(type: Jar) {
+    manifest {
+        attributes(
+                "Main-Class": "$mainClassName"
+        )
+    }
+    outputs.upToDateWhen { false }
+    project.archivesBaseName = "SeedCandy"
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    with jar
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+artifacts {
+    archives fatJar
+}
+
+
