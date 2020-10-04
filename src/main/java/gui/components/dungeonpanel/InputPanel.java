@@ -10,6 +10,7 @@ import randomreverser.call.java.FilteredSkip;
 import randomreverser.call.java.NextInt;
 import randomreverser.device.JavaRandomDevice;
 import randomreverser.device.LCGReverserDevice;
+import swing.content.SelectionBox;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +33,7 @@ public class InputPanel extends JPanel {
         JTextField xCord = new JTextField();
         JTextField yCord = new JTextField();
         JTextField zCord = new JTextField();
-        JComboBox<MCVersion> versionSelector = new JComboBox<>(new MCVersion[]{MCVersion.v1_16, MCVersion.v1_15, MCVersion.v1_14, MCVersion.v1_13});
+        SelectionBox<MCVersion> versionSelector = new SelectionBox<>(MCVersion.v1_16, MCVersion.v1_15, MCVersion.v1_14, MCVersion.v1_13);
         JComboBox<String> biomeSelector = new JComboBox<>(new String[]{"other Biome", "desert", "swamp", "swamp_hill"});
         JComboBox<String> sizeSelector = new JComboBox<>(new String[]{"9x9", "9x7", "7x9", "7x7"});
         JButton copyButton = new JButton("copy");
@@ -52,7 +53,7 @@ public class InputPanel extends JPanel {
         copyButton.setPreferredSize(buttonDimension);
         moveButton.setPreferredSize(buttonDimension);
 
-        versionSelector.addActionListener(e -> biomeSelector.setEnabled(versionSelector.getSelectedItem() == MCVersion.v1_16));
+        versionSelector.addActionListener(e -> biomeSelector.setEnabled(versionSelector.getSelected() == MCVersion.v1_16));
         sizeSelector.addActionListener(e -> SeedCandy.INSTANCE.dungeonPanel.resizeGUI(String.valueOf(sizeSelector.getSelectedItem())));
         copyButton.addActionListener(e -> Strings.clipboard(SeedCandy.INSTANCE.dungeonPanel.dungeonOutput.getText()));
         moveButton.addActionListener(e -> {
@@ -70,7 +71,7 @@ public class InputPanel extends JPanel {
             JavaRandomDevice device = new JavaRandomDevice();
             ArrayList<Long> StructureSeeds = new ArrayList<>();
 
-            if (((MCVersion) versionSelector.getSelectedItem()).isNewerThan(MCVersion.v1_14_4)) {
+            if ((versionSelector.getSelected()).isNewerThan(MCVersion.v1_14_4)) {
                 device.addCall(NextInt.withValue(16, offsetX));
                 device.addCall(NextInt.withValue(16, offsetZ));
                 device.addCall(NextInt.withValue(256, posY));
@@ -98,8 +99,8 @@ public class InputPanel extends JPanel {
                 LCG failedDungeon = LCG.JAVA.combine(-5);
                 for (int i = 0; i < 8; i++) {
                     StructureSeeds.addAll(ChunkRandomReverser.reversePopulationSeed(
-                            (decoratorSeed ^ LCG.JAVA.multiplier) - (versionSelector.getSelectedItem() != MCVersion.v1_16 ? 20003L :
-                                    biomeSelector.getSelectedItem().equals("other Biome") ? 30002L : 30003L), posX & -16, posZ & -16, (MCVersion) versionSelector.getSelectedItem()));
+                            (decoratorSeed ^ LCG.JAVA.multiplier) - (versionSelector.getSelected() != MCVersion.v1_16 ? 20003L :
+                                    biomeSelector.getSelectedItem().equals("other Biome") ? 30002L : 30003L), posX & -16, posZ & -16, versionSelector.getSelected()));
 
                     decoratorSeed = failedDungeon.nextSeed(decoratorSeed);
                 }

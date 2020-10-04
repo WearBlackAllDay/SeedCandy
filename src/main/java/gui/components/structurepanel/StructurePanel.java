@@ -42,7 +42,7 @@ public class StructurePanel extends JPanel {
 
         biomeButton.addActionListener(e -> {
             outputText.setText("");
-            progressBar.setMaximum(Strings.splitLines(outputText.getText()).length * 65536);
+            progressBar.setMaximum(Strings.countLines(this.inputText.getText()) * 65536);
             AtomicInteger progress = new AtomicInteger(0);
             ThreadPool.execute(Arrays.stream(Strings.splitToLongs(this.inputText.getText())).boxed().collect(Collectors.toList()), seed -> {
                 StructureSeed.getWorldSeeds(seed).forEachRemaining(candidate -> {

@@ -10,7 +10,7 @@ repositories {
 
 dependencies {
     implementation 'com.github.KaptainWutax:SEED:6f0a91d7911f2bd9806192ce52e49f23b082b5c0'
-    implementation 'com.github.WearBlackAllDay:JavaUtils:6a25684fb4b9c620f59836e5b0c0843cb142e5eb'
+    implementation 'com.github.WearBlackAllDay:JavaUtils:947cb92ef1ea65819496cf189aac20983ba3d36d'
     implementation "com.formdev:flatlaf:0.38"
     implementation "org.swinglabs.swingx:swingx-core:1.6.5-1"
 }

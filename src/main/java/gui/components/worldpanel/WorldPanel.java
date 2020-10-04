@@ -8,6 +8,7 @@ import kaptainwutax.seedutils.mc.pos.BPos;
 import kaptainwutax.seedutils.mc.seed.ChunkSeeds;
 import kaptainwutax.seedutils.mc.seed.WorldSeed;
 import org.jdesktop.swingx.prompt.PromptSupport;
+import swing.content.SelectionBox;
 import threading.ThreadPool;
 import util.QuadFinder;
 
@@ -40,7 +41,7 @@ public class WorldPanel extends JPanel{
         JTextField xCord = new JTextField();
         JTextField zCord = new JTextField();
         JTextField saltField = new JTextField();
-        JComboBox<MCVersion> versionSelector = new JComboBox<>(new MCVersion[]{MCVersion.v1_16, MCVersion.v1_15, MCVersion.v1_14, MCVersion.v1_13});
+        SelectionBox<MCVersion> versionSelector = new SelectionBox<>(MCVersion.v1_16, MCVersion.v1_15, MCVersion.v1_14, MCVersion.v1_13);
         JProgressBar progressBar = new JProgressBar();
 
         this.setLayout(new BorderLayout());
@@ -63,9 +64,9 @@ public class WorldPanel extends JPanel{
 
         quadButton.addActionListener(e -> {
             outputText.setText("");
-            progressBar.setMaximum(Strings.splitToLongs(inputText.getText()).length);
+            progressBar.setMaximum(Strings.countLines(inputText.getText()));
             ThreadPool.execute(Arrays.stream(Strings.splitToLongs(inputText.getText())).boxed().collect(Collectors.toList()), seed -> {
-                outputText.addEntry(QuadFinder.find(seed, (MCVersion) versionSelector.getSelectedItem()));
+                outputText.addEntry(QuadFinder.find(seed, versionSelector.getSelected()));
             });
         });
 
@@ -121,7 +122,7 @@ public class WorldPanel extends JPanel{
 
         populationButton.addActionListener(e -> {
             outputText.setText("");
-            MCVersion version = (MCVersion) versionSelector.getSelectedItem();
+            MCVersion version = versionSelector.getSelected();
             int x,z;
             try {
                 x = Integer.parseInt(xCord.getText().trim());
@@ -136,7 +137,7 @@ public class WorldPanel extends JPanel{
 
         regionButton.addActionListener(e -> {
             outputText.setText("");
-            MCVersion version = (MCVersion) versionSelector.getSelectedItem();
+            MCVersion version = versionSelector.getSelected();
             int x, z, salt;
             try {
                 x = Integer.parseInt(xCord.getText().trim());
