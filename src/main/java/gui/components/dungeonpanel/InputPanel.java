@@ -5,12 +5,12 @@ import gui.SeedCandy;
 import kaptainwutax.seedutils.lcg.LCG;
 import kaptainwutax.seedutils.mc.MCVersion;
 import mjtb49.hashreversals.ChunkRandomReverser;
-import org.jdesktop.swingx.prompt.PromptSupport;
 import randomreverser.call.java.FilteredSkip;
 import randomreverser.call.java.NextInt;
 import randomreverser.device.JavaRandomDevice;
 import randomreverser.device.LCGReverserDevice;
-import swing.content.SelectionBox;
+import swing.SwingUtils;
+import swing.components.SelectionBox;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,11 +42,11 @@ public class InputPanel extends JPanel {
         Dimension buttonDimension = new Dimension(80, 25);
 
         xCord.setPreferredSize(dimension);
-        PromptSupport.setPrompt("X", xCord);
+        SwingUtils.setPrompt("X", xCord);
         yCord.setPreferredSize(dimension);
-        PromptSupport.setPrompt("Y", yCord);
+        SwingUtils.setPrompt("Y", yCord);
         zCord.setPreferredSize(dimension);
-        PromptSupport.setPrompt("Z", zCord);
+        SwingUtils.setPrompt("Z", zCord);
 
         this.dungeonString.setPreferredSize(new Dimension(520, 25));
         this.crackButton.setPreferredSize(buttonDimension);

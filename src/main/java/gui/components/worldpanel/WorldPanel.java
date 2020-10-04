@@ -7,8 +7,8 @@ import kaptainwutax.seedutils.mc.MCVersion;
 import kaptainwutax.seedutils.mc.pos.BPos;
 import kaptainwutax.seedutils.mc.seed.ChunkSeeds;
 import kaptainwutax.seedutils.mc.seed.WorldSeed;
-import org.jdesktop.swingx.prompt.PromptSupport;
-import swing.content.SelectionBox;
+import swing.SwingUtils;
+import swing.components.SelectionBox;
 import threading.ThreadPool;
 import util.QuadFinder;
 
@@ -16,7 +16,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class WorldPanel extends JPanel{
@@ -48,11 +47,11 @@ public class WorldPanel extends JPanel{
         this.setName("WorldSeed");
 
         xCord.setPreferredSize(new Dimension(40, 25));
-        PromptSupport.setPrompt("X", xCord);
+        SwingUtils.setPrompt("X", xCord);
         zCord.setPreferredSize(new Dimension(40, 25));
-        PromptSupport.setPrompt("Z", zCord);
+        SwingUtils.setPrompt("Z", zCord);
         saltField.setPreferredSize(new Dimension(60, 25));
-        PromptSupport.setPrompt("salt", saltField);
+        SwingUtils.setPrompt("salt", saltField);
         progressBar.setMinimum(0);
 
         nextLongButton.addActionListener(e -> {

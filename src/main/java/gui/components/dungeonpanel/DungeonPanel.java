@@ -1,7 +1,7 @@
 package gui.components.dungeonpanel;
 
 import gui.components.TextBlock;
-import swing.content.GridPanel;
+import swing.components.GridPanel;
 
 import javax.swing.*;
 import java.awt.*;

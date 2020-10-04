@@ -5,7 +5,7 @@ import gui.components.TextBlock;
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.seedutils.mc.MCVersion;
 import kaptainwutax.seedutils.mc.seed.StructureSeed;
-import swing.content.GridPanel;
+import swing.components.GridPanel;
 import threading.ThreadPool;
 
 import javax.swing.*;
