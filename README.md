@@ -24,7 +24,7 @@ This tab finds possible StructureSeeds (**NOT** a WorldSeed) based on informatio
 - Buttons
 	- "move": jumps over to the StructureSeed tab and carries the latest results over
 	- "copy": copies all results to clipboard
-	- "bits/32": displays the bits of information you have currently collected and starts the cracking process (if this has no output, your data is flawed, but if it has it can **still** be a different version)
+	- "bits/32": displays the bits of information you have currently collected and starts the cracking process (if this has no output, your data is flawed, but if it has your dungeon data is correct, but the version can be wrong)
 
 ### StructureSeed
 This tab finds possible WorldSeeds from StructureSeeds and offers to check WorldSeeds for Biome-restrictions.
