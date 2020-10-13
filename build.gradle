@@ -10,7 +10,7 @@ repositories {
 
 dependencies {
     implementation 'com.github.KaptainWutax:SEED:6f0a91d7911f2bd9806192ce52e49f23b082b5c0'
-    implementation 'com.github.WearBlackAllDay:JavaUtils:f47b2cd2e8672b122824574ea5e084d8a16e898a'
+    implementation 'com.github.WearBlackAllDay:JavaUtils:ab1e0ad736be1d2c2d74c68fa8e9e40e752f2d18'
     implementation "com.formdev:flatlaf:0.38"
 }
 application {
@@ -37,5 +37,3 @@ targetCompatibility = 1.8
 artifacts {
     archives fatJar
 }
-
-

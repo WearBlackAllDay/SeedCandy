@@ -1,6 +1,7 @@
 package gui.components.worldpanel;
 
 import data.Strings;
+import gui.SeedCandy;
 import gui.components.TextBlock;
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.seedutils.mc.MCVersion;
@@ -64,28 +65,27 @@ public class WorldPanel extends JPanel{
         quadButton.addActionListener(e -> {
             outputText.setText("");
             progressBar.setMaximum(Strings.countLines(inputText.getText()));
-            ThreadPool.execute(Arrays.stream(Strings.splitToLongs(inputText.getText())).boxed().collect(Collectors.toList()), seed -> {
-                outputText.addEntry(QuadFinder.find(seed, versionSelector.getSelected()));
-            });
+            SeedCandy.POOL.execute((Strings.splitToLongs(inputText.getText())), seed -> outputText.addEntry(QuadFinder.find(seed, versionSelector.getSelected())));
         });
 
         spawnButton.addActionListener(e -> {
-            MCVersion version = (MCVersion) versionSelector.getSelectedItem();
+            MCVersion version = versionSelector.getSelected();
             outputText.setText("");
             try {
                 BPos search = new BPos(Integer.parseInt(xCord.getText().trim()),0, Integer.parseInt(zCord.getText().trim()));
 
-                ThreadPool.execute(Arrays.stream(Strings.splitToLongs(inputText.getText())).boxed().collect(Collectors.toList()), seed -> {
+                SeedCandy.POOL.execute(Strings.splitToLongs(inputText.getText()), seed -> {
                     OverworldBiomeSource biomeSource = new OverworldBiomeSource(version, seed);
                     if (biomeSource.getSpawnPoint().equals(search)) {
                         outputText.addEntry(String.valueOf(seed));
                     }
                 });
             } catch (NumberFormatException exception) {
-                ThreadPool.execute(Arrays.stream(Strings.splitToLongs(inputText.getText())).boxed().collect(Collectors.toList()), seed -> {
+                SeedCandy.POOL.execute(Strings.splitToLongs(inputText.getText()), seed -> {
                     OverworldBiomeSource biomeSource = new OverworldBiomeSource(version, seed);
                         outputText.addEntry(String.format("%d (%d, %d)", seed, biomeSource.getSpawnPoint().getX(), biomeSource.getSpawnPoint().getZ()));
                 });
+
             }
         });
 

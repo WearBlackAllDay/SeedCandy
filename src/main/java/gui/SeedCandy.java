@@ -5,6 +5,7 @@ import com.formdev.flatlaf.FlatLightLaf;
 import gui.components.dungeonpanel.DungeonPanel;
 import gui.components.structurepanel.StructurePanel;
 import gui.components.worldpanel.WorldPanel;
+import threading.ThreadPool;
 import util.Icons;
 
 import javax.swing.*;
@@ -12,6 +13,7 @@ import javax.swing.*;
 public class SeedCandy extends JFrame {
 
     public static SeedCandy INSTANCE;
+    public static final ThreadPool POOL = new ThreadPool();
     public DungeonPanel dungeonPanel;
     public StructurePanel structurePanel;
     public WorldPanel worldPanel;

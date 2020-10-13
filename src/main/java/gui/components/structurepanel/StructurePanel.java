@@ -1,6 +1,7 @@
 package gui.components.structurepanel;
 
 import data.Strings;
+import gui.SeedCandy;
 import gui.components.TextBlock;
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.seedutils.mc.MCVersion;
@@ -44,20 +45,18 @@ public class StructurePanel extends JPanel {
             outputText.setText("");
             progressBar.setMaximum(Strings.countLines(this.inputText.getText()) * 65536);
             AtomicInteger progress = new AtomicInteger(0);
-            ThreadPool.execute(Arrays.stream(Strings.splitToLongs(this.inputText.getText())).boxed().collect(Collectors.toList()), seed -> {
-                StructureSeed.getWorldSeeds(seed).forEachRemaining(candidate -> {
-                    OverworldBiomeSource biomeSource = new OverworldBiomeSource(MCVersion.v1_16_2, candidate);
-                    progressBar.setValue(progress.incrementAndGet());
-                    boolean match = true;
-                    for (int i = 0; i < 16; i++) {
-                        if (!biomePanel.componentAt(0, i).matches(biomeSource)) {
-                            match = false;
-                            break;
-                        }
+            SeedCandy.POOL.execute(Strings.splitToLongs(this.inputText.getText()), seed -> StructureSeed.getWorldSeeds(seed).forEachRemaining(candidate -> {
+                OverworldBiomeSource biomeSource = new OverworldBiomeSource(MCVersion.v1_16_2, candidate);
+                progressBar.setValue(progress.incrementAndGet());
+                boolean match = true;
+                for (int i = 0; i < 16; i++) {
+                    if (!biomePanel.componentAt(0, i).matches(biomeSource)) {
+                        match = false;
+                        break;
                     }
-                    if(match) SwingUtilities.invokeLater(() -> outputText.addEntry(String.valueOf(candidate)));
-                });
-            });
+                }
+                if(match) SwingUtilities.invokeLater(() -> outputText.addEntry(String.valueOf(candidate)));
+            }));
         });
 
         verifyButton.addActionListener(e -> {
