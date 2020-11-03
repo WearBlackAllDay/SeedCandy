@@ -1,7 +1,6 @@
 package gui;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
 import gui.components.dungeonpanel.DungeonPanel;
 import gui.components.structurepanel.StructurePanel;
 import gui.components.worldpanel.WorldPanel;
@@ -21,12 +20,7 @@ public class SeedCandy extends JFrame {
 
     public static void main(String[] args) {
 
-        FlatLightLaf.install();
-        try {
-            UIManager.setLookAndFeel(new FlatDarculaLaf());
-        } catch (UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
-        }
+        FlatDarkLaf.install();
         INSTANCE = new SeedCandy();
     }
 

@@ -38,14 +38,14 @@ public class DungeonPanel extends JPanel {
 
     public void updateInfo() {
         float bits = 0F;
-        String dungeonString = "";
-        for (int row = 0; row < this.guiPanel.xSize(); row++) {
-            for (int column = 0; column < this.guiPanel.ySize(); column++) {
-                bits += this.guiPanel.componentAt(row, column).getBits();
-                dungeonString = dungeonString.concat(this.guiPanel.componentAt(row, column).getString());
+        StringBuilder dungeonString = new StringBuilder();
+        for (int row = 0; row < this.guiPanel.getRows(); row++) {
+            for (int column = 0; column < this.guiPanel.getColumns(); column++) {
+                bits += this.guiPanel.getComponent(row, column).getBits();
+                dungeonString.append(this.guiPanel.getComponent(row, column).getString());
             }
         }
         this.inputPanel.updateBits(bits);
-        this.inputPanel.dungeonString.setText(dungeonString);
+        this.inputPanel.dungeonString.setText(dungeonString.toString());
     }
 }

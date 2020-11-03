@@ -46,7 +46,7 @@ public class StructurePanel extends JPanel {
                         progressBar.setValue(progress.incrementAndGet());
                         boolean match = true;
                         for (int i = 0; i < 16; i++) {
-                            if (!biomePanel.componentAt(0, i).matches(biomeSource)) {
+                            if (!biomePanel.getComponent(0, i).matches(biomeSource)) {
                                 match = false;
                                 break;
                             }
@@ -60,7 +60,7 @@ public class StructurePanel extends JPanel {
                         OverworldBiomeSource biomeSource = new OverworldBiomeSource(MCVersion.v1_16_2, seed);
                         boolean match = true;
                         for (int i = 0; i < 16; i++) {
-                            if (!biomePanel.componentAt(0, i).matches(biomeSource)) {
+                            if (!biomePanel.getComponent(0, i).matches(biomeSource)) {
                                 match = false;
                                 break;
                             }
