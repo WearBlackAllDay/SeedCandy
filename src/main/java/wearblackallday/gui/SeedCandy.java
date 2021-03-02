@@ -1,10 +1,10 @@
-package gui;
+package wearblackallday.gui;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import gui.components.dungeonpanel.DungeonPanel;
-import gui.components.structurepanel.StructurePanel;
-import gui.components.worldpanel.WorldPanel;
-import util.Icons;
+import wearblackallday.gui.components.dungeonpanel.DungeonPanel;
+import wearblackallday.gui.components.structurepanel.StructurePanel;
+import wearblackallday.gui.components.worldpanel.WorldPanel;
+import wearblackallday.util.Icons;
 import wearblackallday.threading.ThreadPool;
 
 import javax.swing.*;

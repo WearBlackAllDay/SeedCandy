@@ -1,6 +1,6 @@
-package util;
+package wearblackallday.util;
 
-import gui.SeedCandy;
+import wearblackallday.gui.SeedCandy;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

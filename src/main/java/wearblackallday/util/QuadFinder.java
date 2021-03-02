@@ -1,4 +1,4 @@
-package util;
+package wearblackallday.util;
 
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.featureutils.structure.OldStructure;
