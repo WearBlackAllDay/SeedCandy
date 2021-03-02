@@ -1,6 +1,5 @@
 package gui.components.worldpanel;
 
-import data.Strings;
 import gui.SeedCandy;
 import gui.components.TextBlock;
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
@@ -8,10 +7,11 @@ import kaptainwutax.seedutils.mc.MCVersion;
 import kaptainwutax.seedutils.mc.pos.BPos;
 import kaptainwutax.seedutils.mc.seed.ChunkSeeds;
 import kaptainwutax.seedutils.mc.seed.WorldSeed;
-import swing.SwingUtils;
-import swing.components.ButtonSet;
-import swing.components.SelectionBox;
 import util.QuadFinder;
+import wearblackallday.data.Strings;
+import wearblackallday.swing.SwingUtils;
+import wearblackallday.swing.components.ButtonSet;
+import wearblackallday.swing.components.SelectionBox;
 
 import javax.swing.*;
 import java.awt.*;

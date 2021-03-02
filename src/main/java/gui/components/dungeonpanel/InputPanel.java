@@ -1,6 +1,5 @@
 package gui.components.dungeonpanel;
 
-import data.Strings;
 import gui.SeedCandy;
 import kaptainwutax.seedutils.lcg.LCG;
 import kaptainwutax.seedutils.mc.MCVersion;
@@ -9,8 +8,9 @@ import randomreverser.call.java.FilteredSkip;
 import randomreverser.call.java.NextInt;
 import randomreverser.device.JavaRandomDevice;
 import randomreverser.device.LCGReverserDevice;
-import swing.SwingUtils;
-import swing.components.SelectionBox;
+import wearblackallday.data.Strings;
+import wearblackallday.swing.SwingUtils;
+import wearblackallday.swing.components.SelectionBox;
 
 import javax.swing.*;
 import java.awt.*;

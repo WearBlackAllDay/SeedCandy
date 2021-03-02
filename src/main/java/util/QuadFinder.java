@@ -4,14 +4,15 @@ import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.featureutils.structure.OldStructure;
 import kaptainwutax.featureutils.structure.SwampHut;
 import kaptainwutax.mathutils.arithmetic.Rational;
-import kaptainwutax.mathutils.component.Vector;
+import kaptainwutax.mathutils.component.vector.QVector;
 import kaptainwutax.seedutils.mc.ChunkRand;
 import kaptainwutax.seedutils.mc.MCVersion;
 import kaptainwutax.seedutils.mc.pos.CPos;
 import kaptainwutax.seedutils.mc.seed.RegionSeed;
 import mjtb49.hashreversals.Lattice2D;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -28,9 +29,9 @@ public class QuadFinder {
 
         for (long regionSeed : regionSeeds) {
             long target = regionSeed - seed - swampHut.getSalt();
-            List<Vector> vectorList = REGION_LATTICE.findSolutionsInBox(target, -60000, -60000, 60000, 60000);
+            List<QVector> vectorList = REGION_LATTICE.findSolutionsInBox(target, -60000, -60000, 60000, 60000);
 
-            for (Vector solution : vectorList) {
+            for (QVector solution : vectorList) {
                 if(!checkBiomes(biomeSource, solution, swampHut)) continue;
                 solution.scaleAndSet(16 * 32);
                 result = String.format(result + "[%d]" + "\n" + "-> (%d, %d)" + "\n", seed, solution.get(0).intValue(), solution.get(1).intValue());
@@ -40,7 +41,7 @@ public class QuadFinder {
     }
 
 
-    private static boolean checkBiomes(OverworldBiomeSource source, Vector solution, OldStructure<?> structure) {
+    private static boolean checkBiomes(OverworldBiomeSource source, QVector solution, OldStructure<?> structure) {
         if(checkStructure(source, solution.get(0), solution.get(1), structure))return false;
         if(checkStructure(source, solution.get(0).subtract(1), solution.get(1), structure))return false;
         if(checkStructure(source, solution.get(0), solution.get(1).subtract(1), structure))return false;
@@ -56,4 +57,5 @@ public class QuadFinder {
         BufferedReader reader = new BufferedReader(new InputStreamReader(QuadFinder.class.getResourceAsStream("/regionSeeds.txt")));
         return reader.lines().mapToLong(Long::parseLong);
     }
+
 }

@@ -2,8 +2,8 @@ package gui.components.structurepanel;
 
 import kaptainwutax.biomeutils.Biome;
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
-import swing.SwingUtils;
-import swing.components.SelectionBox;
+import wearblackallday.swing.SwingUtils;
+import wearblackallday.swing.components.SelectionBox;
 
 import javax.swing.*;
 import java.awt.*;
