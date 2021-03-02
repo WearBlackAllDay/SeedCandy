@@ -1,13 +1,13 @@
 package gui.components.structurepanel;
 
-import data.Strings;
 import gui.SeedCandy;
 import gui.components.TextBlock;
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.seedutils.mc.MCVersion;
 import kaptainwutax.seedutils.mc.seed.StructureSeed;
-import swing.components.ButtonSet;
-import swing.components.GridPanel;
+import wearblackallday.data.Strings;
+import wearblackallday.swing.components.ButtonSet;
+import wearblackallday.swing.components.GridPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +21,7 @@ public class StructurePanel extends JPanel {
         this.inputText = new TextBlock(true);
         TextBlock outputText = new TextBlock(false);
         JPanel inputPanel = new JPanel(new BorderLayout());
-        GridPanel<BiomeUnit> biomePanel = new GridPanel<>(1, 16, BiomeUnit::new);
+        GridPanel<BiomeUnit> biomePanel = new GridPanel<>(16, 1, BiomeUnit::new);
         JPanel selectionPanel = new JPanel(new GridLayout(2, 2));
         ButtonSet<JButton> buttonSet = new ButtonSet<>(JButton::new,
                 "reverse to nextLong()", "crack with Biomes", "verify WorldSeeds");
@@ -46,7 +46,7 @@ public class StructurePanel extends JPanel {
                         progressBar.setValue(progress.incrementAndGet());
                         boolean match = true;
                         for (int i = 0; i < 16; i++) {
-                            if (!biomePanel.getComponent(0, i).matches(biomeSource)) {
+                            if (!biomePanel.getComponent(i, 0).matches(biomeSource)) {
                                 match = false;
                                 break;
                             }
@@ -60,7 +60,7 @@ public class StructurePanel extends JPanel {
                         OverworldBiomeSource biomeSource = new OverworldBiomeSource(MCVersion.v1_16_2, seed);
                         boolean match = true;
                         for (int i = 0; i < 16; i++) {
-                            if (!biomePanel.getComponent(0, i).matches(biomeSource)) {
+                            if (!biomePanel.getComponent(i, 0).matches(biomeSource)) {
                                 match = false;
                                 break;
                             }

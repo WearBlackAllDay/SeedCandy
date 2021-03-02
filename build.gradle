@@ -9,8 +9,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.KaptainWutax:SEED:6f0a91d7911f2bd9806192ce52e49f23b082b5c0'
-    implementation 'com.github.WearBlackAllDay:JavaUtils:e41afbc86d4dae3a52935cd288e0dd15aff94707'
+    implementation 'com.github.KaptainWutax:SEED:9125e8b8094ebd2588c89e16fcc0a94418129f5e'
+    implementation 'com.github.WearBlackAllDay:JavaUtils:a680009ff05e83c36977bc5dd206dca27f770eea'
     implementation "com.formdev:flatlaf:0.38"
 }
 application {

@@ -4,8 +4,8 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import gui.components.dungeonpanel.DungeonPanel;
 import gui.components.structurepanel.StructurePanel;
 import gui.components.worldpanel.WorldPanel;
-import threading.ThreadPool;
 import util.Icons;
+import wearblackallday.threading.ThreadPool;
 
 import javax.swing.*;
 
