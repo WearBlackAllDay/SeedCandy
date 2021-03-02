@@ -1,6 +1,6 @@
-package gui.components.dungeonpanel;
+package wearblackallday.gui.components.dungeonpanel;
 
-import gui.SeedCandy;
+import wearblackallday.gui.SeedCandy;
 import kaptainwutax.seedutils.lcg.LCG;
 import kaptainwutax.seedutils.mc.MCVersion;
 import mjtb49.hashreversals.ChunkRandomReverser;
@@ -10,6 +10,7 @@ import randomreverser.device.JavaRandomDevice;
 import randomreverser.device.LCGReverserDevice;
 import wearblackallday.data.Strings;
 import wearblackallday.swing.SwingUtils;
+import wearblackallday.swing.components.CustomPanel;
 import wearblackallday.swing.components.SelectionBox;
 
 import javax.swing.*;
@@ -28,43 +29,33 @@ public class InputPanel extends JPanel {
         this.dungeonString = new JTextField("String");
         this.crackButton = new JButton();
         this.setLayout(new BorderLayout());
-        JPanel upper = new JPanel();
         JPanel lower = new JPanel();
-        JTextField xCord = new JTextField();
-        JTextField yCord = new JTextField();
-        JTextField zCord = new JTextField();
         SelectionBox<MCVersion> versionSelector = new SelectionBox<>(MCVersion.v1_16, MCVersion.v1_15, MCVersion.v1_14, MCVersion.v1_13);
         JComboBox<String> biomeSelector = new JComboBox<>(new String[]{"other Biome", "desert", "swamp", "swamp_hill"});
         JComboBox<String> sizeSelector = new JComboBox<>(new String[]{"9x9", "9x7", "7x9", "7x7"});
-        JButton copyButton = new JButton("copy");
-        JButton moveButton = new JButton("move");
-        Dimension dimension = new Dimension(50, 25);
-        Dimension buttonDimension = new Dimension(80, 25);
 
-        xCord.setPreferredSize(dimension);
-        SwingUtils.setPrompt("X", xCord);
-        yCord.setPreferredSize(dimension);
-        SwingUtils.setPrompt("Y", yCord);
-        zCord.setPreferredSize(dimension);
-        SwingUtils.setPrompt("Z", zCord);
+        CustomPanel upper = new CustomPanel(50, 25).
+                addComponent(() -> sizeSelector).
+                addTextField("X","x").
+                addTextField("Y", "y").
+                addTextField("Z", "z").
+                addComponent(() -> versionSelector).
+                addComponent(() -> biomeSelector).
+                addButton("move", 80, 25, e -> {
+                    SeedCandy.INSTANCE.structurePanel.inputText.setText(SeedCandy.INSTANCE.dungeonPanel.dungeonOutput.getText());
+                    SeedCandy.INSTANCE.tabbedPane.setSelectedComponent(SeedCandy.INSTANCE.structurePanel);
+                }).
+                addButton("copy", 80, 25, e -> Strings.clipboard(SeedCandy.INSTANCE.dungeonPanel.dungeonOutput.getText()));
 
         this.dungeonString.setPreferredSize(new Dimension(520, 25));
-        this.crackButton.setPreferredSize(buttonDimension);
-        copyButton.setPreferredSize(buttonDimension);
-        moveButton.setPreferredSize(buttonDimension);
-
+        this.dungeonString.setFont(new Font("Arial", Font.PLAIN, 10));
         versionSelector.addActionListener(e -> biomeSelector.setEnabled(versionSelector.getSelected() == MCVersion.v1_16));
         sizeSelector.addActionListener(e -> SeedCandy.INSTANCE.dungeonPanel.resizeGUI(String.valueOf(sizeSelector.getSelectedItem())));
-        copyButton.addActionListener(e -> Strings.clipboard(SeedCandy.INSTANCE.dungeonPanel.dungeonOutput.getText()));
-        moveButton.addActionListener(e -> {
-            SeedCandy.INSTANCE.structurePanel.inputText.setText(SeedCandy.INSTANCE.dungeonPanel.dungeonOutput.getText());
-            SeedCandy.INSTANCE.tabbedPane.setSelectedComponent(SeedCandy.INSTANCE.structurePanel);
-        });
         this.crackButton.addActionListener(e -> {
             SeedCandy.INSTANCE.dungeonPanel.dungeonOutput.setText("");
-            int posX = Integer.parseInt(xCord.getText().trim());
-            int posY = Integer.parseInt(yCord.getText().trim());
-            int posZ = Integer.parseInt(zCord.getText().trim());
+            int posX = Integer.parseInt(upper.getText("x").trim());
+            int posY = Integer.parseInt(upper.getText("y").trim());
+            int posZ = Integer.parseInt(upper.getText("z").trim());
             int offsetX = posX & 15;
             int offsetZ = posZ & 15;
             Integer[] pattern = this.dungeonString.getText().chars().mapToObj(c -> c == '0' ? 0 : c == '1' ? 1 : 2).toArray(Integer[]::new);
@@ -111,16 +102,7 @@ public class InputPanel extends JPanel {
             }
         });
 
-        upper.add(sizeSelector);
-        upper.add(xCord);
-        upper.add(yCord);
-        upper.add(zCord);
-        upper.add(versionSelector);
-        upper.add(biomeSelector);
-        upper.add(moveButton);
-        upper.add(copyButton);
-        lower.add(this.dungeonString);
-        lower.add(this.crackButton);
+        SwingUtils.addSet(lower, this.dungeonString, this.crackButton);
         this.add(upper, BorderLayout.CENTER);
         this.add(lower, BorderLayout.SOUTH);
     }

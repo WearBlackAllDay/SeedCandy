@@ -1,6 +1,6 @@
-package gui.components.dungeonpanel;
+package wearblackallday.gui.components.dungeonpanel;
 
-import gui.components.TextBlock;
+import wearblackallday.gui.components.TextBlock;
 import wearblackallday.swing.components.GridPanel;
 
 import javax.swing.*;
@@ -50,5 +50,4 @@ public class DungeonPanel extends JPanel {
         this.inputPanel.updateBits(bits);
         this.inputPanel.dungeonString.setText(dungeonString.toString());
     }
-
 }

@@ -1,7 +1,7 @@
-package gui.components.structurepanel;
+package wearblackallday.gui.components.structurepanel;
 
-import gui.SeedCandy;
-import gui.components.TextBlock;
+import wearblackallday.gui.SeedCandy;
+import wearblackallday.gui.components.TextBlock;
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.seedutils.mc.MCVersion;
 import kaptainwutax.seedutils.mc.seed.StructureSeed;

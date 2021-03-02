@@ -1,4 +1,4 @@
-package gui.components.structurepanel;
+package wearblackallday.gui.components.structurepanel;
 
 import kaptainwutax.biomeutils.Biome;
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;

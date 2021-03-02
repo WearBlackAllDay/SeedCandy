@@ -1,7 +1,7 @@
-package gui.components.dungeonpanel;
+package wearblackallday.gui.components.dungeonpanel;
 
-import gui.SeedCandy;
-import util.Icons;
+import wearblackallday.gui.SeedCandy;
+import wearblackallday.util.Icons;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package gui.components;
+package wearblackallday.gui.components;
 
 import javax.swing.*;
 import java.awt.*;
