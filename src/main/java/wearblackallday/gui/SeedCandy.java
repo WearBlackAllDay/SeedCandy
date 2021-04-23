@@ -1,43 +1,30 @@
 package wearblackallday.gui;
 
-import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme;
 import wearblackallday.gui.components.dungeonpanel.DungeonPanel;
 import wearblackallday.gui.components.structurepanel.StructurePanel;
 import wearblackallday.gui.components.worldpanel.WorldPanel;
-import wearblackallday.util.Icons;
+import wearblackallday.swing.SwingUtils;
+import wearblackallday.swing.components.builder.FrameBuilder;
 import wearblackallday.threading.ThreadPool;
+import wearblackallday.util.Icons;
 
 import javax.swing.*;
 
-public class SeedCandy extends JFrame {
+public class SeedCandy {
 
-    public static SeedCandy INSTANCE;
-    public static final ThreadPool POOL = new ThreadPool();
-    public DungeonPanel dungeonPanel;
-    public StructurePanel structurePanel;
-    public WorldPanel worldPanel;
-    public final JTabbedPane tabbedPane;
-
-    public static void main(String[] args) {
-
-        FlatDarkLaf.install();
-        INSTANCE = new SeedCandy();
+    static {
+        FlatOneDarkIJTheme.install();
     }
 
-    public SeedCandy() {
-        this.dungeonPanel = new DungeonPanel();
-        this.structurePanel = new StructurePanel();
-        this.worldPanel = new WorldPanel();
-        this.tabbedPane = new JTabbedPane();
+	public static final ThreadPool POOL = new ThreadPool();
+	public static final DungeonPanel DUNGEON_PANEL = new DungeonPanel();
 
-        this.tabbedPane.add(this.dungeonPanel);
-        this.tabbedPane.add(this.structurePanel);
-        this.tabbedPane.add(this.worldPanel);
-        this.add(this.tabbedPane);
-        this.setVisible(true);
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.setTitle("SeedCandy");
-        this.setIconImage(Icons.SEED);
-        this.pack();
-    }
+	public static void main(String[] args) {
+		JTabbedPane tabbedPane = new JTabbedPane();
+		SwingUtils.addSet(tabbedPane, DUNGEON_PANEL, new StructurePanel(), new WorldPanel());
+
+		new FrameBuilder().visible().centered().title("SeedCandy")
+			.contentPane(tabbedPane).create().setIconImage(Icons.SEED);
+	}
 }

@@ -1,32 +1,29 @@
 package wearblackallday.gui.components;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
 
 public class TextBlock extends JScrollPane {
 
-    private final JTextArea text;
+	private final JTextArea textArea = new JTextArea();
 
-    public TextBlock(boolean input) {
-        this.text = new JTextArea();
-        this.setPreferredSize(new Dimension(200,600));
-        this.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        this.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+	public TextBlock(boolean input) {
+		this.setPreferredSize(new Dimension(200, 600));
+		this.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		this.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		this.textArea.setEditable(input);
+		this.setViewportView(this.textArea);
+	}
 
-        this.text.setEditable(input);
+	public String getText() {
+		return this.textArea.getText();
+	}
 
-        this.setViewportView(this.text);
-    }
+	public void setText(String textArea) {
+		this.textArea.setText(textArea);
+	}
 
-    public String getText() {
-        return this.text.getText();
-    }
-
-    public void setText(String text) {
-        this.text.setText(text);
-    }
-
-    public void addEntry(String entry) {
-        this.text.setText(this.text.getText() + entry + "\n");
-    }
+	public void addEntry(String entry) {
+		this.textArea.setText(this.textArea.getText() + entry + "\n");
+	}
 }

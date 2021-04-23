@@ -19,43 +19,41 @@ import java.util.stream.LongStream;
 
 public class QuadFinder {
 
-    private static final Lattice2D REGION_LATTICE = new Lattice2D(RegionSeed.A, RegionSeed.B, 1L << 48);
-    private static final List<Long> regionSeeds = getQuadRegionSeeds().boxed().collect(Collectors.toList());
+	private static final Lattice2D REGION_LATTICE = new Lattice2D(RegionSeed.A, RegionSeed.B, 1L << 48);
+	private static final long[] REGION_SEEDS = getQuadRegionSeeds().toArray();
 
-    public static String find(long seed, MCVersion version) {
-        OverworldBiomeSource biomeSource = new OverworldBiomeSource(version, seed);
-        OldStructure<?> swampHut = new SwampHut(version);
-        String result = "";
+	public static String find(long seed, MCVersion version) {
+		OverworldBiomeSource biomeSource = new OverworldBiomeSource(version, seed);
+		OldStructure<?> swampHut = new SwampHut(version);
+		String result = "";
 
-        for (long regionSeed : regionSeeds) {
-            long target = regionSeed - seed - swampHut.getSalt();
-            List<QVector> vectorList = REGION_LATTICE.findSolutionsInBox(target, -60000, -60000, 60000, 60000);
+		for(long regionSeed : REGION_SEEDS) {
+			long target = regionSeed - seed - swampHut.getSalt();
+			List<QVector> vectorList = REGION_LATTICE.findSolutionsInBox(target, -60000, -60000, 60000, 60000);
+			for(QVector solution : vectorList) {
+				if(!checkBiomes(biomeSource, solution, swampHut)) break;
+				solution.scaleAndSet(16 * 32);
+				result = String.format(result + "[%d]" + "\n" + "-> (%d, %d)" + "\n", seed, solution.get(0).intValue(), solution.get(1).intValue());
+			}
+		}
+		return result.isEmpty() ? String.format("[%d]" + "\n" + "-> no huts", seed) : result;
+	}
 
-            for (QVector solution : vectorList) {
-                if(!checkBiomes(biomeSource, solution, swampHut)) continue;
-                solution.scaleAndSet(16 * 32);
-                result = String.format(result + "[%d]" + "\n" + "-> (%d, %d)" + "\n", seed, solution.get(0).intValue(), solution.get(1).intValue());
-            }
-        }
-        return result.isEmpty() ? String.format("[%d]" + "\n" + "-> no huts", seed) : result;
-    }
 
+	private static boolean checkBiomes(OverworldBiomeSource source, QVector solution, OldStructure<?> structure) {
+		if(checkStructure(source, solution.get(0), solution.get(1), structure)) return false;
+		if(checkStructure(source, solution.get(0).subtract(1), solution.get(1), structure)) return false;
+		if(checkStructure(source, solution.get(0), solution.get(1).subtract(1), structure)) return false;
+		return !checkStructure(source, solution.get(0).subtract(1), solution.get(1).subtract(1), structure);
+	}
 
-    private static boolean checkBiomes(OverworldBiomeSource source, QVector solution, OldStructure<?> structure) {
-        if(checkStructure(source, solution.get(0), solution.get(1), structure))return false;
-        if(checkStructure(source, solution.get(0).subtract(1), solution.get(1), structure))return false;
-        if(checkStructure(source, solution.get(0), solution.get(1).subtract(1), structure))return false;
-        return !checkStructure(source, solution.get(0).subtract(1), solution.get(1).subtract(1), structure);
-    }
+	private static boolean checkStructure(OverworldBiomeSource source, Rational x, Rational z, OldStructure<?> structure) {
+		CPos chunk = structure.getInRegion(source.getWorldSeed(), x.intValue(), z.intValue(), new ChunkRand());
+		return !structure.canSpawn(chunk.getX(), chunk.getZ(), source);
+	}
 
-    private static boolean checkStructure(OverworldBiomeSource source, Rational x, Rational z, OldStructure<?> structure) {
-        CPos chunk = structure.getInRegion(source.getWorldSeed(), x.intValue(), z.intValue(), new ChunkRand());
-        return !structure.canSpawn(chunk.getX(), chunk.getZ(), source);
-    }
-
-    private static LongStream getQuadRegionSeeds() {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(QuadFinder.class.getResourceAsStream("/regionSeeds.txt")));
-        return reader.lines().mapToLong(Long::parseLong);
-    }
-
+	private static LongStream getQuadRegionSeeds() {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(QuadFinder.class.getResourceAsStream("/regionSeeds.txt")));
+		return reader.lines().mapToLong(Long::parseLong);
+	}
 }

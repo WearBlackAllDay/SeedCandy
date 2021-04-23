@@ -2,38 +2,47 @@ package wearblackallday.gui.components.structurepanel;
 
 import kaptainwutax.biomeutils.Biome;
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
+import kaptainwutax.seedutils.mc.Dimension;
 import wearblackallday.swing.SwingUtils;
 import wearblackallday.swing.components.SelectionBox;
 
 import javax.swing.*;
-import java.awt.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class BiomeUnit extends JPanel {
 
-    private final JTextField xCord;
-    private final JTextField zCord;
-    private final SelectionBox<Biome> biomeSelector;
+	private static final List<Biome> BIOMES;
 
-    public BiomeUnit() {
-        this.xCord = new JTextField();
-        this.zCord = new JTextField();
-        this.biomeSelector = new SelectionBox<>(Biome::getName, Biome.REGISTRY.values());
+	static {
+		BIOMES = Biome.REGISTRY.values().stream()
+			.filter(biome -> biome.getDimension() == Dimension.OVERWORLD)
+			.sorted(Comparator.comparing(Biome::getName))
+			.collect(Collectors.toList());
+	}
 
-        SwingUtils.setPrompt("X", this.xCord);
-        SwingUtils.setPrompt("Z", this.zCord);
-        this.biomeSelector.setPreferredSize(new Dimension(150, 25));
+	private final JTextField xCord;
+	private final JTextField zCord;
+	private final SelectionBox<Biome> biomeSelector;
 
-        this.add(this.xCord);
-        this.add(this.zCord);
-        this.add(this.biomeSelector);
-    }
+	protected BiomeUnit() {
+		this.xCord = new JTextField();
+		this.zCord = new JTextField();
+		this.biomeSelector = new SelectionBox<>(Biome::getName, BIOMES);
+		SwingUtils.setPrompt(this.xCord, "X");
+		SwingUtils.setPrompt(this.zCord, "Z");
+		SwingUtils.addSet(this, this.xCord, this.zCord, this.biomeSelector);
+	}
 
-    public boolean matches(OverworldBiomeSource biomeSource) {
-        try {
-            return biomeSource.getBiome(Integer.parseInt(this.xCord.getText().trim()), 0, Integer.parseInt(this.zCord.getText().trim()))
-                    == this.biomeSelector.getSelected();
-        } catch (NumberFormatException exception) {
-            return true;
-        }
-    }
+	protected boolean matches(OverworldBiomeSource biomeSource) {
+		try {
+			return biomeSource.getBiome(Integer.parseInt(this.xCord.getText().trim()),
+				0,
+				Integer.parseInt(this.zCord.getText().trim()))
+				== this.biomeSelector.getSelected();
+		} catch(NumberFormatException exception) {
+			return true;
+		}
+	}
 }

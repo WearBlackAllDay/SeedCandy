@@ -1,81 +1,66 @@
 package wearblackallday.gui.components.structurepanel;
 
-import wearblackallday.gui.SeedCandy;
-import wearblackallday.gui.components.TextBlock;
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.seedutils.mc.MCVersion;
 import kaptainwutax.seedutils.mc.seed.StructureSeed;
 import wearblackallday.data.Strings;
-import wearblackallday.swing.components.ButtonSet;
+import wearblackallday.gui.SeedCandy;
+import wearblackallday.gui.components.TextBlock;
+import wearblackallday.swing.components.CustomPanel;
 import wearblackallday.swing.components.GridPanel;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class StructurePanel extends JPanel {
+	public StructurePanel() {
+		TextBlock inputText = new TextBlock(true);
+		TextBlock outputText = new TextBlock(false);
+		Box inputPanel = new Box(BoxLayout.Y_AXIS);
+		GridPanel<BiomeUnit> biomePanel = new GridPanel<>(16, 1, BiomeUnit::new);
+		JProgressBar progressBar = new JProgressBar(0, 1);
 
-    public final TextBlock inputText;
+		JPanel buttonPanel = new CustomPanel(new GridLayout(2, 2), 170, 30)
+			.addButton("reverse to nextLong()", (panel, button, event) -> {
+				outputText.setText("");
+				Arrays.stream(Strings.splitToLongs(inputText.getText()))
+					.flatMap(seed -> StructureSeed.toRandomWorldSeeds(seed).stream()
+						.mapToLong(Long::longValue))
+					.mapToObj(String::valueOf)
+					.forEach(outputText::addEntry);
+			})
+			.addButton("crack with biomes", (panel, button, event) -> {
+				outputText.setText("");
+				progressBar.setMaximum(Strings.countLines(inputText.getText()) * 65536);
+				AtomicInteger progress = new AtomicInteger(0);
+				SeedCandy.POOL.execute(Strings.splitToLongs(inputText.getText()), seed -> StructureSeed.getWorldSeeds(seed).forEachRemaining(candidate -> {
+					OverworldBiomeSource biomeSource = new OverworldBiomeSource(MCVersion.v1_16_2, candidate);
+					progressBar.setValue(progress.incrementAndGet());
+					if(biomePanel.allMatch(biomeUnit -> biomeUnit.matches(biomeSource))) {
+						SwingUtilities.invokeLater(() -> outputText.addEntry(String.valueOf(candidate)));
+					}
+				}));
+			})
+			.addButton("verify WorldSeeds", (panel, button, event) -> {
+				outputText.setText("");
+				for(long seed : Strings.splitToLongs(inputText.getText())) {
+					OverworldBiomeSource biomeSource = new OverworldBiomeSource(MCVersion.v1_16_2, seed);
+					if(biomePanel.allMatch(biomeUnit -> biomeUnit.matches(biomeSource))) {
+						SwingUtilities.invokeLater(() -> outputText.addEntry(String.valueOf(seed)));
+					}
+				}
+			})
+			.addComponent(progressBar);
 
-    public StructurePanel() {
-        this.inputText = new TextBlock(true);
-        TextBlock outputText = new TextBlock(false);
-        JPanel inputPanel = new JPanel(new BorderLayout());
-        GridPanel<BiomeUnit> biomePanel = new GridPanel<>(16, 1, BiomeUnit::new);
-        JPanel selectionPanel = new JPanel(new GridLayout(2, 2));
-        ButtonSet<JButton> buttonSet = new ButtonSet<>(JButton::new,
-                "reverse to nextLong()", "crack with Biomes", "verify WorldSeeds");
-        JProgressBar progressBar = new JProgressBar(0,1);
-
-        this.setLayout(new BorderLayout());
-        this.setName("StructureSeed");
-
-        buttonSet.addListeners(
-                longButton -> {
-                    outputText.setText("");
-                    for (long seed : Strings.splitToLongs(this.inputText.getText())) {
-                        StructureSeed.toRandomWorldSeeds(seed).forEach(worldseed -> outputText.addEntry(String.valueOf(worldseed)));
-                    }
-                },
-                biomeButton -> {
-                    outputText.setText("");
-                    progressBar.setMaximum(Strings.countLines(this.inputText.getText()) * 65536);
-                    AtomicInteger progress = new AtomicInteger(0);
-                    SeedCandy.POOL.execute(Strings.splitToLongs(this.inputText.getText()), seed -> StructureSeed.getWorldSeeds(seed).forEachRemaining(candidate -> {
-                        OverworldBiomeSource biomeSource = new OverworldBiomeSource(MCVersion.v1_16_2, candidate);
-                        progressBar.setValue(progress.incrementAndGet());
-                        boolean match = true;
-                        for (int i = 0; i < 16; i++) {
-                            if (!biomePanel.getComponent(i, 0).matches(biomeSource)) {
-                                match = false;
-                                break;
-                            }
-                        }
-                        if(match) SwingUtilities.invokeLater(() -> outputText.addEntry(String.valueOf(candidate)));
-                    }));
-                },
-                verifyButton -> {
-                    outputText.setText("");
-                    for (long seed : Strings.splitToLongs(this.inputText.getText())) {
-                        OverworldBiomeSource biomeSource = new OverworldBiomeSource(MCVersion.v1_16_2, seed);
-                        boolean match = true;
-                        for (int i = 0; i < 16; i++) {
-                            if (!biomePanel.getComponent(i, 0).matches(biomeSource)) {
-                                match = false;
-                                break;
-                            }
-                        }
-                        if(match) outputText.addEntry(String.valueOf(seed));
-                    }
-                }
-        );
-
-        buttonSet.addAll(selectionPanel);
-        selectionPanel.add(progressBar);
-        inputPanel.add(biomePanel, BorderLayout.CENTER);
-        inputPanel.add(selectionPanel, BorderLayout.SOUTH);
-        this.add(this.inputText, BorderLayout.WEST);
-        this.add(outputText, BorderLayout.CENTER);
-        this.add(inputPanel, BorderLayout.EAST);
-    }
+		this.setLayout(new BorderLayout());
+		inputPanel.add(biomePanel);
+		inputPanel.add(buttonPanel);
+		this.add(inputText, BorderLayout.WEST);
+		this.add(outputText, BorderLayout.CENTER);
+		this.add(inputPanel, BorderLayout.EAST);
+		this.setName("StructureSeed");
+	}
 }

@@ -10,13 +10,14 @@ repositories {
 
 dependencies {
     implementation 'com.github.KaptainWutax:SEED:9125e8b8094ebd2588c89e16fcc0a94418129f5e'
-    implementation 'com.github.WearBlackAllDay:JavaUtils:a680009ff05e83c36977bc5dd206dca27f770eea'
+    implementation 'com.github.WearBlackAllDay:JavaUtils:5dcd4385d2264a1edf8ab778ff81155ebaf38e30'
     implementation "com.formdev:flatlaf:0.38"
+    implementation 'com.formdev:flatlaf-intellij-themes:1.1.2'
 }
 application {
-    mainClassName = "gui.SeedCandy"
+    mainClassName = "wearblackallday.gui.SeedCandy"
 }
-version "1.4"
+version "1.5.0"
 task fatJar(type: Jar) {
     manifest {
         attributes(
@@ -32,8 +33,6 @@ task fatJar(type: Jar) {
     }
     with jar
 }
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 artifacts {
     archives fatJar
 }
