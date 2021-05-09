@@ -34,8 +34,8 @@ public class DungeonPanel extends JPanel {
 		guiPanel.add(new GridPanel<>(7, 9, StringButton::new), "79");
 		guiPanel.add(new GridPanel<>(7, 7, StringButton::new), "77");
 
-		this.sizeSelector = new SelectionBox<>(gp ->
-			gp.getColumns() + "x" + gp.getRows(),
+		this.sizeSelector = new SelectionBox<>(gridPanel ->
+			gridPanel.getColumns() + "x" + gridPanel.getRows(),
 			Arrays.stream(guiPanel.getComponents())
 				.map(component -> (GridPanel<StringButton>)component)
 				.collect(Collectors.toList()));
@@ -85,19 +85,18 @@ public class DungeonPanel extends JPanel {
 						device.addCall(NextInt.withValue(256, posY));
 						device.addCall(NextInt.withValue(16, offsetZ));
 					}
-					device.addCall(NextInt.withValue(16, offsetZ));
 					device.addCall(NextInt.consume(2, 2));
 
 					this.dungeonString.getText().chars().forEach(i -> {
 						switch(i) {
-							case 0:
+							case '0':
 								device.addCall(NextInt.withValue(4, 0));
 								break;
-							case 1:
+							case '1':
 								device.addCall(FilteredSkip.filter(LCG.JAVA, r ->
 									r.nextInt(4) != 0, 1));
 								break;
-							case 2:
+							case '2':
 								device.addCall(NextInt.consume(4, 1));
 								break;
 						}
@@ -140,10 +139,9 @@ public class DungeonPanel extends JPanel {
 		this.bitLabel.setText("Bits: " + Math.round(this.sizeSelector.getSelected().stream()
 			.mapToDouble(StringButton::getBits)
 			.sum()));
-		StringBuilder dungeonString = new StringBuilder();
-		this.sizeSelector.getSelected().stream()
+
+		this.dungeonString.setText(this.sizeSelector.getSelected().stream()
 			.map(StringButton::getString)
-			.forEach(dungeonString::append);
-		this.dungeonString.setText(dungeonString.toString());
+			.collect(Collectors.joining()));
 	}
 }

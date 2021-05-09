@@ -20,7 +20,7 @@ import java.util.stream.LongStream;
 public class QuadFinder {
 
 	private static final Lattice2D REGION_LATTICE = new Lattice2D(RegionSeed.A, RegionSeed.B, 1L << 48);
-	private static final long[] REGION_SEEDS = getQuadRegionSeeds().toArray();
+	private static final long[] REGION_SEEDS = getQuadRegionSeeds();
 
 	public static String find(long seed, MCVersion version) {
 		OverworldBiomeSource biomeSource = new OverworldBiomeSource(version, seed);
@@ -52,8 +52,8 @@ public class QuadFinder {
 		return !structure.canSpawn(chunk.getX(), chunk.getZ(), source);
 	}
 
-	private static LongStream getQuadRegionSeeds() {
+	private static long[] getQuadRegionSeeds() {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(QuadFinder.class.getResourceAsStream("/regionSeeds.txt")));
-		return reader.lines().mapToLong(Long::parseLong);
+		return reader.lines().mapToLong(Long::parseLong).toArray();
 	}
 }
