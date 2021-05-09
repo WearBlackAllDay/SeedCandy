@@ -85,19 +85,17 @@ public class DungeonPanel extends JPanel {
 						device.addCall(NextInt.withValue(256, posY));
 						device.addCall(NextInt.withValue(16, offsetZ));
 					}
-					device.addCall(NextInt.withValue(16, offsetZ));
 					device.addCall(NextInt.consume(2, 2));
-
 					this.dungeonString.getText().chars().forEach(i -> {
 						switch(i) {
-							case 0:
+							case '0':
 								device.addCall(NextInt.withValue(4, 0));
 								break;
-							case 1:
+							case '1':
 								device.addCall(FilteredSkip.filter(LCG.JAVA, r ->
 									r.nextInt(4) != 0, 1));
 								break;
-							case 2:
+							case '2':
 								device.addCall(NextInt.consume(4, 1));
 								break;
 						}
