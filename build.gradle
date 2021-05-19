@@ -1,23 +1,26 @@
 plugins {
-    id 'java'
+    id "java"
     id "application"
 }
 
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
-    implementation 'com.github.KaptainWutax:SEED:9125e8b8094ebd2588c89e16fcc0a94418129f5e'
-    implementation 'com.github.WearBlackAllDay:JavaUtils:5dcd4385d2264a1edf8ab778ff81155ebaf38e30'
+    implementation "com.github.KaptainWutax:SEED:b1b7c79e9b"
+    implementation "com.github.WearBlackAllDay:JavaUtils:520c04e605b5c571c57f85f73f4609b2ff442a91"
+
     implementation "com.formdev:flatlaf:0.38"
-    implementation 'com.formdev:flatlaf-intellij-themes:1.1.2'
+    implementation "com.formdev:flatlaf-intellij-themes:1.1.2"
 }
 application {
     mainClassName = "wearblackallday.gui.SeedCandy"
 }
-version "1.5.0"
+
+version "1.5.1"
+
 task fatJar(type: Jar) {
     manifest {
         attributes(
@@ -38,6 +41,7 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
+
 artifacts {
     archives fatJar
 }

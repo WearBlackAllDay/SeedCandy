@@ -12,24 +12,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BiomeUnit extends JPanel {
+	private static final List<Biome> BIOMES = Biome.REGISTRY.values().stream()
+		.filter(biome -> biome.getDimension() == Dimension.OVERWORLD)
+		.sorted(Comparator.comparing(Biome::getName))
+		.collect(Collectors.toList());
 
-	private static final List<Biome> BIOMES;
-
-	static {
-		BIOMES = Biome.REGISTRY.values().stream()
-			.filter(biome -> biome.getDimension() == Dimension.OVERWORLD)
-			.sorted(Comparator.comparing(Biome::getName))
-			.collect(Collectors.toList());
-	}
-
-	private final JTextField xCord;
-	private final JTextField zCord;
-	private final SelectionBox<Biome> biomeSelector;
+	private final JTextField xCord = new JTextField();
+	private final JTextField zCord = new JTextField();
+	private final SelectionBox<Biome> biomeSelector = new SelectionBox<>(Biome::getName, BIOMES);
 
 	protected BiomeUnit() {
-		this.xCord = new JTextField();
-		this.zCord = new JTextField();
-		this.biomeSelector = new SelectionBox<>(Biome::getName, BIOMES);
 		SwingUtils.setPrompt(this.xCord, "X");
 		SwingUtils.setPrompt(this.zCord, "Z");
 		SwingUtils.addSet(this, this.xCord, this.zCord, this.biomeSelector);
