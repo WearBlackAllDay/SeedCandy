@@ -1,19 +1,19 @@
-package wearblackallday.gui.components.structurepanel;
+package wearblackallday.components.structurepanel;
 
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.seedutils.mc.MCVersion;
 import kaptainwutax.seedutils.mc.seed.StructureSeed;
 import wearblackallday.data.Strings;
-import wearblackallday.gui.components.TextBlock;
 import wearblackallday.swing.SwingUtils;
 import wearblackallday.swing.components.GridPanel;
 import wearblackallday.swing.components.LPanel;
+import wearblackallday.components.TextBlock;
 
 import javax.swing.*;
 import java.awt.GridLayout;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static wearblackallday.gui.SeedCandy.POOL;
+import static wearblackallday.SeedCandy.POOL;
 
 public class StructurePanel extends Box {
 	public StructurePanel() {

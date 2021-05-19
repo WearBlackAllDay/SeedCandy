@@ -74,12 +74,12 @@ public class Dungeon {
 	}
 
 	public enum Size {
-		NINE_BY_NINE(9, 9),
-		NINE_BY_SEVEN(9, 7),
-		SEVEN_BY_NINE(7, 9),
-		SEVEN_BY_SEVEN(7, 7);
+		_9x9(9, 9),
+		_9x7(9, 7),
+		_7x9(7, 9),
+		_7x7(7, 7);
 
-		private final int x, y;
+		public final int x, y;
 
 		Size(int x, int y) {
 			this.x = x;

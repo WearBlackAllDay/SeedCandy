@@ -1,4 +1,4 @@
-package wearblackallday.gui.components;
+package wearblackallday.components;
 
 import wearblackallday.data.Strings;
 
@@ -9,10 +9,10 @@ public class TextBlock extends JScrollPane {
 	private final JTextArea textArea = new JTextArea();
 
 	public TextBlock(boolean editable) {
+		this.textArea.setEditable(editable);
 		this.setPreferredSize(new Dimension(200, 600));
 		this.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		this.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		this.textArea.setEditable(editable);
 		this.setViewportView(this.textArea);
 	}
 
@@ -24,8 +24,8 @@ public class TextBlock extends JScrollPane {
 		return Strings.splitToLongs(this.getText());
 	}
 
-	public void setText(String textArea) {
-		this.textArea.setText(textArea);
+	public void setText(String text) {
+		this.textArea.setText(text);
 	}
 
 	public void addEntry(String entry) {

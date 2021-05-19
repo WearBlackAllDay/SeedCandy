@@ -1,4 +1,4 @@
-package wearblackallday.gui.components.worldpanel;
+package wearblackallday.components.worldpanel;
 
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.seedutils.mc.MCVersion;
@@ -6,7 +6,7 @@ import kaptainwutax.seedutils.mc.pos.BPos;
 import kaptainwutax.seedutils.mc.seed.ChunkSeeds;
 import kaptainwutax.seedutils.mc.seed.WorldSeed;
 import wearblackallday.data.Strings;
-import wearblackallday.gui.components.TextBlock;
+import wearblackallday.components.TextBlock;
 import wearblackallday.swing.SwingUtils;
 import wearblackallday.swing.components.LPanel;
 import wearblackallday.swing.components.SelectionBox;
@@ -15,7 +15,7 @@ import wearblackallday.util.QuadFinder;
 import javax.swing.*;
 import java.awt.GridLayout;
 
-import static wearblackallday.gui.SeedCandy.POOL;
+import static wearblackallday.SeedCandy.POOL;
 
 public class WorldPanel extends Box {
 	public WorldPanel() {

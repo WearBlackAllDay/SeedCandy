@@ -1,9 +1,9 @@
-package wearblackallday.gui.components.dungeonpanel;
+package wearblackallday.components.dungeonpanel;
 
 import kaptainwutax.biomeutils.Biome;
 import kaptainwutax.seedutils.mc.MCVersion;
 import wearblackallday.data.Strings;
-import wearblackallday.gui.components.TextBlock;
+import wearblackallday.components.TextBlock;
 import wearblackallday.swing.components.LPanel;
 import wearblackallday.swing.components.SelectionBox;
 import wearblackallday.util.Dungeon;

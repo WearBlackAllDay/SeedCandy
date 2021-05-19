@@ -1,4 +1,4 @@
-package wearblackallday.gui.components.dungeonpanel;
+package wearblackallday.components.dungeonpanel;
 
 import wearblackallday.swing.Events;
 import wearblackallday.swing.components.GridPanel;
@@ -17,10 +17,9 @@ public class FloorPanel extends JPanel {
 	protected FloorPanel() {
 		super(new CardLayout());
 
-		this.add(new GridPanel<>(9, 9, FloorButton::new), Dungeon.Size.NINE_BY_NINE.toString());
-		this.add(new GridPanel<>(9, 7, FloorButton::new), Dungeon.Size.NINE_BY_SEVEN.toString());
-		this.add(new GridPanel<>(7, 9, FloorButton::new), Dungeon.Size.SEVEN_BY_NINE.toString());
-		this.add(new GridPanel<>(7, 7, FloorButton::new), Dungeon.Size.SEVEN_BY_SEVEN.toString());
+		for(Dungeon.Size dungeonSize : Dungeon.Size.values()) {
+			this.add(new GridPanel<>(dungeonSize.x, dungeonSize.y, FloorButton::new), dungeonSize.toString());
+		}
 	}
 
 	protected double getBits() {
@@ -47,7 +46,7 @@ public class FloorPanel extends JPanel {
 		((CardLayout)this.getLayout()).show(this, size.toString());
 	}
 
-	protected GridPanel<FloorButton> currentGrid() {
+	private GridPanel<FloorButton> currentGrid() {
 		for(Component c : this.getComponents()) {
 			if(c.isVisible()) return (GridPanel<FloorButton>)c;
 		}
