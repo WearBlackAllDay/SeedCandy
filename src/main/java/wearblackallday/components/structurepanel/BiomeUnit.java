@@ -29,9 +29,9 @@ public class BiomeUnit extends JPanel {
 
 	protected boolean matches(OverworldBiomeSource biomeSource) {
 		try {
-			return biomeSource.getBiome(Integer.parseInt(this.xCord.getText().trim()),
-				0,
-				Integer.parseInt(this.zCord.getText().trim()))
+			int xPos = Integer.parseInt(this.xCord.getText().trim());
+			int zPos = Integer.parseInt(this.zCord.getText().trim());
+			return biomeSource.getBiome(xPos, 0, zPos)
 				== this.biomeSelector.getSelected();
 		} catch(NumberFormatException exception) {
 			return true;

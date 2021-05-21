@@ -14,29 +14,26 @@ import mjtb49.hashreversals.Lattice2D;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
 public class QuadFinder {
-
 	private static final Lattice2D REGION_LATTICE = new Lattice2D(RegionSeed.A, RegionSeed.B, 1L << 48);
 	private static final long[] REGION_SEEDS = getQuadRegionSeeds();
 
-	public static String find(long seed, MCVersion version) {
-		OverworldBiomeSource biomeSource = new OverworldBiomeSource(version, seed);
+	public static String find(long worldSeed, MCVersion version) {
+		OverworldBiomeSource biomeSource = new OverworldBiomeSource(version, worldSeed);
 		OldStructure<?> swampHut = new SwampHut(version);
 		String result = "";
 
 		for(long regionSeed : REGION_SEEDS) {
-			long target = regionSeed - seed - swampHut.getSalt();
+			long target = regionSeed - worldSeed - swampHut.getSalt();
 			List<QVector> vectorList = REGION_LATTICE.findSolutionsInBox(target, -60000, -60000, 60000, 60000);
 			for(QVector solution : vectorList) {
 				if(!checkBiomes(biomeSource, solution, swampHut)) break;
 				solution.scaleAndSet(16 * 32);
-				result = String.format(result + "[%d]" + "\n" + "-> (%d, %d)" + "\n", seed, solution.get(0).intValue(), solution.get(1).intValue());
+				result = String.format(result + "[%d]" + "\n" + "-> (%d, %d)" + "\n", worldSeed, solution.get(0).intValue(), solution.get(1).intValue());
 			}
 		}
-		return result.isEmpty() ? String.format("[%d]" + "\n" + "-> no huts", seed) : result;
+		return result.isEmpty() ? String.format("[%d]" + "\n" + "-> no huts", worldSeed) : result;
 	}
 
 
@@ -53,7 +50,7 @@ public class QuadFinder {
 	}
 
 	private static long[] getQuadRegionSeeds() {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(QuadFinder.class.getResourceAsStream("/regionSeeds.txt")));
-		return reader.lines().mapToLong(Long::parseLong).toArray();
+		return new BufferedReader(new InputStreamReader(QuadFinder.class.getResourceAsStream("/regionSeeds.txt")))
+			.lines().mapToLong(Long::parseLong).toArray();
 	}
 }
