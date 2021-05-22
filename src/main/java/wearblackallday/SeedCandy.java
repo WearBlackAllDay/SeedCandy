@@ -1,9 +1,9 @@
 package wearblackallday;
 
 import com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme;
-import wearblackallday.components.dungeonpanel.DungeonPanel;
-import wearblackallday.components.structurepanel.StructurePanel;
-import wearblackallday.components.worldpanel.WorldPanel;
+import wearblackallday.components.dungeontab.DungeonTab;
+import wearblackallday.components.structuretab.StructureTab;
+import wearblackallday.components.worldtab.WorldTab;
 import wearblackallday.swing.SwingUtils;
 import wearblackallday.swing.components.LFrame;
 import wearblackallday.util.Icons;
@@ -18,7 +18,7 @@ public class SeedCandy {
 		FlatOneDarkIJTheme.install();
 
 		new LFrame("SeedCandy", null,
-			SwingUtils.addSet(new JTabbedPane(), new DungeonPanel(), new StructurePanel(), new WorldPanel()))
+			SwingUtils.addSet(new JTabbedPane(), new DungeonTab(), new StructureTab(), new WorldTab()))
 			.center().sizeLock().setIconImage(Icons.SEED);
 	}
 }

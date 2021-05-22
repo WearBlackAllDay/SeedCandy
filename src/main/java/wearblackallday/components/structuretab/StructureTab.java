@@ -1,9 +1,9 @@
-package wearblackallday.components.structurepanel;
+package wearblackallday.components.structuretab;
 
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.seedutils.mc.MCVersion;
 import kaptainwutax.seedutils.mc.seed.StructureSeed;
-import wearblackallday.components.SeedPanel;
+import wearblackallday.components.SeedTab;
 import wearblackallday.data.Strings;
 import wearblackallday.swing.components.GridPanel;
 import wearblackallday.swing.components.LPanel;
@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static wearblackallday.SeedCandy.POOL;
 
-public class StructurePanel extends SeedPanel {
-	public StructurePanel() {
+public class StructureTab extends SeedTab {
+	public StructureTab() {
 		super("StructureSeed");
 		JProgressBar progressBar = new JProgressBar(0, 1);
 		GridPanel<BiomeUnit> biomePanel =

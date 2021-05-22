@@ -1,11 +1,11 @@
-package wearblackallday.components.worldpanel;
+package wearblackallday.components.worldtab;
 
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.seedutils.mc.MCVersion;
 import kaptainwutax.seedutils.mc.pos.BPos;
 import kaptainwutax.seedutils.mc.seed.ChunkSeeds;
 import kaptainwutax.seedutils.mc.seed.WorldSeed;
-import wearblackallday.components.SeedPanel;
+import wearblackallday.components.SeedTab;
 import wearblackallday.data.Strings;
 import wearblackallday.swing.components.LPanel;
 import wearblackallday.swing.components.SelectionBox;
@@ -16,8 +16,8 @@ import java.awt.GridLayout;
 
 import static wearblackallday.SeedCandy.POOL;
 
-public class WorldPanel extends SeedPanel {
-	public WorldPanel() {
+public class WorldTab extends SeedTab {
+	public WorldTab() {
 		super("WorldSeed");
 		SelectionBox<MCVersion> versionSelector =
 			new SelectionBox<>(MCVersion.v1_16, MCVersion.v1_15, MCVersion.v1_14, MCVersion.v1_13);
