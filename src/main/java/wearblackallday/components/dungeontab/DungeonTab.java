@@ -44,12 +44,12 @@ public class DungeonTab extends JComponent {
 			.addTextField("Z", "z")
 			.addComponent(versionSelector)
 			.addComponent(biomeSelector)
-			.addButton("crack", 80, 25, (panel, button, event) -> {
+			.addButton("crack", (panel, button, event) -> {
 				int posX, posY, posZ;
 				try {
-					posX = Integer.parseInt(panel.getText("x").trim());
-					posY = Integer.parseInt(panel.getText("y").trim());
-					posZ = Integer.parseInt(panel.getText("z").trim());
+					posX = panel.getInt("x");
+					posY = panel.getInt("y");
+					posZ = panel.getInt("z");
 				} catch(NumberFormatException exception) {
 					return;
 				}
@@ -57,7 +57,7 @@ public class DungeonTab extends JComponent {
 				Dungeon.crack(this.dungeonString.getText(), posX, posY, posZ,
 					versionSelector.getSelected(), biomeSelector.getSelected()).forEach(dungeonOutput::addEntry);
 			})
-			.addButton("copy", 80, 25, (panel, button, event) ->
+			.addButton("copy", (panel, button, event) ->
 				Strings.clipboard(dungeonOutput.getText()))
 			.addComponent(this.bitLabel);
 

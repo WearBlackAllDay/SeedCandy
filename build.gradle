@@ -10,13 +10,13 @@ repositories {
 
 dependencies {
     implementation "com.github.KaptainWutax:SEED:b1b7c79e9b"
-    implementation "com.github.WearBlackAllDay:JavaUtils:520c04e605b5c571c57f85f73f4609b2ff442a91"
+    implementation "com.github.WearBlackAllDay:JavaUtils:6f7540f13726331e6a062f6e73c088d397823473"
 
     implementation "com.formdev:flatlaf:0.38"
     implementation "com.formdev:flatlaf-intellij-themes:1.1.2"
 }
 application {
-    mainClassName = "wearblackallday.gui.SeedCandy"
+    mainClassName = "wearblackallday.SeedCandy"
 }
 
 version "1.5.1"
