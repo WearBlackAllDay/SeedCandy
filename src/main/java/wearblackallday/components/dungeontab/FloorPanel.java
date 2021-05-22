@@ -1,4 +1,4 @@
-package wearblackallday.components.dungeonpanel;
+package wearblackallday.components.dungeontab;
 
 import wearblackallday.swing.Events;
 import wearblackallday.swing.components.GridPanel;
@@ -13,9 +13,9 @@ import java.awt.Dimension;
 
 import static javax.swing.SwingUtilities.isRightMouseButton;
 
-public class FloorPanel extends JPanel {
+public class FloorPanel extends JComponent {
 	protected FloorPanel() {
-		super(new CardLayout());
+		this.setLayout(new CardLayout());
 
 		for(Dungeon.Size dungeonSize : Dungeon.Size.values()) {
 			this.add(new GridPanel<>(dungeonSize.x, dungeonSize.y, FloorButton::new), dungeonSize.toString());
@@ -66,7 +66,7 @@ public class FloorPanel extends JPanel {
 				if(isRightMouseButton(e)) {
 					this.setEnabled(!this.isEnabled());
 				}
-				((DungeonPanel)FloorPanel.this.getParent()).updateInfo();
+				((DungeonTab)FloorPanel.this.getParent()).updateInfo();
 			}));
 		}
 
