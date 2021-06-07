@@ -33,16 +33,10 @@ public class Dungeon {
 
 		for(char c : dungeonString.toCharArray()) {
 			switch(c) {
-				case '0':
-					device.addCall(NextInt.withValue(4, 0));
-					break;
-				case '1':
-					device.addCall(FilteredSkip.filter(LCG.JAVA, r ->
-						r.nextInt(4) != 0, 1));
-					break;
-				case '2':
-					device.addCall(NextInt.consume(4, 1));
-					break;
+				case '0' -> device.addCall(NextInt.withValue(4, 0));
+				case '1' -> device.addCall(FilteredSkip.filter(LCG.JAVA, r ->
+					r.nextInt(4) != 0, 1));
+				case '2' -> device.addCall(NextInt.consume(4, 1));
 			}
 		}
 

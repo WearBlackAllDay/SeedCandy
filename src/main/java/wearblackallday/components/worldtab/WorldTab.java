@@ -9,12 +9,10 @@ import wearblackallday.components.SeedTab;
 import wearblackallday.data.Strings;
 import wearblackallday.swing.components.LPanel;
 import wearblackallday.swing.components.SelectionBox;
-import wearblackallday.util.QuadFinder;
+import wearblackallday.util.QuadHuts;
 
 import javax.swing.*;
 import java.awt.GridLayout;
-
-import static wearblackallday.SeedCandy.POOL;
 
 public class WorldTab extends SeedTab {
 	public WorldTab() {
@@ -32,30 +30,23 @@ public class WorldTab extends SeedTab {
 
 		JComponent buttons = new LPanel()
 			.withLayout(new GridLayout(0, 2))
-			.addButton("check for nextLong()", (panel, button, event) -> {
-				this.output.setText("");
-				for(long worldSeed : this.input.getLongs()) {
-					this.output.addEntry(WorldSeed.isRandom(worldSeed) ? "possible nextLong()" : "is NOT nextLong()");
-				}
-			})
-			.addButton("locate Quadhuts", (panel, button, event) -> {
-				this.output.setText("");
-				progressBar.setMaximum(Strings.countLines(this.input.getText()));
-				POOL.execute(this.input.getLongs(), worldSeed ->
-					this.output.addEntry(QuadFinder.find(worldSeed, versionSelector.getSelected())));
-			})
-			.addButton("show/filter Spawnpoint", (panel, button, event) -> {
+			.addButton("check for nextLong()", () -> this.mapToString(worldSeed ->
+				WorldSeed.isRandom(worldSeed)
+					? "possible nextLong()"
+					: "is NOT nextLong()"))
+			.addButton("locate Quadhuts", () -> this.mapToString(worldSeed ->
+				QuadHuts.find(worldSeed, versionSelector.getSelected()).toString()))
+			.addButton("show/filter Spawnpoint", () -> {
 				MCVersion version = versionSelector.getSelected();
 				this.output.setText("");
 				try {
-					BPos target = new BPos(Integer.parseInt(selectionPanel.getText("x").trim()), 0,
-						Integer.parseInt(selectionPanel.getText("z").trim()));
+					BPos target = new BPos(selectionPanel.getInt("x"), 0,
+						selectionPanel.getInt("z"));
 
 					POOL.execute(this.input.getLongs(), worldSeed -> {
 						OverworldBiomeSource biomeSource = new OverworldBiomeSource(version, worldSeed);
-						if(biomeSource.getSpawnPoint().equals(target)) {
+						if(biomeSource.getSpawnPoint().equals(target))
 							this.output.addEntry(worldSeed);
-						}
 					});
 				} catch(NumberFormatException exception) {
 					POOL.execute(this.input.getLongs(), worldSeed -> {
@@ -65,71 +56,24 @@ public class WorldTab extends SeedTab {
 					});
 				}
 			})
-			.addButton("convert to hash", (panel, button, event) -> {
-				this.output.setText("");
-				for(long worldSeed : this.input.getLongs()) {
-					this.output.addEntry(WorldSeed.toHash(worldSeed));
-				}
-			})
-			.addButton("switch to ShadowSeed", (panel, button, event) -> {
-				this.output.setText("");
-				for(long worldSeed : this.input.getLongs()) {
-					this.output.addEntry(WorldSeed.getShadowSeed(worldSeed));
-				}
-			})
-			.addButton("get SisterSeeds", (panel, button, event) -> {
-				this.output.setText("");
-				StringBuilder stringBuilder = new StringBuilder();
-				for(long worldSeed : this.input.getLongs()) {
-					WorldSeed.getSisterSeeds(worldSeed).forEachRemaining(sisterSeed ->
-						stringBuilder.append(sisterSeed).append("\n"));
-				}
-				this.output.setText(stringBuilder.toString());
-			})
-			.addButton("reduce to StructureSeed", (panel, button, event) -> {
-				this.output.setText("");
-				for(long worldSeed : this.input.getLongs()) {
-					this.output.addEntry(WorldSeed.toStructureSeed(worldSeed));
-				}
-			})
-			.addButton("get PopulationSeed", (panel, button, event) -> {
-				this.output.setText("");
-				MCVersion version = versionSelector.getSelected();
-				int x, z;
-				try {
-					x = Integer.parseInt(selectionPanel.getText("x").trim());
-					z = Integer.parseInt(selectionPanel.getText("z").trim());
-				} catch(NumberFormatException exception) {
-					x = z = 0;
-				}
-				for(long worldSeed : this.input.getLongs()) {
-					this.output.addEntry(ChunkSeeds.getPopulationSeed(worldSeed, x, z, version));
-				}
-			})
-			.addButton("get RegionSeed", (panel, button, event) -> {
-				this.output.setText("");
-				MCVersion version = versionSelector.getSelected();
-				int x, z, salt;
-				try {
-					x = Integer.parseInt(selectionPanel.getText("x").trim());
-					z = Integer.parseInt(selectionPanel.getText("z").trim());
-					salt = Integer.parseInt(selectionPanel.getText("s").trim());
-				} catch(NumberFormatException exception) {
-					x = z = 0;
-					salt = 14357620;
-				}
-				for(long worldSeed : this.input.getLongs()) {
-					this.output.addEntry(ChunkSeeds.getRegionSeed(worldSeed, x, z, salt, version));
-				}
-			})
-			.addButton("get PillarSeed", (panel, button, event) -> {
-				this.output.setText("");
-				for(long worldSeed : this.input.getLongs()) {
-					this.output.addEntry(WorldSeed.toPillarSeed(worldSeed));
-				}
-			})
-			.addButton("copy Output", (panel, button, event) -> Strings.clipboard(this.output.getText()))
-			.addButton("clear text", (panel, button, event) -> {
+			.addButton("convert to hash", () -> this.mapSeeds(WorldSeed::toHash))
+			.addButton("switch to ShadowSeed", () -> this.mapSeeds(WorldSeed::getShadowSeed))
+			.addButton("get SisterSeeds", () -> this.mapToString(worldSeed -> {
+				var buffer = new StringBuilder();
+				WorldSeed.getSisterSeeds(worldSeed).forEachRemaining(sisterSeed ->
+					buffer.append(sisterSeed).append("\n"));
+				return buffer.toString();
+			}))
+			.addButton("reduce to StructureSeed", () -> this.mapSeeds(WorldSeed::toStructureSeed))
+			.addButton("get PopulationSeed", () -> this.mapSeeds(worldSeed ->
+				ChunkSeeds.getPopulationSeed(worldSeed, selectionPanel.getInt("x"),
+					selectionPanel.getInt("z"), versionSelector.getSelected())))
+			.addButton("get RegionSeed", () -> this.mapSeeds(worldSeed ->
+				ChunkSeeds.getRegionSeed(worldSeed, selectionPanel.getInt("x"),
+					selectionPanel.getInt("z"), selectionPanel.getInt("s"), versionSelector.getSelected())))
+			.addButton("get PillarSeed", () -> this.mapSeeds(WorldSeed::toPillarSeed))
+			.addButton("copy Output", () -> Strings.clipboard(this.output.getText()))
+			.addButton("clear text", () -> {
 				this.input.setText("");
 				this.output.setText("");
 			});

@@ -7,33 +7,34 @@ import kaptainwutax.mathutils.arithmetic.Rational;
 import kaptainwutax.mathutils.component.vector.QVector;
 import kaptainwutax.seedutils.mc.ChunkRand;
 import kaptainwutax.seedutils.mc.MCVersion;
+import kaptainwutax.seedutils.mc.pos.BPos;
 import kaptainwutax.seedutils.mc.pos.CPos;
 import kaptainwutax.seedutils.mc.seed.RegionSeed;
 import mjtb49.hashreversals.Lattice2D;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
-public class QuadFinder {
+public class QuadHuts {
 	private static final Lattice2D REGION_LATTICE = new Lattice2D(RegionSeed.A, RegionSeed.B, 1L << 48);
 	private static final long[] REGION_SEEDS = getQuadRegionSeeds();
 
-	public static String find(long worldSeed, MCVersion version) {
-		OverworldBiomeSource biomeSource = new OverworldBiomeSource(version, worldSeed);
-		OldStructure<?> swampHut = new SwampHut(version);
-		String result = "";
+	public static List<BPos> find(long worldSeed, MCVersion version) {
+		List<BPos> quadHuts = new ArrayList<>(2);
+		var biomeSource = new OverworldBiomeSource(version, worldSeed);
+		var swampHut = new SwampHut(version);
 
 		for(long regionSeed : REGION_SEEDS) {
-			long target = regionSeed - worldSeed - swampHut.getSalt();
-			List<QVector> vectorList = REGION_LATTICE.findSolutionsInBox(target, -60000, -60000, 60000, 60000);
-			for(QVector solution : vectorList) {
+			for(QVector solution : REGION_LATTICE.findSolutionsInBox(regionSeed - worldSeed - swampHut.getSalt(),
+				-60000, -60000, 60000, 60000)) {
 				if(!checkBiomes(biomeSource, solution, swampHut)) break;
-				solution.scaleAndSet(16 * 32);
-				result = String.format(result + "[%d]" + "\n" + "-> (%d, %d)" + "\n", worldSeed, solution.get(0).intValue(), solution.get(1).intValue());
+				solution.scaleAndSet(512);
+				quadHuts.add(new BPos(solution.get(0).intValue(), 0, solution.get(1).intValue()));
 			}
 		}
-		return result.isEmpty() ? String.format("[%d]" + "\n" + "-> no huts", worldSeed) : result;
+		return quadHuts;
 	}
 
 
@@ -41,7 +42,8 @@ public class QuadFinder {
 		if(checkStructure(source, solution.get(0), solution.get(1), structure)) return false;
 		if(checkStructure(source, solution.get(0).subtract(1), solution.get(1), structure)) return false;
 		if(checkStructure(source, solution.get(0), solution.get(1).subtract(1), structure)) return false;
-		return !checkStructure(source, solution.get(0).subtract(1), solution.get(1).subtract(1), structure);
+		if(checkStructure(source, solution.get(0).subtract(1), solution.get(1).subtract(1), structure)) return false;
+		return true;
 	}
 
 	private static boolean checkStructure(OverworldBiomeSource source, Rational x, Rational z, OldStructure<?> structure) {
@@ -50,7 +52,7 @@ public class QuadFinder {
 	}
 
 	private static long[] getQuadRegionSeeds() {
-		return new BufferedReader(new InputStreamReader(QuadFinder.class.getResourceAsStream("/regionSeeds.txt")))
+		return new BufferedReader(new InputStreamReader(QuadHuts.class.getResourceAsStream("/regionSeeds.txt")))
 			.lines().mapToLong(Long::parseLong).toArray();
 	}
 }

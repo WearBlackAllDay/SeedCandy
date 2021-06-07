@@ -9,14 +9,12 @@ import wearblackallday.util.Filters;
 
 import javax.swing.*;
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class BiomeUnit extends JPanel {
-	private static final List<Biome> BIOMES = Biome.REGISTRY.values().stream()
+	private static final Biome[] BIOMES = Biome.REGISTRY.values().stream()
 		.filter(Filters.byKeyID(Biome::getDimension, Dimension.OVERWORLD))
 		.sorted(Comparator.comparing(Biome::getName))
-		.collect(Collectors.toList());
+		.toArray(Biome[]::new);
 
 	private final JTextField xCord = new JTextField();
 	private final JTextField zCord = new JTextField();

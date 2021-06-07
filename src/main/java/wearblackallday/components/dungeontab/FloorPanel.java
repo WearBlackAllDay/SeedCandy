@@ -23,13 +23,13 @@ public class FloorPanel extends JComponent {
 	}
 
 	protected double getBits() {
-		double[] bits = {0D};
+		double bits = 0D;
 
-		for(int col = 0; col < this.currentGrid().getGridWidth(); col++) {
-			this.currentGrid().forEachY(col, floorButton -> bits[0] += floorButton.getBits());
+		for(FloorButton fb : this.currentGrid()) {
+			bits += fb.getBits();
 		}
 
-		return bits[0];
+		return bits;
 	}
 
 	protected String getString() {
