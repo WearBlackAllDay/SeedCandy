@@ -1,7 +1,8 @@
 package wearblackallday.components.dungeontab;
 
-import kaptainwutax.biomeutils.Biome;
-import kaptainwutax.seedutils.mc.MCVersion;
+import kaptainwutax.biomeutils.biome.Biome;
+import kaptainwutax.mcutils.version.MCVersion;
+import wearblackallday.SeedCandy;
 import wearblackallday.components.TextBlock;
 import wearblackallday.data.Strings;
 import wearblackallday.swing.SwingUtils;
@@ -11,6 +12,9 @@ import wearblackallday.util.Dungeon;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class DungeonTab extends JComponent {
 	private final FloorPanel floorPanel = new FloorPanel();
@@ -29,13 +33,11 @@ public class DungeonTab extends JComponent {
 			this.updateInfo();
 		});
 
-		SelectionBox<Biome> biomeSelector =
-			new SelectionBox<>(DungeonTab::getBiomeName, Biome.THE_VOID, Biome.DESERT, Biome.SWAMP, Biome.SWAMP_HILLS);
-		SelectionBox<MCVersion> versionSelector =
-			new SelectionBox<>(MCVersion.v1_16, MCVersion.v1_15, MCVersion.v1_14, MCVersion.v1_13);
+		SelectionBox<Biome> biomeSelector = new SelectionBox<>(Biome::getName, getFossilBiomeSelection());
+		SelectionBox<MCVersion> versionSelector = new SelectionBox<>(SeedCandy.SUPPORTED_VERSIONS);
 
 		versionSelector.addActionListener(e ->
-			biomeSelector.setEnabled(versionSelector.getSelected() == MCVersion.v1_16));
+			biomeSelector.setEnabled(versionSelector.getSelected().isNewerOrEqualTo(MCVersion.v1_16)));
 
 		JComponent userEntry = new LPanel()
 			.addComponent(this.sizeSelector)
@@ -55,10 +57,11 @@ public class DungeonTab extends JComponent {
 				}
 				dungeonOutput.setText("");
 				Dungeon.crack(this.dungeonString.getText(), posX, posY, posZ,
-					versionSelector.getSelected(), biomeSelector.getSelected()).forEach(dungeonOutput::addEntry);
+					versionSelector.getSelected(), biomeSelector.getSelected())
+					.forEach(dungeonOutput::addEntry);
+				if(dungeonOutput.getText().isEmpty()) dungeonOutput.setText("no results");
 			})
-			.addButton("copy", (panel, button, event) ->
-				Strings.clipboard(dungeonOutput.getText()))
+			.addButton("copy", () -> Strings.clipboard(dungeonOutput.getText()))
 			.addComponent(this.bitLabel);
 
 		this.setLayout(new BorderLayout());
@@ -73,7 +76,11 @@ public class DungeonTab extends JComponent {
 		this.dungeonString.setText(this.floorPanel.getString());
 	}
 
-	private static String getBiomeName(Biome biome) {
-		return biome == Biome.THE_VOID ? "other Biome" : biome.getName();
+	private static List<Biome> getFossilBiomeSelection() {
+		List<Biome> biomes = new ArrayList<>(Dungeon.FOSSIL_BIOMES);
+		biomes.add(new Biome(MCVersion.v1_0, null, -1, "other Biome", null,
+			null, Float.NaN, Float.NaN, Float.NaN, null));
+		biomes.sort(Comparator.comparingInt(Biome::getId));
+		return biomes;
 	}
 }

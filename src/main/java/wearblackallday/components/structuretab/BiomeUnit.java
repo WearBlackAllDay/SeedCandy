@@ -1,8 +1,9 @@
 package wearblackallday.components.structuretab;
 
-import kaptainwutax.biomeutils.Biome;
+import kaptainwutax.biomeutils.biome.Biome;
+import kaptainwutax.biomeutils.biome.Biomes;
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
-import kaptainwutax.seedutils.mc.Dimension;
+import kaptainwutax.mcutils.state.Dimension;
 import wearblackallday.swing.SwingUtils;
 import wearblackallday.swing.components.SelectionBox;
 import wearblackallday.util.Filters;
@@ -11,7 +12,7 @@ import javax.swing.*;
 import java.util.Comparator;
 
 public class BiomeUnit extends JPanel {
-	private static final Biome[] BIOMES = Biome.REGISTRY.values().stream()
+	private static final Biome[] BIOMES = Biomes.REGISTRY.values().stream()
 		.filter(Filters.byKeyID(Biome::getDimension, Dimension.OVERWORLD))
 		.sorted(Comparator.comparing(Biome::getName))
 		.toArray(Biome[]::new);

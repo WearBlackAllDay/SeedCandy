@@ -12,7 +12,7 @@ public abstract class SeedTab extends Box {
 	private final Box mainPanel = new Box(BoxLayout.Y_AXIS);
 	public static final ThreadPool POOL = new ThreadPool();
 
-	public SeedTab(String title) {
+	protected SeedTab(String title) {
 		super(BoxLayout.X_AXIS);
 		this.setName(title);
 		this.add(this.input);
@@ -21,8 +21,8 @@ public abstract class SeedTab extends Box {
 	}
 
 	protected void addComponents(JComponent... components) {
-		for(JComponent c : components) {
-			this.mainPanel.add(c);
+		for(var component : components) {
+			this.mainPanel.add(component);
 		}
 	}
 

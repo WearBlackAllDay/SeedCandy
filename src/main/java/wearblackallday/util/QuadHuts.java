@@ -1,15 +1,14 @@
 package wearblackallday.util;
 
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
-import kaptainwutax.featureutils.structure.OldStructure;
 import kaptainwutax.featureutils.structure.SwampHut;
 import kaptainwutax.mathutils.arithmetic.Rational;
 import kaptainwutax.mathutils.component.vector.QVector;
-import kaptainwutax.seedutils.mc.ChunkRand;
-import kaptainwutax.seedutils.mc.MCVersion;
-import kaptainwutax.seedutils.mc.pos.BPos;
-import kaptainwutax.seedutils.mc.pos.CPos;
-import kaptainwutax.seedutils.mc.seed.RegionSeed;
+import kaptainwutax.mcutils.rand.ChunkRand;
+import kaptainwutax.mcutils.rand.seed.RegionSeed;
+import kaptainwutax.mcutils.util.pos.BPos;
+import kaptainwutax.mcutils.util.pos.CPos;
+import kaptainwutax.mcutils.version.MCVersion;
 import mjtb49.hashreversals.Lattice2D;
 
 import java.io.BufferedReader;
@@ -23,8 +22,8 @@ public class QuadHuts {
 
 	public static List<BPos> find(long worldSeed, MCVersion version) {
 		List<BPos> quadHuts = new ArrayList<>(2);
+		SwampHut swampHut = new SwampHut(version);
 		var biomeSource = new OverworldBiomeSource(version, worldSeed);
-		var swampHut = new SwampHut(version);
 
 		for(long regionSeed : REGION_SEEDS) {
 			for(QVector solution : REGION_LATTICE.findSolutionsInBox(regionSeed - worldSeed - swampHut.getSalt(),
@@ -38,7 +37,7 @@ public class QuadHuts {
 	}
 
 
-	private static boolean checkBiomes(OverworldBiomeSource source, QVector solution, OldStructure<?> structure) {
+	private static boolean checkBiomes(OverworldBiomeSource source, QVector solution, SwampHut structure) {
 		if(checkStructure(source, solution.get(0), solution.get(1), structure)) return false;
 		if(checkStructure(source, solution.get(0).subtract(1), solution.get(1), structure)) return false;
 		if(checkStructure(source, solution.get(0), solution.get(1).subtract(1), structure)) return false;
@@ -46,7 +45,7 @@ public class QuadHuts {
 		return true;
 	}
 
-	private static boolean checkStructure(OverworldBiomeSource source, Rational x, Rational z, OldStructure<?> structure) {
+	private static boolean checkStructure(OverworldBiomeSource source, Rational x, Rational z, SwampHut structure) {
 		CPos chunk = structure.getInRegion(source.getWorldSeed(), x.intValue(), z.intValue(), new ChunkRand());
 		return !structure.canSpawn(chunk.getX(), chunk.getZ(), source);
 	}

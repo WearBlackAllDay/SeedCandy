@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.KaptainWutax:SEED:b1b7c79e9b"
+    implementation "com.github.KaptainWutax:SEED:b090a45dd5"
     implementation "com.github.wearblackallday:JavaUtils:1b369d41cd"
     implementation "com.formdev:flatlaf:0.38"
     implementation "com.formdev:flatlaf-intellij-themes:1.1.2"

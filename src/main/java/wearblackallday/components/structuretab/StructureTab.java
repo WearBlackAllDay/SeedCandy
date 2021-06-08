@@ -1,8 +1,8 @@
 package wearblackallday.components.structuretab;
 
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
-import kaptainwutax.seedutils.mc.MCVersion;
-import kaptainwutax.seedutils.mc.seed.StructureSeed;
+import kaptainwutax.mcutils.rand.seed.StructureSeed;
+import kaptainwutax.mcutils.version.MCVersion;
 import wearblackallday.components.SeedTab;
 import wearblackallday.data.Strings;
 import wearblackallday.swing.components.GridPanel;

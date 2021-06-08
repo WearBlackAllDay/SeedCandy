@@ -1,10 +1,11 @@
 package wearblackallday.components.worldtab;
 
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
-import kaptainwutax.seedutils.mc.MCVersion;
-import kaptainwutax.seedutils.mc.pos.BPos;
-import kaptainwutax.seedutils.mc.seed.ChunkSeeds;
-import kaptainwutax.seedutils.mc.seed.WorldSeed;
+import kaptainwutax.mcutils.rand.seed.ChunkSeeds;
+import kaptainwutax.mcutils.rand.seed.WorldSeed;
+import kaptainwutax.mcutils.util.pos.BPos;
+import kaptainwutax.mcutils.version.MCVersion;
+import wearblackallday.SeedCandy;
 import wearblackallday.components.SeedTab;
 import wearblackallday.data.Strings;
 import wearblackallday.swing.components.LPanel;
@@ -17,8 +18,7 @@ import java.awt.GridLayout;
 public class WorldTab extends SeedTab {
 	public WorldTab() {
 		super("WorldSeed");
-		SelectionBox<MCVersion> versionSelector =
-			new SelectionBox<>(MCVersion.v1_16, MCVersion.v1_15, MCVersion.v1_14, MCVersion.v1_13);
+		SelectionBox<MCVersion> versionSelector = new SelectionBox<>(SeedCandy.SUPPORTED_VERSIONS);
 		JProgressBar progressBar = new JProgressBar(0, 1);
 
 		LPanel selectionPanel = new LPanel()
@@ -44,13 +44,13 @@ public class WorldTab extends SeedTab {
 						selectionPanel.getInt("z"));
 
 					POOL.execute(this.input.getLongs(), worldSeed -> {
-						OverworldBiomeSource biomeSource = new OverworldBiomeSource(version, worldSeed);
+						var biomeSource = new OverworldBiomeSource(version, worldSeed);
 						if(biomeSource.getSpawnPoint().equals(target))
 							this.output.addEntry(worldSeed);
 					});
 				} catch(NumberFormatException exception) {
 					POOL.execute(this.input.getLongs(), worldSeed -> {
-						OverworldBiomeSource biomeSource = new OverworldBiomeSource(version, worldSeed);
+						var biomeSource = new OverworldBiomeSource(version, worldSeed);
 						this.output.addEntry(String.format("%d (%d, %d)", worldSeed,
 							biomeSource.getSpawnPoint().getX(), biomeSource.getSpawnPoint().getZ()));
 					});
