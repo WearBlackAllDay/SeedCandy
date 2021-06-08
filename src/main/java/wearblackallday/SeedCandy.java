@@ -21,7 +21,7 @@ public class SeedCandy {
 	};
 
 	public static void main(String[] args) {
-		FlatOneDarkIJTheme.install();
+		FlatOneDarkIJTheme.setup();
 
 		new LFrame("SeedCandy", null,
 			SwingUtils.addSet(new JTabbedPane(), new DungeonTab(), new StructureTab(), new WorldTab()))

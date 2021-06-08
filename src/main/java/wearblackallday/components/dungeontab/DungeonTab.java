@@ -47,17 +47,9 @@ public class DungeonTab extends JComponent {
 			.addComponent(versionSelector)
 			.addComponent(biomeSelector)
 			.addButton("crack", (panel, button, event) -> {
-				int posX, posY, posZ;
-				try {
-					posX = panel.getInt("x");
-					posY = panel.getInt("y");
-					posZ = panel.getInt("z");
-				} catch(NumberFormatException exception) {
-					return;
-				}
 				dungeonOutput.setText("");
-				Dungeon.crack(this.dungeonString.getText(), posX, posY, posZ,
-					versionSelector.getSelected(), biomeSelector.getSelected())
+				Dungeon.crack(this.dungeonString.getText(), panel.getInt("x"), panel.getInt("y"),
+					panel.getInt("z"), versionSelector.getSelected(), biomeSelector.getSelected())
 					.forEach(dungeonOutput::addEntry);
 				if(dungeonOutput.getText().isEmpty()) dungeonOutput.setText("no results");
 			})
