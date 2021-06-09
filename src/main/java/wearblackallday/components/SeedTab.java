@@ -3,6 +3,7 @@ package wearblackallday.components;
 import wearblackallday.util.ThreadPool;
 
 import javax.swing.*;
+import java.awt.Container;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.LongFunction;
 import java.util.function.LongUnaryOperator;
@@ -12,7 +13,7 @@ public abstract class SeedTab extends AbstractTab {
 	protected final TextBlock output = new TextBlock(false);
 	protected final JProgressBar progressBar = new JProgressBar(0, 1);
 	private final Box mainPanel = new Box(BoxLayout.Y_AXIS);
-	public static final ThreadPool POOL = new ThreadPool(12);
+	protected final ThreadPool pool = new ThreadPool();
 
 	protected SeedTab(String title) {
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -45,7 +46,9 @@ public abstract class SeedTab extends AbstractTab {
 
 	protected void mapToString(LongFunction<String> mapper) {
 		long[] seeds = this.input.getLongs();
-		if(seeds.length < POOL.getThreadCount() << 1) {
+		int threads = this.pool.getThreadCount();
+
+		if(seeds.length < threads << 1) {
 			var buffer = new StringBuilder();
 
 			for(long seed : seeds) {
@@ -56,22 +59,35 @@ public abstract class SeedTab extends AbstractTab {
 		}
 
 		String[] result = new String[seeds.length];
-		var progress = new AtomicInteger(0);
+		AtomicInteger progress = new AtomicInteger(0);
 		this.progressBar.setMaximum(seeds.length);
-		int threads = POOL.getThreadCount();
+		this.toggleComponents(false);
+
 		for(int i = 0; i < threads; i++) {
 			int start = i;
-			POOL.execute(() -> {
+			this.pool.execute(() -> {
 				int current = start;
 				while(current < seeds.length) {
 					result[current] = mapper.apply(seeds[current]);
 					current += threads;
-					SwingUtilities.invokeLater(() -> this.progressBar.setValue(progress.incrementAndGet()));
+					SwingUtilities.invokeLater(() -> {
+						this.progressBar.setValue(progress.incrementAndGet());
+						if(progress.get() == this.progressBar.getMaximum()) {
+							this.toggleComponents(true);
+							this.output.setText(String.join("\n", result));
+						}
+					});
 				}
 			});
 		}
-		POOL.awaitCompletion();
-		this.output.setText(String.join("\n", result));
+	}
+
+	private void toggleComponents(boolean activated) {
+		for(var panel : this.mainPanel.getComponents()) {
+			for(var button : ((Container)panel).getComponents()) {
+				button.setEnabled(activated);
+			}
+		}
 	}
 
 	@Override

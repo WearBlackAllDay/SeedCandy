@@ -30,7 +30,7 @@ public class StructureTab extends SeedTab {
 				this.output.setText("");
 				this.progressBar.setMaximum(Strings.countLines(this.input.getText()) << 16);
 				AtomicInteger progress = new AtomicInteger(0);
-				POOL.execute(this.input.getLongs(), structureSeed ->
+				this.pool.execute(this.input.getLongs(), structureSeed ->
 					StructureSeed.getWorldSeeds(structureSeed).forEachRemaining(worldSeed -> {
 						var biomeSource = new OverworldBiomeSource(MCVersion.v1_16, worldSeed);
 						this.progressBar.setValue(progress.incrementAndGet());
