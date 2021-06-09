@@ -3,21 +3,29 @@ package wearblackallday.components;
 import wearblackallday.util.ThreadPool;
 
 import javax.swing.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.LongFunction;
 import java.util.function.LongUnaryOperator;
 
-public abstract class SeedTab extends Box {
+public abstract class SeedTab extends AbstractTab {
 	protected final TextBlock input = new TextBlock(true);
 	protected final TextBlock output = new TextBlock(false);
+	protected final JProgressBar progressBar = new JProgressBar(0, 1);
 	private final Box mainPanel = new Box(BoxLayout.Y_AXIS);
-	public static final ThreadPool POOL = new ThreadPool();
+	public static final ThreadPool POOL = new ThreadPool(12);
 
 	protected SeedTab(String title) {
-		super(BoxLayout.X_AXIS);
+		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		this.setName(title);
 		this.add(this.input);
 		this.add(this.output);
 		this.add(this.mainPanel);
+
+		this.input.getVerticalScrollBar().addAdjustmentListener(e ->
+			this.output.getVerticalScrollBar().setValue(e.getValue()));
+
+		this.output.getVerticalScrollBar().addAdjustmentListener(e ->
+			this.input.getVerticalScrollBar().setValue(e.getValue()));
 	}
 
 	protected void addComponents(JComponent... components) {
@@ -36,11 +44,38 @@ public abstract class SeedTab extends Box {
 	}
 
 	protected void mapToString(LongFunction<String> mapper) {
-		var buffer = new StringBuilder();
+		long[] seeds = this.input.getLongs();
+		if(seeds.length < POOL.getThreadCount() << 1) {
+			var buffer = new StringBuilder();
 
-		for(long seed : this.input.getLongs()) {
-			buffer.append(mapper.apply(seed)).append("\n");
+			for(long seed : seeds) {
+				buffer.append(mapper.apply(seed)).append("\n");
+			}
+			this.output.setText(buffer.toString());
+			return;
 		}
-		this.output.setText(buffer.toString());
+
+		String[] result = new String[seeds.length];
+		var progress = new AtomicInteger(0);
+		this.progressBar.setMaximum(seeds.length);
+		int threads = POOL.getThreadCount();
+		for(int i = 0; i < threads; i++) {
+			int start = i;
+			POOL.execute(() -> {
+				int current = start;
+				while(current < seeds.length) {
+					result[current] = mapper.apply(seeds[current]);
+					current += threads;
+					SwingUtilities.invokeLater(() -> this.progressBar.setValue(progress.incrementAndGet()));
+				}
+			});
+		}
+		POOL.awaitCompletion();
+		this.output.setText(String.join("\n", result));
+	}
+
+	@Override
+	public String getOutput() {
+		return this.output.getText();
 	}
 }

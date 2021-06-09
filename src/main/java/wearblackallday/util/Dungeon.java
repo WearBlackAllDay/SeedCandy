@@ -11,6 +11,7 @@ import randomreverser.device.JavaRandomDevice;
 import randomreverser.device.LCGReverserDevice;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -18,8 +19,7 @@ public class Dungeon {
 	public static final Set<Biome> FOSSIL_BIOMES = Set.of(Biomes.DESERT, Biomes.SWAMP, Biomes.SWAMP_HILLS);
 
 	public static List<Long> crack(String dungeonString, int posX, int posY, int posZ, MCVersion version, Biome biome) {
-		List<Long> structureSeeds = new ArrayList<>();
-		if(!dungeonString.matches("[0-2]+")) return structureSeeds;
+		if(!dungeonString.matches("[0-2]+")) return Collections.emptyList();
 
 		LCG failedDungeon = LCG.JAVA.combine(-5);
 		JavaRandomDevice device = getDungeonRand(posX, posY, posZ, version);
@@ -33,19 +33,20 @@ public class Dungeon {
 			}
 		}
 
-		device.streamSeeds(LCGReverserDevice.Process.EVERYTHING)
+		return device.streamSeeds(LCGReverserDevice.Process.EVERYTHING)
 			.parallel()
-			.limit(1)
-			.findAny()
-			.ifPresent(decoratorSeed -> {
+			.mapToObj(decoratorSeed -> {
+				List<Long> structureSeeds = new ArrayList<>();
 				for(int i = 0; i < 8; i++) {
 					structureSeeds.addAll(ChunkRandomReverser.reversePopulationSeed(
 						(decoratorSeed ^ LCG.JAVA.multiplier) - getDungeonSalt(version, biome),
 						posX & -16, posZ & -16, version));
 					decoratorSeed = failedDungeon.nextSeed(decoratorSeed);
 				}
-			});
-		return structureSeeds;
+				return structureSeeds;
+			})
+			.flatMap(List::stream)
+			.toList();
 	}
 
 	private static JavaRandomDevice getDungeonRand(int posX, int posY, int posZ, MCVersion version) {

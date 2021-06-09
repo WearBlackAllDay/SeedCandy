@@ -37,11 +37,11 @@ public class QuadHuts {
 	}
 
 
-	private static boolean checkBiomes(OverworldBiomeSource source, QVector solution, SwampHut structure) {
-		if(checkStructure(source, solution.get(0), solution.get(1), structure)) return false;
-		if(checkStructure(source, solution.get(0).subtract(1), solution.get(1), structure)) return false;
-		if(checkStructure(source, solution.get(0), solution.get(1).subtract(1), structure)) return false;
-		if(checkStructure(source, solution.get(0).subtract(1), solution.get(1).subtract(1), structure)) return false;
+	private static boolean checkBiomes(OverworldBiomeSource source, QVector solution, SwampHut hut) {
+		if(checkStructure(source, solution.get(0), solution.get(1), hut)) return false;
+		if(checkStructure(source, solution.get(0).subtract(1), solution.get(1), hut)) return false;
+		if(checkStructure(source, solution.get(0), solution.get(1).subtract(1), hut)) return false;
+		if(checkStructure(source, solution.get(0).subtract(1), solution.get(1).subtract(1), hut)) return false;
 		return true;
 	}
 
