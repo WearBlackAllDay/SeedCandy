@@ -7,6 +7,9 @@ import wearblackallday.swing.components.LPanel;
 
 import javax.swing.*;
 import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class StructureTab extends SeedTab {
@@ -36,7 +39,8 @@ public class StructureTab extends SeedTab {
 
 				AtomicInteger progress = new AtomicInteger(0);
 				this.progressBar.setMaximum(structureSeeds.length << 16);
-				var buffer = new StringBuffer();
+				List<String> validSeeds =
+					Collections.synchronizedList(new ArrayList<>(worldSeeds.length));
 				int threads = this.pool.getThreadCount();
 
 				for(int i = 0; i < threads; i++) {
@@ -45,12 +49,12 @@ public class StructureTab extends SeedTab {
 						int current = start;
 						while(current < worldSeeds.length) {
 							if(biomePanel.matchesSeed(worldSeeds[current])) {
-								buffer.append(worldSeeds[current]).append("\n");
+								validSeeds.add(String.valueOf(worldSeeds[current]));
 							}
 							SwingUtilities.invokeLater(() -> {
 								this.progressBar.setValue(progress.incrementAndGet());
 								if(progress.get() == this.progressBar.getMaximum()) {
-									this.output.setText(buffer.toString());
+									this.output.setText(String.join("\n", validSeeds));
 									this.toggleComponents(true);
 								}
 							});

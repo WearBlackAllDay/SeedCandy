@@ -18,7 +18,7 @@ application {
     mainClassName = "wearblackallday.SeedCandy"
 }
 
-version "1.5.2"
+version "1.5.3"
 
 task fatJar(type: Jar) {
     manifest {

@@ -33,7 +33,7 @@ public class SeedCandy extends JFrame {
 	public SeedCandy() {
 		super("SeedCandy");
 
-		this.setJMenuBar(new LMenuBar()
+		JMenuBar menu = new LMenuBar()
 			.addMenu("version", lMenu -> {
 				ButtonGroup buttonGroup = new ButtonGroup();
 				for(var version : SUPPORTED_VERSIONS) {
@@ -43,12 +43,14 @@ public class SeedCandy extends JFrame {
 					lMenu.add(button);
 				}
 				buttonGroup.getElements().nextElement().setSelected(true);
-			}));
+			});
 
 		JButton copyButton = new JButton("copy Output");
 		copyButton.addActionListener(e ->
 			((AbstractTab)this.tabSelection.getSelectedComponent()).copyOutput());
-		this.getJMenuBar().add(copyButton);
+		menu.add(copyButton);
+
+		this.setJMenuBar(menu);
 		this.setContentPane(this.tabSelection);
 		this.setIconImage(Icons.SEED);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
