@@ -17,8 +17,7 @@ public class WorldTab extends SeedTab {
 		LPanel selectionPanel = new LPanel()
 			.addTextField("X", "x")
 			.addTextField("Z", "z")
-			.addTextField("salt", "s")
-			.addComponent(this.progressBar);
+			.addTextField("salt", "s");
 
 		JComponent buttons = new LPanel()
 			.withLayout(new GridLayout(0, 2))

@@ -1,11 +1,8 @@
 package wearblackallday.components.structuretab;
 
-import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.mcutils.rand.seed.StructureSeed;
-import kaptainwutax.mcutils.version.MCVersion;
 import wearblackallday.components.SeedTab;
 import wearblackallday.data.Strings;
-import wearblackallday.swing.components.GridPanel;
 import wearblackallday.swing.components.LPanel;
 
 import javax.swing.*;
@@ -15,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class StructureTab extends SeedTab {
 	public StructureTab() {
 		super("StructureSeed");
-		GridPanel<BiomeUnit> biomePanel = new GridPanel<>(1, 16, BiomeUnit::new);
+		BiomePanel biomePanel = new BiomePanel();
 
 		JComponent buttons = new LPanel()
 			.withLayout(new GridLayout(2, 2))
@@ -27,29 +24,51 @@ public class StructureTab extends SeedTab {
 				}
 			})
 			.addButton("crack with biomes", () -> {
-				this.output.setText("");
-				this.progressBar.setMaximum(Strings.countLines(this.input.getText()) << 16);
+				this.toggleComponents(false);
+				long[] structureSeeds = this.input.getLongs();
+				long[] worldSeeds = new long[structureSeeds.length << 16];
+
+				int[] c = {0};
+				for(long structureSeed : structureSeeds) {
+					StructureSeed.getWorldSeeds(structureSeed)
+						.forEachRemaining(worldSeed -> worldSeeds[c[0]++] = worldSeed);
+				}
+
 				AtomicInteger progress = new AtomicInteger(0);
-				this.pool.execute(this.input.getLongs(), structureSeed ->
-					StructureSeed.getWorldSeeds(structureSeed).forEachRemaining(worldSeed -> {
-						var biomeSource = new OverworldBiomeSource(MCVersion.v1_16, worldSeed);
-						this.progressBar.setValue(progress.incrementAndGet());
-						if(biomePanel.allMatch(biomeUnit -> biomeUnit.matches(biomeSource))) {
-							SwingUtilities.invokeLater(() -> this.output.addEntry(worldSeed));
+				this.progressBar.setMaximum(structureSeeds.length << 16);
+				var buffer = new StringBuffer();
+				int threads = this.pool.getThreadCount();
+
+				for(int i = 0; i < threads; i++) {
+					int start = i;
+					this.pool.execute(() -> {
+						int current = start;
+						while(current < worldSeeds.length) {
+							if(biomePanel.matchesSeed(worldSeeds[current])) {
+								buffer.append(worldSeeds[current]).append("\n");
+							}
+							SwingUtilities.invokeLater(() -> {
+								this.progressBar.setValue(progress.incrementAndGet());
+								if(progress.get() == this.progressBar.getMaximum()) {
+									this.output.setText(buffer.toString());
+									this.toggleComponents(true);
+								}
+							});
+							current += threads;
 						}
-					}));
+					});
+				}
 			})
 			.addButton("verify WorldSeeds", () -> {
 				this.output.setText("");
 				for(long worldSeed : this.input.getLongs()) {
-					var biomeSource = new OverworldBiomeSource(MCVersion.v1_16, worldSeed);
-					if(biomePanel.allMatch(biomeUnit -> biomeUnit.matches(biomeSource))) {
+					if(biomePanel.matchesSeed(worldSeed)) {
 						SwingUtilities.invokeLater(() -> this.output.addEntry(worldSeed));
 					}
 				}
 			})
-			.addButton("copy Output", () -> Strings.clipboard(this.output.getText()));
+			.addButton("copy Output", () -> Strings.clipboard(this.getOutput()));
 
-		this.addComponents(biomePanel, buttons, this.progressBar);
+		this.addComponents(biomePanel, buttons);
 	}
 }

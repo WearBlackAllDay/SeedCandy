@@ -33,6 +33,7 @@ public abstract class SeedTab extends AbstractTab {
 		for(var component : components) {
 			this.mainPanel.add(component);
 		}
+		this.mainPanel.add(this.progressBar);
 	}
 
 	protected void mapSeeds(LongUnaryOperator mapper) {
@@ -82,7 +83,7 @@ public abstract class SeedTab extends AbstractTab {
 		}
 	}
 
-	private void toggleComponents(boolean activated) {
+	protected void toggleComponents(boolean activated) {
 		for(var panel : this.mainPanel.getComponents()) {
 			for(var button : ((Container)panel).getComponents()) {
 				button.setEnabled(activated);

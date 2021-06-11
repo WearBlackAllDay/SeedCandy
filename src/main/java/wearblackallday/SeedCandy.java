@@ -28,7 +28,7 @@ public class SeedCandy extends JFrame {
 
 	public MCVersion version = SUPPORTED_VERSIONS[0];
 	private final AbstractTab[] tabs = {new DungeonTab(), new StructureTab(), new WorldTab()};
-	private final JTabbedPane tabbedPane = SwingUtils.addSet(new JTabbedPane(), this.tabs);
+	private final JTabbedPane tabSelection = SwingUtils.addSet(new JTabbedPane(), this.tabs);
 
 	public SeedCandy() {
 		super("SeedCandy");
@@ -47,9 +47,9 @@ public class SeedCandy extends JFrame {
 
 		JButton copyButton = new JButton("copy Output");
 		copyButton.addActionListener(e ->
-			((AbstractTab)this.tabbedPane.getSelectedComponent()).copyOutput());
+			((AbstractTab)this.tabSelection.getSelectedComponent()).copyOutput());
 		this.getJMenuBar().add(copyButton);
-		this.setContentPane(this.tabbedPane);
+		this.setContentPane(this.tabSelection);
 		this.setIconImage(Icons.SEED);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
