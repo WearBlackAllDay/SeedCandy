@@ -1,41 +1,39 @@
 package wearblackallday.util;
 
+import com.seedfinding.latticg.reversal.DynamicProgram;
+import com.seedfinding.latticg.reversal.calltype.java.JavaCalls;
 import kaptainwutax.biomeutils.biome.Biome;
 import kaptainwutax.biomeutils.biome.Biomes;
 import kaptainwutax.mcutils.version.MCVersion;
 import kaptainwutax.seedutils.lcg.LCG;
 import mjtb49.hashreversals.ChunkRandomReverser;
-import randomreverser.call.java.FilteredSkip;
-import randomreverser.call.java.NextInt;
-import randomreverser.device.JavaRandomDevice;
-import randomreverser.device.LCGReverserDevice;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Dungeon {
 	public static final Set<Biome> FOSSIL_BIOMES = Set.of(Biomes.DESERT, Biomes.SWAMP, Biomes.SWAMP_HILLS);
 
-	public static List<Long> crack(String dungeonString, int posX, int posY, int posZ, MCVersion version, Biome biome) {
+	public static List<Long> crack(String dungeonString, int posX, int posY, int posZ,Size size, MCVersion version, Biome biome) {
 		if(!dungeonString.matches("[0-2]+")) return Collections.emptyList();
 
 		LCG failedDungeon = LCG.JAVA.combine(-5);
-		JavaRandomDevice device = getDungeonRand(posX, posY, posZ, version);
+		DynamicProgram device = getDungeonRand(posX, posY, posZ, size, version);
 
 		for(char c : dungeonString.toCharArray()) {
 			switch(c) {
-				case '0' -> device.addCall(NextInt.withValue(4, 0));
-				case '1' -> device.addCall(FilteredSkip.filter(LCG.JAVA, r ->
-					r.nextInt(4) != 0, 1));
-				case '2' -> device.addCall(NextInt.consume(4, 1));
+				case '0' -> device.add(JavaCalls.nextInt(4).equalTo(0));
+				case '1' -> device.filteredSkip( r -> r.nextInt(4) != 0, 1);
+				case '2' -> device.skip(1);
 			}
 		}
 
-		return device.streamSeeds(LCGReverserDevice.Process.EVERYTHING)
+		return device.reverse().boxed()
 			.parallel()
-			.mapToObj(decoratorSeed -> {
+			.map(decoratorSeed -> {
 				List<Long> structureSeeds = new ArrayList<>();
 				for(int i = 0; i < 8; i++) {
 					structureSeeds.addAll(ChunkRandomReverser.reversePopulationSeed(
@@ -46,20 +44,21 @@ public class Dungeon {
 				return structureSeeds;
 			})
 			.flatMap(List::stream)
-			.toList();
+			.collect(Collectors.toList());
 	}
 
-	private static JavaRandomDevice getDungeonRand(int posX, int posY, int posZ, MCVersion version) {
-		JavaRandomDevice device = new JavaRandomDevice();
-		device.addCall(NextInt.withValue(16, posX & 15));
+	private static DynamicProgram getDungeonRand(int posX, int posY, int posZ, Size size, MCVersion version) {
+		DynamicProgram device = DynamicProgram.create(com.seedfinding.latticg.util.LCG.JAVA);
+		device.add(JavaCalls.nextInt(16).equalTo(posX & 15));
 		if(version.isNewerOrEqualTo(MCVersion.v1_15)) {
-			device.addCall(NextInt.withValue(16, posZ & 15));
-			device.addCall(NextInt.withValue(256, posY));
+			device.add(JavaCalls.nextInt(16).equalTo(posZ & 15));
+			device.add(JavaCalls.nextInt(256).equalTo(posY));
 		} else {
-			device.addCall(NextInt.withValue(256, posY));
-			device.addCall(NextInt.withValue(16, posZ & 15));
+			device.add(JavaCalls.nextInt(256).equalTo(posY));
+			device.add(JavaCalls.nextInt(16).equalTo(posZ & 15));
 		}
-		device.addCall(NextInt.consume(2, 2));
+		device.add(JavaCalls.nextInt(2).equalTo((size.x - 7) / 2));
+		device.add(JavaCalls.nextInt(2).equalTo((size.z - 7) / 2));
 		return device;
 	}
 
@@ -77,16 +76,16 @@ public class Dungeon {
 		_7x9(7, 9),
 		_7x7(7, 7);
 
-		public final int x, y;
+		public final int x, z;
 
-		Size(int x, int y) {
+		Size(int x, int z) {
 			this.x = x;
-			this.y = y;
+			this.z = z;
 		}
 
 		@Override
 		public String toString() {
-			return this.x + "x" + this.y;
+			return this.x + "x" + this.z;
 		}
 	}
 }

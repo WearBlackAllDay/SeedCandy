@@ -42,7 +42,7 @@ public class DungeonTab extends AbstractTab {
 			.addButton("crack", (panel, button, event) -> {
 				this.dungeonOutput.setText("");
 				Dungeon.crack(this.dungeonString.getText(), panel.getInt("x"), panel.getInt("y"),
-					panel.getInt("z"), this.getVersion(), biomeSelector.getSelected())
+					panel.getInt("z"),this.sizeSelector.getSelected(), this.getVersion(), biomeSelector.getSelected())
 					.forEach(this.dungeonOutput::addEntry);
 				if(this.getOutput().isEmpty()) this.dungeonOutput.setText("no results");
 			})

@@ -18,7 +18,7 @@ public class FloorPanel extends JComponent {
 		this.setLayout(new CardLayout());
 
 		for(Dungeon.Size dungeonSize : Dungeon.Size.values()) {
-			this.add(new GridPanel<>(dungeonSize.x, dungeonSize.y, FloorButton::new), dungeonSize.toString());
+			this.add(new GridPanel<>(dungeonSize.x, dungeonSize.z, FloorButton::new), dungeonSize.toString());
 		}
 	}
 

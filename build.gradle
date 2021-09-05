@@ -6,9 +6,11 @@ plugins {
 repositories {
     mavenCentral()
     maven { url "https://jitpack.io" }
+    maven { url "https://maven.latticg.com/" }
 }
 
 dependencies {
+    implementation "com.seedfinding:latticg:1.06"
     implementation "com.github.KaptainWutax:SEED:b090a45dd5"
     implementation "com.github.wearblackallday:JavaUtils:1b369d41cd"
     implementation 'com.formdev:flatlaf:1.2'
