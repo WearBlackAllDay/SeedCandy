@@ -6,11 +6,7 @@ import wearblackallday.util.Dungeon;
 import wearblackallday.util.Icons;
 
 import javax.swing.*;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-
+import java.awt.*;
 import static javax.swing.SwingUtilities.isRightMouseButton;
 
 public class FloorPanel extends JComponent {
@@ -62,9 +58,7 @@ public class FloorPanel extends JComponent {
 			this.setFocusable(false);
 			this.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
 			this.addMouseListener(Events.Mouse.onClicked(e -> {
-				if(isRightMouseButton(e)) {
-					this.setEnabled(!this.isEnabled());
-				}
+				if(isRightMouseButton(e)) this.setEnabled(!this.isEnabled());
 				((DungeonTab)FloorPanel.this.getParent()).updateInfo();
 			}));
 		}

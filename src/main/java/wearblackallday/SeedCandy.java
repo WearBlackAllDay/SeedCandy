@@ -39,11 +39,14 @@ public class SeedCandy extends JFrame {
 		super("SeedCandy");
 
 		JMenuBar menu = new LMenuBar()
-			.addMenu("version", lMenu -> {
+			.addMenu(this.version.name, lMenu -> {
 				ButtonGroup buttonGroup = new ButtonGroup();
 				for(var version : SUPPORTED_VERSIONS) {
 					var button = new JRadioButtonMenuItem(version.name);
-					button.addActionListener(e -> this.version = version);
+					button.addActionListener(e -> {
+						this.version = version;
+						lMenu.setText(version.name);
+					});
 					buttonGroup.add(button);
 					lMenu.add(button);
 				}

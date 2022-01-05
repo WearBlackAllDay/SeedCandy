@@ -5,8 +5,8 @@ plugins {
 
 repositories {
     maven { url "https://maven.seedfinding.com" }
-    maven { url "https://maven.latticg.com" }
     maven { url "https://maven-snapshots.seedfinding.com" }
+    maven { url "https://maven.latticg.com" }
     maven { url "https://jitpack.io" }
 }
 
@@ -18,7 +18,7 @@ dependencies {
     implementation("com.seedfinding:mc_math:1.0.0") {transitive(false)}
     implementation("com.seedfinding:mc_feature:1.0.0") {transitive(false)}
     implementation("com.seedfinding:latticg:1.06") {transitive(false)}
-    
+
     implementation "com.github.wearblackallday:JavaUtils:1b369d41cd"
     implementation 'com.formdev:flatlaf:1.2'
     implementation "com.formdev:flatlaf-intellij-themes:1.2"

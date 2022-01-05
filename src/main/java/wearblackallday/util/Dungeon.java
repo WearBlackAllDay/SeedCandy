@@ -15,7 +15,8 @@ public record Dungeon(Size size, String floor, int posX, int posY, int posZ, MCV
 	public static final Set<Biome> FOSSIL_BIOMES = Set.of(Biomes.DESERT, Biomes.SWAMP, Biomes.SWAMP_HILLS);
 
 	public List<Long> crack() {
-		if(!this.floor.matches("[0-2]+")) return Collections.emptyList();
+		if(this.size.x * this.size.z != this.floor.length() || !this.floor.matches("[0-2]+"))
+			return Collections.emptyList();
 
 		LCG failedDungeon = LCG.JAVA.combine(-5);
 		DynamicProgram device = this.getDungeonRand();
@@ -44,7 +45,7 @@ public record Dungeon(Size size, String floor, int posX, int posY, int posZ, MCV
 	}
 
 	private DynamicProgram getDungeonRand() {
-		DynamicProgram device = DynamicProgram.create(com.seedfinding.latticg.util.LCG.JAVA);
+		DynamicProgram device = DynamicProgram.create(LCG.JAVA);
 		device.add(JavaCalls.nextInt(16).equalTo(this.posX & 15));
 		if(this.version.isNewerOrEqualTo(MCVersion.v1_15)) {
 			device.add(JavaCalls.nextInt(16).equalTo(this.posZ & 15));
@@ -53,8 +54,8 @@ public record Dungeon(Size size, String floor, int posX, int posY, int posZ, MCV
 			device.add(JavaCalls.nextInt(256).equalTo(this.posY));
 			device.add(JavaCalls.nextInt(16).equalTo(this.posZ & 15));
 		}
-		device.add(JavaCalls.nextInt(2).equalTo((this.size.x - 7) >> 1));
-		device.add(JavaCalls.nextInt(2).equalTo((this.size.z - 7) >> 1));
+		device.add(JavaCalls.nextInt(2).equalTo(this.size.x >> 3));
+		device.add(JavaCalls.nextInt(2).equalTo(this.size.z >> 3));
 		return device;
 	}
 

@@ -10,17 +10,15 @@ import wearblackallday.util.Dungeon;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class DungeonTab extends AbstractTab {
 	private final FloorPanel floorPanel = new FloorPanel();
-	private final JTextField floorString = new JTextField();
-	private final JLabel bitLabel = new JLabel();
-	private final SelectionBox<Dungeon.Size> sizeSelector = new SelectionBox<>(Dungeon.Size.values());
 	private final TextBox dungeonOutput = new TextBox(false);
+	private final JTextField floorString = new JTextField();
+	private final SelectionBox<Dungeon.Size> sizeSelector = new SelectionBox<>(Dungeon.Size.values());
 	private final SelectionBox<Biome> biomeSelector = new SelectionBox<>(Biome::getName, getFossilBiomeSelection());
+	private final JLabel bitLabel = new JLabel();
 	private final LPanel userEntry = this.buildUserEntry();
 
 	public DungeonTab() {
