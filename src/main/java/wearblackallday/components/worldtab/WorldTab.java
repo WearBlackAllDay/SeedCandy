@@ -1,8 +1,10 @@
 package wearblackallday.components.worldtab;
 
-import kaptainwutax.biomeutils.source.OverworldBiomeSource;
-import kaptainwutax.mcutils.rand.seed.ChunkSeeds;
-import kaptainwutax.mcutils.rand.seed.WorldSeed;
+import com.seedfinding.mcbiome.source.OverworldBiomeSource;
+import com.seedfinding.mccore.rand.seed.ChunkSeeds;
+import com.seedfinding.mccore.rand.seed.WorldSeed;
+import com.seedfinding.mccore.util.pos.BPos;
+import com.seedfinding.mcfeature.misc.SpawnPoint;
 import wearblackallday.components.SeedTab;
 import wearblackallday.swing.components.LPanel;
 import wearblackallday.util.QuadHuts;
@@ -28,14 +30,13 @@ public class WorldTab extends SeedTab {
 			.addButton("locate Quadhuts", () -> this.mapToString(worldSeed ->
 				QuadHuts.find(worldSeed, this.getVersion()).toString()))
 			.addButton("show Spawnpoint", () -> this.mapToString(worldSeed -> {
-				var biomeSource = new OverworldBiomeSource(this.getVersion(), worldSeed);
-				return "{" + biomeSource.getSpawnPoint().getX() + ", " +
-					biomeSource.getSpawnPoint().getZ() + "}";
+				BPos spawn = SpawnPoint.getApproximateSpawn(new OverworldBiomeSource(this.getVersion(), worldSeed));
+				return "{" + spawn.getX() + ", " + spawn.getZ() + "}";
 			}))
 			.addButton("convert to hash", () -> this.mapSeeds(WorldSeed::toHash))
 			.addButton("switch to ShadowSeed", () -> this.mapSeeds(WorldSeed::getShadowSeed))
 			.addButton("get SisterSeeds", () -> this.mapToString(worldSeed -> {
-				var buffer = new StringBuilder();
+				StringBuilder buffer = new StringBuilder();
 				WorldSeed.getSisterSeeds(worldSeed).forEachRemaining(sisterSeed ->
 					buffer.append(sisterSeed).append("\n"));
 				return buffer.toString();

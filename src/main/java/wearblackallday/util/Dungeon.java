@@ -1,46 +1,40 @@
 package wearblackallday.util;
 
-import kaptainwutax.biomeutils.biome.Biome;
-import kaptainwutax.biomeutils.biome.Biomes;
-import kaptainwutax.mcutils.version.MCVersion;
-import kaptainwutax.seedutils.lcg.LCG;
-import mjtb49.hashreversals.ChunkRandomReverser;
-import randomreverser.call.java.FilteredSkip;
-import randomreverser.call.java.NextInt;
-import randomreverser.device.JavaRandomDevice;
-import randomreverser.device.LCGReverserDevice;
+import com.seedfinding.latticg.reversal.DynamicProgram;
+import com.seedfinding.latticg.reversal.calltype.java.JavaCalls;
+import com.seedfinding.latticg.util.LCG;
+import com.seedfinding.mcbiome.biome.Biome;
+import com.seedfinding.mcbiome.biome.Biomes;
+import com.seedfinding.mccore.version.MCVersion;
+import com.seedfinding.mccore.version.UnsupportedVersion;
+import com.seedfinding.mcreversal.ChunkRandomReverser;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-public class Dungeon {
+public record Dungeon(Size size, String floor, int posX, int posY, int posZ, MCVersion version, Biome biome) {
 	public static final Set<Biome> FOSSIL_BIOMES = Set.of(Biomes.DESERT, Biomes.SWAMP, Biomes.SWAMP_HILLS);
 
-	public static List<Long> crack(String dungeonString, int posX, int posY, int posZ, MCVersion version, Biome biome) {
-		if(!dungeonString.matches("[0-2]+")) return Collections.emptyList();
+	public List<Long> crack() {
+		if(!this.floor.matches("[0-2]+")) return Collections.emptyList();
 
 		LCG failedDungeon = LCG.JAVA.combine(-5);
-		JavaRandomDevice device = getDungeonRand(posX, posY, posZ, version);
+		DynamicProgram device = this.getDungeonRand();
 
-		for(char c : dungeonString.toCharArray()) {
-			switch(c) {
-				case '0' -> device.addCall(NextInt.withValue(4, 0));
-				case '1' -> device.addCall(FilteredSkip.filter(LCG.JAVA, r ->
-					r.nextInt(4) != 0, 1));
-				case '2' -> device.addCall(NextInt.consume(4, 1));
+		for(int i = 0; i < this.floor.length(); i++) {
+			switch(this.floor.charAt(i)) {
+				case '0' -> device.add(JavaCalls.nextInt(4).equalTo(0));
+				case '1' -> device.filteredSkip( r -> r.nextInt(4) != 0, 1);
+				case '2' -> device.skip(1);
 			}
 		}
 
-		return device.streamSeeds(LCGReverserDevice.Process.EVERYTHING)
-			.parallel()
+		return device.reverse().parallel()
 			.mapToObj(decoratorSeed -> {
 				List<Long> structureSeeds = new ArrayList<>();
 				for(int i = 0; i < 8; i++) {
 					structureSeeds.addAll(ChunkRandomReverser.reversePopulationSeed(
-						(decoratorSeed ^ LCG.JAVA.multiplier) - getDungeonSalt(version, biome),
-						posX & -16, posZ & -16, version));
+						(decoratorSeed ^ LCG.JAVA.multiplier) - this.getSalt(),
+						this.posX & -16, this.posZ & -16, this.version));
 					decoratorSeed = failedDungeon.nextSeed(decoratorSeed);
 				}
 				return structureSeeds;
@@ -49,25 +43,26 @@ public class Dungeon {
 			.toList();
 	}
 
-	private static JavaRandomDevice getDungeonRand(int posX, int posY, int posZ, MCVersion version) {
-		JavaRandomDevice device = new JavaRandomDevice();
-		device.addCall(NextInt.withValue(16, posX & 15));
-		if(version.isNewerOrEqualTo(MCVersion.v1_15)) {
-			device.addCall(NextInt.withValue(16, posZ & 15));
-			device.addCall(NextInt.withValue(256, posY));
+	private DynamicProgram getDungeonRand() {
+		DynamicProgram device = DynamicProgram.create(com.seedfinding.latticg.util.LCG.JAVA);
+		device.add(JavaCalls.nextInt(16).equalTo(this.posX & 15));
+		if(this.version.isNewerOrEqualTo(MCVersion.v1_15)) {
+			device.add(JavaCalls.nextInt(16).equalTo(this.posZ & 15));
+			device.add(JavaCalls.nextInt(256).equalTo(this.posY));
 		} else {
-			device.addCall(NextInt.withValue(256, posY));
-			device.addCall(NextInt.withValue(16, posZ & 15));
+			device.add(JavaCalls.nextInt(256).equalTo(this.posY));
+			device.add(JavaCalls.nextInt(16).equalTo(this.posZ & 15));
 		}
-		device.addCall(NextInt.consume(2, 2));
+		device.add(JavaCalls.nextInt(2).equalTo((this.size.x - 7) >> 1));
+		device.add(JavaCalls.nextInt(2).equalTo((this.size.z - 7) >> 1));
 		return device;
 	}
 
-	private static long getDungeonSalt(MCVersion version, Biome biome) {
-		return switch(version) {
-			case v1_17, v1_16 -> FOSSIL_BIOMES.contains(biome) ? 30003L : 30002L;
+	private long getSalt() {
+		return switch(this.version) {
+			case v1_17, v1_16 -> FOSSIL_BIOMES.contains(this.biome) ? 30003L : 30002L;
 			case v1_15, v1_14, v1_13 -> 20003L;
-			default -> throw new IllegalArgumentException();
+			default -> throw new UnsupportedVersion(this.version, "single-Dungeon reversal");
 		};
 	}
 
@@ -77,16 +72,16 @@ public class Dungeon {
 		_7x9(7, 9),
 		_7x7(7, 7);
 
-		public final int x, y;
+		public final int x, z;
 
-		Size(int x, int y) {
+		Size(int x, int z) {
 			this.x = x;
-			this.y = y;
+			this.z = z;
 		}
 
 		@Override
 		public String toString() {
-			return this.x + "x" + this.y;
+			return this.x + "x" + this.z;
 		}
 	}
 }

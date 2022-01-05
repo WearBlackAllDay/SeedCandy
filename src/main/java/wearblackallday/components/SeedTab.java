@@ -4,13 +4,14 @@ import wearblackallday.util.ThreadPool;
 
 import javax.swing.*;
 import java.awt.Container;
+import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.LongFunction;
 import java.util.function.LongUnaryOperator;
 
 public abstract class SeedTab extends AbstractTab {
-	protected final TextBlock input = new TextBlock(true);
-	protected final TextBlock output = new TextBlock(false);
+	protected final TextBox input = new TextBox(true);
+	protected final TextBox output = new TextBox(false);
 	protected final JProgressBar progressBar = new JProgressBar(0, 1);
 	private final Box mainPanel = new Box(BoxLayout.Y_AXIS);
 	protected final ThreadPool pool = new ThreadPool();
@@ -50,12 +51,12 @@ public abstract class SeedTab extends AbstractTab {
 		int threads = this.pool.getThreadCount();
 
 		if(seeds.length < threads << 1) {
-			var buffer = new StringBuilder();
+			StringJoiner joiner = new StringJoiner("\n");
 
 			for(long seed : seeds) {
-				buffer.append(mapper.apply(seed)).append("\n");
+				joiner.add(mapper.apply(seed));
 			}
-			this.output.setText(buffer.toString());
+			this.output.setText(joiner.toString());
 			return;
 		}
 

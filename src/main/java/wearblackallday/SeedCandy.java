@@ -1,7 +1,7 @@
 package wearblackallday;
 
 import com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme;
-import kaptainwutax.mcutils.version.MCVersion;
+import com.seedfinding.mccore.version.MCVersion;
 import wearblackallday.components.AbstractTab;
 import wearblackallday.components.dungeontab.DungeonTab;
 import wearblackallday.components.structuretab.StructureTab;
@@ -21,14 +21,19 @@ public class SeedCandy extends JFrame {
 		MCVersion.v1_13,
 	};
 
-	public static void main(String[] args) {
+	static {
 		FlatOneDarkIJTheme.setup();
-		new SeedCandy().setVisible(true);
 	}
+
+	private static final SeedCandy INSTANCE = new SeedCandy();
 
 	public MCVersion version = SUPPORTED_VERSIONS[0];
 	private final AbstractTab[] tabs = {new DungeonTab(), new StructureTab(), new WorldTab()};
 	private final JTabbedPane tabSelection = SwingUtils.addSet(new JTabbedPane(), this.tabs);
+
+	public static void main(String[] args) {
+		get().setVisible(true);
+	}
 
 	public SeedCandy() {
 		super("SeedCandy");
@@ -57,5 +62,9 @@ public class SeedCandy extends JFrame {
 		this.setResizable(false);
 		this.pack();
 		this.setLocationRelativeTo(null);
+	}
+
+	public static SeedCandy get() {
+		return INSTANCE;
 	}
 }

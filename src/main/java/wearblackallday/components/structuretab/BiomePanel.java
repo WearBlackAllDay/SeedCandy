@@ -1,10 +1,10 @@
 package wearblackallday.components.structuretab;
 
-import kaptainwutax.biomeutils.biome.Biome;
-import kaptainwutax.biomeutils.biome.Biomes;
-import kaptainwutax.biomeutils.source.OverworldBiomeSource;
-import kaptainwutax.mcutils.state.Dimension;
-import kaptainwutax.mcutils.version.MCVersion;
+import com.seedfinding.mcbiome.biome.Biome;
+import com.seedfinding.mcbiome.biome.Biomes;
+import com.seedfinding.mcbiome.source.OverworldBiomeSource;
+import com.seedfinding.mccore.state.Dimension;
+import com.seedfinding.mccore.version.MCVersion;
 import wearblackallday.swing.SwingUtils;
 import wearblackallday.swing.components.SelectionBox;
 import wearblackallday.util.Filters;

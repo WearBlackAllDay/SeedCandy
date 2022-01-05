@@ -18,35 +18,30 @@ public class FloorPanel extends JComponent {
 		this.setLayout(new CardLayout());
 
 		for(Dungeon.Size dungeonSize : Dungeon.Size.values()) {
-			this.add(new GridPanel<>(dungeonSize.x, dungeonSize.y, FloorButton::new), dungeonSize.toString());
+			this.add(new GridPanel<>(dungeonSize.x, dungeonSize.z, FloorButton::new), dungeonSize.toString());
 		}
 	}
 
-	protected double getBits() {
-		double bits = 0D;
-
-		for(FloorButton fb : this.currentGrid()) {
-			bits += fb.getBits();
-		}
-
-		return bits;
-	}
-
-	protected String getString() {
+	protected FloorInfo getInfo() {
+		float bits = 0f;
 		StringBuilder stringBuilder = new StringBuilder();
+		var floor = this.getFloor();
 
-		for(int col = 0; col < this.currentGrid().getGridWidth(); col++) {
-			this.currentGrid().forEachY(col, floorButton -> stringBuilder.append(floorButton.getString()));
+		for(int col = 0; col < floor.getGridWidth(); col++) {
+			for(int row = 0; row < floor.getGridHeight(); row++) {
+				var info = floor.getComponent(col, row).getInfo();
+				bits += info.bits;
+				stringBuilder.append(info.stringRep);
+			}
 		}
-
-		return stringBuilder.toString();
+		return new FloorInfo((int)bits, stringBuilder.toString());
 	}
 
-	protected void changeGrid(Dungeon.Size size) {
+	protected void setFloor(Dungeon.Size size) {
 		((CardLayout)this.getLayout()).show(this, size.toString());
 	}
 
-	private GridPanel<FloorButton> currentGrid() {
+	private GridPanel<FloorButton> getFloor() {
 		for(Component c : this.getComponents()) {
 			if(c.isVisible()) return (GridPanel<FloorButton>)c;
 		}
@@ -54,6 +49,10 @@ public class FloorPanel extends JComponent {
 	}
 
 	private class FloorButton extends JToggleButton {
+		private static final ButtonInfo COBBLE = new ButtonInfo(2f, '0');
+		private static final ButtonInfo MOSSY = new ButtonInfo(0.415f, '1');
+		private static final ButtonInfo UNKNOWN = new ButtonInfo(0f, '2');
+
 		private FloorButton() {
 			this.setPreferredSize(new Dimension(64, 64));
 			this.setIcon(Icons.MOSSY);
@@ -70,12 +69,12 @@ public class FloorPanel extends JComponent {
 			}));
 		}
 
-		private double getBits() {
-			return !this.isEnabled() ? 0D : this.isSelected() ? 2D : 0.415D;
+		private ButtonInfo getInfo() {
+			return !this.isEnabled() ? UNKNOWN : this.isSelected() ? COBBLE : MOSSY;
 		}
 
-		private String getString() {
-			return !this.isEnabled() ? "2" : this.isSelected() ? "0" : "1";
-		}
+		private record ButtonInfo(float bits, char stringRep) {}
 	}
+
+	protected record FloorInfo(int bits, String floor) {}
 }

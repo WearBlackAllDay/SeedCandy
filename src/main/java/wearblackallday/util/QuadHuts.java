@@ -1,15 +1,15 @@
 package wearblackallday.util;
 
-import kaptainwutax.biomeutils.source.OverworldBiomeSource;
-import kaptainwutax.featureutils.structure.SwampHut;
-import kaptainwutax.mathutils.arithmetic.Rational;
-import kaptainwutax.mathutils.component.vector.QVector;
-import kaptainwutax.mcutils.rand.ChunkRand;
-import kaptainwutax.mcutils.rand.seed.RegionSeed;
-import kaptainwutax.mcutils.util.pos.BPos;
-import kaptainwutax.mcutils.util.pos.CPos;
-import kaptainwutax.mcutils.version.MCVersion;
-import mjtb49.hashreversals.Lattice2D;
+import com.seedfinding.mcbiome.source.OverworldBiomeSource;
+import com.seedfinding.mccore.rand.ChunkRand;
+import com.seedfinding.mccore.rand.seed.RegionSeed;
+import com.seedfinding.mccore.util.pos.BPos;
+import com.seedfinding.mccore.util.pos.CPos;
+import com.seedfinding.mccore.version.MCVersion;
+import com.seedfinding.mcfeature.structure.SwampHut;
+import com.seedfinding.mcmath.arithmetic.Rational;
+import com.seedfinding.mcmath.component.vector.QVector;
+import com.seedfinding.mcreversal.Lattice2D;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

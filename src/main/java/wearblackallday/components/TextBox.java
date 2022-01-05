@@ -5,10 +5,10 @@ import wearblackallday.data.Strings;
 import javax.swing.*;
 import java.awt.Dimension;
 
-public class TextBlock extends JScrollPane {
+public class TextBox extends JScrollPane {
 	private final JTextArea textArea = new JTextArea();
 
-	public TextBlock(boolean editable) {
+	public TextBox(boolean editable) {
 		this.textArea.setEditable(editable);
 		this.textArea.setFocusable(editable);
 		this.setPreferredSize(new Dimension(200, 600));
@@ -30,7 +30,7 @@ public class TextBlock extends JScrollPane {
 	}
 
 	public void addEntry(String entry) {
-		this.textArea.setText(this.textArea.getText() + entry + "\n");
+		this.setText(this.getText() + entry + "\n");
 	}
 
 	public void addEntry(long entry) {

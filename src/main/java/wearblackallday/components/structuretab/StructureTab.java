@@ -1,6 +1,6 @@
 package wearblackallday.components.structuretab;
 
-import kaptainwutax.mcutils.rand.seed.StructureSeed;
+import com.seedfinding.mccore.rand.seed.StructureSeed;
 import wearblackallday.components.SeedTab;
 import wearblackallday.data.Strings;
 import wearblackallday.swing.components.LPanel;
