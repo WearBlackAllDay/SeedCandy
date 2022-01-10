@@ -1,9 +1,9 @@
-package wearblackallday.components.dungeontab;
+package wearblackallday.seedcandy.components.dungeontab;
 
 import wearblackallday.swing.Events;
 import wearblackallday.swing.components.GridPanel;
-import wearblackallday.util.Dungeon;
-import wearblackallday.util.Icons;
+import wearblackallday.seedcandy.util.Dungeon;
+import wearblackallday.seedcandy.util.Icons;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +19,7 @@ public class FloorPanel extends JComponent {
 	}
 
 	protected FloorInfo getInfo() {
-		float bits = 0f;
+		float bits = 2f;
 		StringBuilder stringBuilder = new StringBuilder();
 		var floor = this.getFloor();
 
@@ -44,7 +44,7 @@ public class FloorPanel extends JComponent {
 		return null;
 	}
 
-	private class FloorButton extends JToggleButton {
+	private static class FloorButton extends JToggleButton {
 		private static final ButtonInfo COBBLE = new ButtonInfo(2f, '0');
 		private static final ButtonInfo MOSSY = new ButtonInfo(0.415f, '1');
 		private static final ButtonInfo UNKNOWN = new ButtonInfo(0f, '2');
@@ -57,9 +57,8 @@ public class FloorPanel extends JComponent {
 			this.setDisabledSelectedIcon(Icons.UNKNOWN);
 			this.setFocusable(false);
 			this.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
-			this.addMouseListener(Events.Mouse.onClicked(e -> {
+			this.addMouseListener(Events.Mouse.onPressed(e -> {
 				if(isRightMouseButton(e)) this.setEnabled(!this.isEnabled());
-				((DungeonTab)FloorPanel.this.getParent()).updateInfo();
 			}));
 		}
 

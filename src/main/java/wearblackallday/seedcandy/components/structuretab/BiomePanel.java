@@ -1,10 +1,10 @@
-package wearblackallday.components.structuretab;
+package wearblackallday.seedcandy.components.structuretab;
 
 import com.seedfinding.mcbiome.biome.Biome;
 import com.seedfinding.mcbiome.biome.Biomes;
 import com.seedfinding.mcbiome.source.OverworldBiomeSource;
 import com.seedfinding.mccore.state.Dimension;
-import com.seedfinding.mccore.version.MCVersion;
+import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.swing.SwingUtils;
 import wearblackallday.swing.components.SelectionBox;
 import wearblackallday.util.Filters;
@@ -27,7 +27,7 @@ public class BiomePanel extends Box {
 	}
 
 	protected boolean matchesSeed(long seed) {
-		var biomeSource = new OverworldBiomeSource(MCVersion.v1_16, seed);
+		var biomeSource = new OverworldBiomeSource(SeedCandy.get().version, seed);
 
 		for(var restriction : this.getComponents()) {
 			if(!((RestrictionSelector)restriction).matchesSource(biomeSource)) {

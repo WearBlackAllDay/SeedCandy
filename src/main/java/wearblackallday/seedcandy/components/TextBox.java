@@ -1,4 +1,4 @@
-package wearblackallday.components;
+package wearblackallday.seedcandy.components;
 
 import wearblackallday.data.Strings;
 
@@ -35,5 +35,9 @@ public class TextBox extends JScrollPane {
 
 	public void addEntry(long entry) {
 		this.addEntry(String.valueOf(entry));
+	}
+
+	public void clear() {
+		this.setText("");
 	}
 }

@@ -1,4 +1,4 @@
-package wearblackallday.util;
+package wearblackallday.seedcandy.util;
 
 import com.seedfinding.mcbiome.source.OverworldBiomeSource;
 import com.seedfinding.mccore.rand.ChunkRand;

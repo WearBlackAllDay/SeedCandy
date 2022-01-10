@@ -1,14 +1,14 @@
-package wearblackallday;
+package wearblackallday.seedcandy;
 
 import com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme;
 import com.seedfinding.mccore.version.MCVersion;
-import wearblackallday.components.AbstractTab;
-import wearblackallday.components.dungeontab.DungeonTab;
-import wearblackallday.components.structuretab.StructureTab;
-import wearblackallday.components.worldtab.WorldTab;
+import wearblackallday.seedcandy.components.AbstractTab;
+import wearblackallday.seedcandy.components.dungeontab.DungeonTab;
+import wearblackallday.seedcandy.components.structuretab.StructureTab;
+import wearblackallday.seedcandy.components.worldtab.WorldTab;
 import wearblackallday.swing.SwingUtils;
 import wearblackallday.swing.components.LMenuBar;
-import wearblackallday.util.Icons;
+import wearblackallday.seedcandy.util.Icons;
 
 import javax.swing.*;
 
@@ -23,7 +23,7 @@ public class SeedCandy extends JFrame {
 
 	static {
 		FlatOneDarkIJTheme.setup();
-	}
+	}	
 
 	private static final SeedCandy INSTANCE = new SeedCandy();
 

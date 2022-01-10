@@ -4,6 +4,7 @@ plugins {
 }
 
 repositories {
+    mavenCentral()
     maven { url "https://maven.seedfinding.com" }
     maven { url "https://maven-snapshots.seedfinding.com" }
     maven { url "https://maven.latticg.com" }
@@ -17,6 +18,7 @@ dependencies {
     implementation("com.seedfinding:mc_seed:1.0.0") {transitive(false)}
     implementation("com.seedfinding:mc_math:1.0.0") {transitive(false)}
     implementation("com.seedfinding:mc_feature:1.0.0") {transitive(false)}
+    implementation("com.seedfinding:mc_noise:1.0.0") {transitive(false)}
     implementation("com.seedfinding:latticg:1.06") {transitive(false)}
 
     implementation "com.github.wearblackallday:JavaUtils:1b369d41cd"

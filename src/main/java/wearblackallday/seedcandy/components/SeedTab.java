@@ -1,13 +1,14 @@
-package wearblackallday.components;
+package wearblackallday.seedcandy.components;
 
 import wearblackallday.util.ThreadPool;
 
 import javax.swing.*;
 import java.awt.Container;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.LongFunction;
 import java.util.function.LongUnaryOperator;
+import java.util.stream.Collectors;
 
 public abstract class SeedTab extends AbstractTab {
 	protected final TextBox input = new TextBox(true);
@@ -48,19 +49,22 @@ public abstract class SeedTab extends AbstractTab {
 
 	protected void mapToString(LongFunction<String> mapper) {
 		long[] seeds = this.input.getLongs();
-		int threads = this.pool.getThreadCount();
 
-		if(seeds.length < threads << 1) {
+		if(seeds.length < this.pool.getThreadCount() << 2) {
 			StringJoiner joiner = new StringJoiner("\n");
 
 			for(long seed : seeds) {
 				joiner.add(mapper.apply(seed));
 			}
 			this.output.setText(joiner.toString());
-			return;
+		} else {
+			this.threadedMap(seeds, mapper);
 		}
+	}
 
-		String[] result = new String[seeds.length];
+	protected void threadedMap(long[] seeds, LongFunction<String> mapper) {
+		int threads = this.pool.getThreadCount();
+		Set<String> results = Collections.synchronizedSet(new HashSet<>());
 		AtomicInteger progress = new AtomicInteger(0);
 		this.progressBar.setMaximum(seeds.length);
 		this.toggleComponents(false);
@@ -70,13 +74,14 @@ public abstract class SeedTab extends AbstractTab {
 			this.pool.execute(() -> {
 				int current = start;
 				while(current < seeds.length) {
-					result[current] = mapper.apply(seeds[current]);
+					results.add(mapper.apply(seeds[current]));
 					current += threads;
 					SwingUtilities.invokeLater(() -> {
 						this.progressBar.setValue(progress.incrementAndGet());
 						if(progress.get() == this.progressBar.getMaximum()) {
 							this.toggleComponents(true);
-							this.output.setText(String.join("\n", result));
+							results.remove("");
+							this.output.setText(String.join("\n", results));
 						}
 					});
 				}

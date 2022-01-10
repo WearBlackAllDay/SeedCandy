@@ -1,7 +1,7 @@
-package wearblackallday.components;
+package wearblackallday.seedcandy.components;
 
 import com.seedfinding.mccore.version.MCVersion;
-import wearblackallday.SeedCandy;
+import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.data.Strings;
 
 import javax.swing.*;

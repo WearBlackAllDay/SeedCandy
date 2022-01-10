@@ -1,15 +1,16 @@
-package wearblackallday.components.dungeontab;
+package wearblackallday.seedcandy.components.dungeontab;
 
 import com.seedfinding.mcbiome.biome.Biome;
-import wearblackallday.components.AbstractTab;
-import wearblackallday.components.TextBox;
+import wearblackallday.seedcandy.components.AbstractTab;
+import wearblackallday.seedcandy.components.TextBox;
 import wearblackallday.swing.SwingUtils;
 import wearblackallday.swing.components.LPanel;
 import wearblackallday.swing.components.SelectionBox;
-import wearblackallday.util.Dungeon;
+import wearblackallday.seedcandy.util.Dungeon;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
+import java.util.List;
 import java.util.*;
 
 public class DungeonTab extends AbstractTab {
@@ -26,10 +27,8 @@ public class DungeonTab extends AbstractTab {
 		this.floorString.setFont(this.floorString.getFont().deriveFont(16F));
 		this.floorString.setHorizontalAlignment(JTextField.CENTER);
 
-		this.sizeSelector.addActionListener(e -> {
-			this.floorPanel.setFloor(this.sizeSelector.getSelected());
-			this.updateInfo();
-		});
+		Toolkit.getDefaultToolkit().addAWTEventListener(e -> this.updateInfo(), AWTEvent.MOUSE_EVENT_MASK);
+		this.sizeSelector.addActionListener(e -> this.floorPanel.setFloor(this.sizeSelector.getSelected()));
 
 		this.setLayout(new BorderLayout());
 		this.add(this.floorPanel, BorderLayout.CENTER);
@@ -38,7 +37,7 @@ public class DungeonTab extends AbstractTab {
 		this.updateInfo();
 	}
 
-	protected void updateInfo() {
+	private void updateInfo() {
 		var info = this.floorPanel.getInfo();
 		this.bitLabel.setText("Bits: " + info.bits());
 		this.floorString.setText(info.floor());

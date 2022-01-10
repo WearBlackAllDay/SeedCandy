@@ -1,4 +1,4 @@
-package wearblackallday.util;
+package wearblackallday.seedcandy.util;
 
 import com.seedfinding.latticg.reversal.DynamicProgram;
 import com.seedfinding.latticg.reversal.calltype.java.JavaCalls;

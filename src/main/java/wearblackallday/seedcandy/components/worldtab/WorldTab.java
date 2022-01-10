@@ -1,16 +1,17 @@
-package wearblackallday.components.worldtab;
+package wearblackallday.seedcandy.components.worldtab;
 
 import com.seedfinding.mcbiome.source.OverworldBiomeSource;
 import com.seedfinding.mccore.rand.seed.ChunkSeeds;
 import com.seedfinding.mccore.rand.seed.WorldSeed;
 import com.seedfinding.mccore.util.pos.BPos;
 import com.seedfinding.mcfeature.misc.SpawnPoint;
-import wearblackallday.components.SeedTab;
+import wearblackallday.seedcandy.components.SeedTab;
 import wearblackallday.swing.components.LPanel;
-import wearblackallday.util.QuadHuts;
+import wearblackallday.seedcandy.util.QuadHuts;
 
 import javax.swing.*;
 import java.awt.GridLayout;
+import java.util.stream.Collectors;
 
 public class WorldTab extends SeedTab {
 	public WorldTab() {
@@ -35,12 +36,10 @@ public class WorldTab extends SeedTab {
 			}))
 			.addButton("convert to hash", () -> this.mapSeeds(WorldSeed::toHash))
 			.addButton("switch to ShadowSeed", () -> this.mapSeeds(WorldSeed::getShadowSeed))
-			.addButton("get SisterSeeds", () -> this.mapToString(worldSeed -> {
-				StringBuilder buffer = new StringBuilder();
-				WorldSeed.getSisterSeeds(worldSeed).forEachRemaining(sisterSeed ->
-					buffer.append(sisterSeed).append("\n"));
-				return buffer.toString();
-			}))
+			.addButton("get SisterSeeds", () -> this.mapToString(worldSeed ->
+				WorldSeed.getSisterSeeds(worldSeed).asStream()
+				.mapToObj(String::valueOf)
+				.collect(Collectors.joining("\n"))))
 			.addButton("reduce to StructureSeed", () -> this.mapSeeds(WorldSeed::toStructureSeed))
 			.addButton("get PopulationSeed", () -> this.mapSeeds(worldSeed ->
 				ChunkSeeds.getPopulationSeed(worldSeed, selectionPanel.getInt("x"),

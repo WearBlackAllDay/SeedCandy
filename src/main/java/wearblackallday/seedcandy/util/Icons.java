@@ -1,4 +1,4 @@
-package wearblackallday.util;
+package wearblackallday.seedcandy.util;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
