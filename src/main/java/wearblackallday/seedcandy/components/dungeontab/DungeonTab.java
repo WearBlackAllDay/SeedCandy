@@ -1,5 +1,6 @@
 package wearblackallday.seedcandy.components.dungeontab;
 
+import com.formdev.flatlaf.util.StringUtils;
 import com.seedfinding.mcbiome.biome.Biome;
 import wearblackallday.seedcandy.components.AbstractTab;
 import wearblackallday.seedcandy.components.TextBox;
@@ -10,6 +11,9 @@ import wearblackallday.seedcandy.util.Dungeon;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import java.util.*;
 
@@ -62,6 +66,25 @@ public class DungeonTab extends AbstractTab {
 				this.dungeonOutput.setText("");
 				this.parseDungeon().crack().forEach(this.dungeonOutput::addEntry);
 				if(this.getOutput().isEmpty()) this.dungeonOutput.setText("no results");
+			})
+			.addButton("crack to file", (panel, button, event) -> {
+				JFileChooser chooser = new JFileChooser();
+				int selection = chooser.showSaveDialog(this);
+				if(selection == JFileChooser.APPROVE_OPTION) {
+					File file = chooser.getSelectedFile();
+					try {
+						file.delete();
+						file.createNewFile();
+						FileWriter writer = new FileWriter(file);
+						List<Long> crack = this.parseDungeon().crack();
+						for(Long seed : crack) {
+							writer.write(seed.toString() + "\n");
+						}
+						writer.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			})
 			.addComponent(this.bitLabel);
 	}
