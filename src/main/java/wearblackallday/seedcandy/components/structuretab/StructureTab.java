@@ -9,6 +9,7 @@ import wearblackallday.swing.components.LPanel;
 import javax.swing.*;
 import java.awt.GridLayout;
 import java.util.Arrays;
+import java.util.List;
 
 public class StructureTab extends SeedTab {
 	public StructureTab() {
@@ -18,14 +19,13 @@ public class StructureTab extends SeedTab {
 		JComponent buttons = new LPanel()
 			.withLayout(new GridLayout(0, 2))
 			.addButton("reverse to nextLong()", () -> {
-				this.output.clear();
-				for(long structureSeed : this.input.getLongs()) {
-					StructureSeed.toRandomWorldSeeds(structureSeed)
-						.forEach(this.output::addEntry);
-				}
+				this.setOutput(Arrays.stream(this.input.getLongs())
+					.mapToObj(StructureSeed::toRandomWorldSeeds)
+					.flatMap(List::stream)
+					.toList()
+				);
 			})
 			.addButton("crack with biomes", () -> {
-				this.output.clear();
 				long[] worldSeeds = Arrays.stream(this.input.getLongs())
 					.mapToObj(StructureSeed::getWorldSeeds)
 					.flatMapToLong(SeedIterator::asStream)
@@ -34,12 +34,10 @@ public class StructureTab extends SeedTab {
 				this.threadedMap(worldSeeds, seed -> biomePanel.matchesSeed(seed) ? String.valueOf(seed) : "");
 			})
 			.addButton("verify WorldSeeds", () -> {
-				this.output.clear();
-				for(long worldSeed : this.input.getLongs()) {
-					if(biomePanel.matchesSeed(worldSeed)) {
-						SwingUtilities.invokeLater(() -> this.output.addEntry(worldSeed));
-					}
-				}
+				this.setOutput(Arrays.stream(this.input.getLongs())
+					.filter(biomePanel::matchesSeed)
+					.boxed().toList()
+				);
 			})
 			.addButton("copy Output", () -> Strings.clipboard(this.getOutput()));
 

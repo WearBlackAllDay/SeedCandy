@@ -6,11 +6,13 @@ import wearblackallday.seedcandy.components.AbstractTab;
 import wearblackallday.seedcandy.components.dungeontab.DungeonTab;
 import wearblackallday.seedcandy.components.structuretab.StructureTab;
 import wearblackallday.seedcandy.components.worldtab.WorldTab;
+import wearblackallday.seedcandy.util.Icons;
 import wearblackallday.swing.SwingUtils;
 import wearblackallday.swing.components.LMenuBar;
-import wearblackallday.seedcandy.util.Icons;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
 
 public class SeedCandy extends JFrame {
 	private static final MCVersion[] SUPPORTED_VERSIONS = {
@@ -23,13 +25,14 @@ public class SeedCandy extends JFrame {
 
 	static {
 		FlatOneDarkIJTheme.setup();
-	}	
+	}
 
 	private static final SeedCandy INSTANCE = new SeedCandy();
 
 	public MCVersion version = SUPPORTED_VERSIONS[0];
 	private final AbstractTab[] tabs = {new DungeonTab(), new StructureTab(), new WorldTab()};
 	private final JTabbedPane tabSelection = SwingUtils.addSet(new JTabbedPane(), this.tabs);
+	public File outputFile;
 
 	public static void main(String[] args) {
 		get().setVisible(true);
@@ -38,25 +41,40 @@ public class SeedCandy extends JFrame {
 	public SeedCandy() {
 		super("SeedCandy");
 
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileFilter(new FileNameExtensionFilter("*.txt", "txt"));
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.addActionListener(e -> {
+			if(fileChooser.getSelectedFile().getName().endsWith(".txt"))
+				this.outputFile = fileChooser.getSelectedFile();
+		});
+
 		JMenuBar menu = new LMenuBar()
-			.addMenu(this.version.name, lMenu -> {
+			.addMenu(this.version.name, versionMenu -> {
 				ButtonGroup buttonGroup = new ButtonGroup();
-				for(var version : SUPPORTED_VERSIONS) {
+				for(MCVersion version : SUPPORTED_VERSIONS) {
 					var button = new JRadioButtonMenuItem(version.name);
 					button.addActionListener(e -> {
 						this.version = version;
-						lMenu.setText(version.name);
+						versionMenu.setText(version.name);
 					});
 					buttonGroup.add(button);
-					lMenu.add(button);
+					versionMenu.add(button);
 				}
 				buttonGroup.getElements().nextElement().setSelected(true);
-			});
+			})
+			.addMenu("Output", outPutMenu -> outPutMenu
+				.withItem("copy to clipBoard" , () ->
+					((AbstractTab)this.tabSelection.getSelectedComponent()).copyOutput())
+				.withCheckBox("use file", (parentMenu, checkBox, e) -> {
+					if(checkBox.isSelected()) {
+						fileChooser.showOpenDialog(this);
+						checkBox.setSelected(this.outputFile != null);
+					} else this.outputFile = null;
 
-		JButton copyButton = new JButton("copy Output");
-		copyButton.addActionListener(e ->
-			((AbstractTab)this.tabSelection.getSelectedComponent()).copyOutput());
-		menu.add(copyButton);
+					checkBox.setText("use file" + (this.outputFile == null
+						? "" : " (" + this.outputFile.getName() + ")"));
+				}));
 
 		this.setJMenuBar(menu);
 		this.setContentPane(this.tabSelection);

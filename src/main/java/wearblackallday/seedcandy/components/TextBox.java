@@ -28,16 +28,4 @@ public class TextBox extends JScrollPane {
 	public void setText(String text) {
 		this.textArea.setText(text);
 	}
-
-	public void addEntry(String entry) {
-		this.setText(this.getText() + entry + "\n");
-	}
-
-	public void addEntry(long entry) {
-		this.addEntry(String.valueOf(entry));
-	}
-
-	public void clear() {
-		this.setText("");
-	}
 }

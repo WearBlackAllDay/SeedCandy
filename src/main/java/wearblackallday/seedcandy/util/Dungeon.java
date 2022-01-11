@@ -5,54 +5,62 @@ import com.seedfinding.latticg.reversal.calltype.java.JavaCalls;
 import com.seedfinding.latticg.util.LCG;
 import com.seedfinding.mcbiome.biome.Biome;
 import com.seedfinding.mcbiome.biome.Biomes;
+import com.seedfinding.mccore.util.pos.BPos;
 import com.seedfinding.mccore.version.MCVersion;
 import com.seedfinding.mccore.version.UnsupportedVersion;
 import com.seedfinding.mcreversal.ChunkRandomReverser;
 
 import java.util.*;
+import java.util.stream.LongStream;
 
-public record Dungeon(Size size, String floor, int posX, int posY, int posZ, MCVersion version, Biome biome) {
+public record Dungeon(BPos position, Size size, String floor, MCVersion version, Biome biome) {
 	public static final Set<Biome> FOSSIL_BIOMES = Set.of(Biomes.DESERT, Biomes.SWAMP, Biomes.SWAMP_HILLS);
+	private static final LCG FAILED_DUNGEON = LCG.JAVA.combine(-5);
 
 	public List<Long> crack() {
 		if(this.size.x * this.size.z != this.floor.length() || !this.floor.matches("[0-2]+"))
 			return Collections.emptyList();
 
-		LCG failedDungeon = LCG.JAVA.combine(-5);
 		DynamicProgram device = this.getDungeonRand();
 
 		for(int i = 0; i < this.floor.length(); i++) {
 			switch(this.floor.charAt(i)) {
 				case '0' -> device.add(JavaCalls.nextInt(4).equalTo(0));
-				case '1' -> device.filteredSkip( r -> r.nextInt(4) != 0, 1);
+				case '1' -> device.filteredSkip(r -> r.nextInt(4) != 0, 1);
 				case '2' -> device.skip(1);
 			}
 		}
 
-		return device.reverse().parallel()
-			.mapToObj(decoratorSeed -> {
-				List<Long> structureSeeds = new ArrayList<>();
-				for(int i = 0; i < 8; i++) {
-					structureSeeds.addAll(ChunkRandomReverser.reversePopulationSeed(
-						(decoratorSeed ^ LCG.JAVA.multiplier) - this.getSalt(),
-						this.posX & -16, this.posZ & -16, this.version));
-					decoratorSeed = failedDungeon.nextSeed(decoratorSeed);
-				}
-				return structureSeeds;
-			})
-			.flatMap(List::stream)
-			.toList();
+		List<Long> structureSeeds = Collections.synchronizedList(new ArrayList<>());
+		long[] dungeonSpawns = device.reverse().flatMap(Dungeon::getSpawnAttempts).toArray();
+		BPos chunkCorner = this.position.toChunkCorner();
+
+		Arrays.stream(dungeonSpawns).parallel()
+			.forEach(spawnAttempt -> structureSeeds.addAll(ChunkRandomReverser.reversePopulationSeed(
+				(spawnAttempt ^ LCG.JAVA.multiplier) - this.getSalt(),
+				chunkCorner.getX(), chunkCorner.getZ(), this.version)));
+
+		return structureSeeds;
+	}
+
+	private static LongStream getSpawnAttempts(long dungeonSeed) {
+		long[] spawnAttempts = new long[8];
+		for(int i = 0; i < spawnAttempts.length; i++) {
+			spawnAttempts[i] = dungeonSeed;
+			dungeonSeed = FAILED_DUNGEON.nextSeed(dungeonSeed);
+		}
+		return Arrays.stream(spawnAttempts);
 	}
 
 	private DynamicProgram getDungeonRand() {
 		DynamicProgram device = DynamicProgram.create(LCG.JAVA);
-		device.add(JavaCalls.nextInt(16).equalTo(this.posX & 15));
+		device.add(JavaCalls.nextInt(16).equalTo(this.position().getX() & 15));
 		if(this.version.isNewerOrEqualTo(MCVersion.v1_15)) {
-			device.add(JavaCalls.nextInt(16).equalTo(this.posZ & 15));
-			device.add(JavaCalls.nextInt(256).equalTo(this.posY));
+			device.add(JavaCalls.nextInt(16).equalTo(this.position.getZ() & 15));
+			device.add(JavaCalls.nextInt(256).equalTo(this.position().getY()));
 		} else {
-			device.add(JavaCalls.nextInt(256).equalTo(this.posY));
-			device.add(JavaCalls.nextInt(16).equalTo(this.posZ & 15));
+			device.add(JavaCalls.nextInt(256).equalTo(this.position().getY()));
+			device.add(JavaCalls.nextInt(16).equalTo(this.position().getZ() & 15));
 		}
 		device.add(JavaCalls.nextInt(2).equalTo(this.size.x >> 3));
 		device.add(JavaCalls.nextInt(2).equalTo(this.size.z >> 3));

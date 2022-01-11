@@ -1,12 +1,13 @@
 package wearblackallday.seedcandy.components.dungeontab;
 
 import com.seedfinding.mcbiome.biome.Biome;
+import com.seedfinding.mccore.util.pos.BPos;
 import wearblackallday.seedcandy.components.AbstractTab;
 import wearblackallday.seedcandy.components.TextBox;
+import wearblackallday.seedcandy.util.Dungeon;
 import wearblackallday.swing.SwingUtils;
 import wearblackallday.swing.components.LPanel;
 import wearblackallday.swing.components.SelectionBox;
-import wearblackallday.seedcandy.util.Dungeon;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +27,8 @@ public class DungeonTab extends AbstractTab {
 		this.setName("DungeonCracker");
 		this.floorString.setFont(this.floorString.getFont().deriveFont(16F));
 		this.floorString.setHorizontalAlignment(JTextField.CENTER);
+		this.floorString.setEditable(false);
+		this.floorString.setFocusable(false);
 
 		Toolkit.getDefaultToolkit().addAWTEventListener(e -> this.updateInfo(), AWTEvent.MOUSE_EVENT_MASK);
 		this.sizeSelector.addActionListener(e -> this.floorPanel.setFloor(this.sizeSelector.getSelected()));
@@ -59,20 +62,18 @@ public class DungeonTab extends AbstractTab {
 			.addTextField("Z", "z")
 			.addComponent(this.biomeSelector)
 			.addButton("crack", (panel, button, event) -> {
-				this.dungeonOutput.setText("");
-				this.parseDungeon().crack().forEach(this.dungeonOutput::addEntry);
-				if(this.getOutput().isEmpty()) this.dungeonOutput.setText("no results");
+				List<Long> structureSeeds = this.parseDungeon().crack();
+				if(structureSeeds.isEmpty()) this.dungeonOutput.setText("no results");
+				else this.setOutput(structureSeeds);
 			})
 			.addComponent(this.bitLabel);
 	}
 
 	private Dungeon parseDungeon() {
 		return new Dungeon(
+			new BPos(this.userEntry.getInt("x"), this.userEntry.getInt("y"), this.userEntry.getInt("z")),
 			this.sizeSelector.getSelected(),
 			this.floorString.getText(),
-			this.userEntry.getInt("x"),
-			this.userEntry.getInt("y"),
-			this.userEntry.getInt("z"),
 			this.getVersion(),
 			this.biomeSelector.getSelected()
 		);
@@ -81,5 +82,10 @@ public class DungeonTab extends AbstractTab {
 	@Override
 	public String getOutput() {
 		return this.dungeonOutput.getText();
+	}
+
+	@Override
+	public void setOutputDefault(String output) {
+		this.dungeonOutput.setText(output);
 	}
 }

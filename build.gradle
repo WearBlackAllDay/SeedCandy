@@ -26,7 +26,7 @@ dependencies {
     implementation "com.formdev:flatlaf-intellij-themes:1.2"
 }
 application {
-    mainClassName = "wearblackallday.SeedCandy"
+    mainClassName = "wearblackallday.seedcandy.SeedCandy"
 }
 
 version "1.5.3"
