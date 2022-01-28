@@ -23,24 +23,15 @@ public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome
 		this.floor.pattern.forEach(block -> block.javaCall.accept(device));
 
 		List<Long> structureSeeds = Collections.synchronizedList(new ArrayList<>());
-		long[] dungeonSpawns = device.reverse().flatMap(Dungeon::getSpawnAttempts).toArray();
 		BPos chunkCorner = this.position.toChunkCorner();
 
-		Arrays.stream(dungeonSpawns).parallel()
+		device.reverse()
+			.mapToObj(dungeonSeed -> LongStream.iterate(dungeonSeed, FAILED_DUNGEON::nextSeed).limit(8))
+			.reduce(LongStream::concat).get().parallel()
 			.forEach(spawnAttempt -> structureSeeds.addAll(ChunkRandomReverser.reversePopulationSeed(
 				(spawnAttempt ^ LCG.JAVA.multiplier) - this.getSalt(),
 				chunkCorner.getX(), chunkCorner.getZ(), this.version)));
-
 		return structureSeeds;
-	}
-
-	private static LongStream getSpawnAttempts(long dungeonSeed) {
-		long[] spawnAttempts = new long[8];
-		for(int i = 0; i < spawnAttempts.length; i++) {
-			spawnAttempts[i] = dungeonSeed;
-			dungeonSeed = FAILED_DUNGEON.nextSeed(dungeonSeed);
-		}
-		return Arrays.stream(spawnAttempts);
 	}
 
 	private DynamicProgram getDungeonRand() {
