@@ -27,18 +27,19 @@ public class SeedCandy extends JFrame {
 		FlatOneDarkIJTheme.setup();
 	}
 
+	public final DungeonTab dungeonTab = new DungeonTab();
 	private static final SeedCandy INSTANCE = new SeedCandy();
+	private final JTabbedPane tabSelection = SwingUtils.addSet(new JTabbedPane(), this.dungeonTab, new StructureTab(), new WorldTab());
 
 	public MCVersion version = SUPPORTED_VERSIONS[0];
-	private final AbstractTab[] tabs = {new DungeonTab(), new StructureTab(), new WorldTab()};
-	private final JTabbedPane tabSelection = SwingUtils.addSet(new JTabbedPane(), this.tabs);
 	public File outputFile;
+
 
 	public static void main(String[] args) {
 		get().setVisible(true);
 	}
 
-	public SeedCandy() {
+	private SeedCandy() {
 		super("SeedCandy");
 
 		JFileChooser fileChooser = new JFileChooser();

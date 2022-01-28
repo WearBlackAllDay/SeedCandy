@@ -33,12 +33,10 @@ public class StructureTab extends SeedTab {
 
 				this.threadedMap(worldSeeds, seed -> biomePanel.matchesSeed(seed) ? String.valueOf(seed) : "");
 			})
-			.addButton("verify WorldSeeds", () -> {
-				this.setOutput(Arrays.stream(this.input.getLongs())
-					.filter(biomePanel::matchesSeed)
-					.boxed().toList()
-				);
-			})
+			.addButton("verify WorldSeeds", () -> this.setOutput(Arrays.stream(this.input.getLongs())
+				.filter(biomePanel::matchesSeed)
+				.boxed().toList()
+			))
 			.addButton("copy Output", () -> Strings.clipboard(this.getOutput()));
 
 		this.addComponents(biomePanel, buttons);

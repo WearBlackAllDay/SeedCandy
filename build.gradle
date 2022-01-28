@@ -22,6 +22,7 @@ dependencies {
     implementation("com.seedfinding:latticg:1.06") {transitive(false)}
 
     implementation "com.github.wearblackallday:JavaUtils:1b369d41cd"
+//    implementation "com.github.wearblackallday:JavaUtils:8d3cdcb12c"
     implementation 'com.formdev:flatlaf:1.2'
     implementation "com.formdev:flatlaf-intellij-themes:1.2"
 }

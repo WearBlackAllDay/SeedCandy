@@ -11,25 +11,16 @@ import com.seedfinding.mccore.version.UnsupportedVersion;
 import com.seedfinding.mcreversal.ChunkRandomReverser;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.LongStream;
 
-public record Dungeon(BPos position, Size size, String floor, MCVersion version, Biome biome) {
+public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome) {
 	public static final Set<Biome> FOSSIL_BIOMES = Set.of(Biomes.DESERT, Biomes.SWAMP, Biomes.SWAMP_HILLS);
 	private static final LCG FAILED_DUNGEON = LCG.JAVA.combine(-5);
 
-	public List<Long> crack() {
-		if(this.size.x * this.size.z != this.floor.length() || !this.floor.matches("[0-2]+"))
-			return Collections.emptyList();
-
+	public List<Long> reverseStructureSeeds() {
 		DynamicProgram device = this.getDungeonRand();
-
-		for(int i = 0; i < this.floor.length(); i++) {
-			switch(this.floor.charAt(i)) {
-				case '0' -> device.add(JavaCalls.nextInt(4).equalTo(0));
-				case '1' -> device.filteredSkip(r -> r.nextInt(4) != 0, 1);
-				case '2' -> device.skip(1);
-			}
-		}
+		this.floor.pattern.forEach(block -> block.javaCall.accept(device));
 
 		List<Long> structureSeeds = Collections.synchronizedList(new ArrayList<>());
 		long[] dungeonSpawns = device.reverse().flatMap(Dungeon::getSpawnAttempts).toArray();
@@ -62,8 +53,8 @@ public record Dungeon(BPos position, Size size, String floor, MCVersion version,
 			device.add(JavaCalls.nextInt(256).equalTo(this.position().getY()));
 			device.add(JavaCalls.nextInt(16).equalTo(this.position().getZ() & 15));
 		}
-		device.add(JavaCalls.nextInt(2).equalTo(this.size.x >> 3));
-		device.add(JavaCalls.nextInt(2).equalTo(this.size.z >> 3));
+		device.add(JavaCalls.nextInt(2).equalTo(this.floor.size.x >> 3));
+		device.add(JavaCalls.nextInt(2).equalTo(this.floor.size.z >> 3));
 		return device;
 	}
 
@@ -92,5 +83,27 @@ public record Dungeon(BPos position, Size size, String floor, MCVersion version,
 		public String toString() {
 			return this.x + "x" + this.z;
 		}
+	}
+
+	public enum FloorBlock {
+		COBBLE(2d, device -> device.add(JavaCalls.nextInt(4).equalTo(0))),
+		MOSSY(0.41503749927d, device -> device.add(JavaCalls.nextInt(4).notEqualTo(0))),
+		UNKNOWN(0d, device -> device.skip(1));
+
+		public final double bits;
+		public final Consumer<DynamicProgram> javaCall;
+
+		FloorBlock(double bits, Consumer<DynamicProgram> javaCall) {
+			this.bits = bits;
+			this.javaCall = javaCall;
+		}
+
+		@Override
+		public String toString() {
+			return this == COBBLE ? "0" : this == MOSSY ? "1" : "2";
+		}
+	}
+
+	public record Floor(Size size, List<FloorBlock> pattern) {
 	}
 }

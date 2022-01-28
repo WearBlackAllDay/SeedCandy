@@ -27,23 +27,20 @@ public class DungeonTab extends AbstractTab {
 		this.setName("DungeonCracker");
 		this.floorString.setFont(this.floorString.getFont().deriveFont(16F));
 		this.floorString.setHorizontalAlignment(JTextField.CENTER);
-		this.floorString.setEditable(false);
-		this.floorString.setFocusable(false);
 
-		Toolkit.getDefaultToolkit().addAWTEventListener(e -> this.updateInfo(), AWTEvent.MOUSE_EVENT_MASK);
 		this.sizeSelector.addActionListener(e -> this.floorPanel.setFloor(this.sizeSelector.getSelected()));
 
 		this.setLayout(new BorderLayout());
 		this.add(this.floorPanel, BorderLayout.CENTER);
 		this.add(SwingUtils.addSet(new Box(BoxLayout.Y_AXIS), this.userEntry, this.floorString), BorderLayout.SOUTH);
 		this.add(this.dungeonOutput, BorderLayout.EAST);
-		this.updateInfo();
+		this.updateBits();
 	}
 
-	private void updateInfo() {
-		var info = this.floorPanel.getInfo();
-		this.bitLabel.setText("Bits: " + info.bits());
-		this.floorString.setText(info.floor());
+	protected void updateBits() {
+		this.bitLabel.setText("Bits: " + (int)this.floorPanel.getPattern().stream()
+		.mapToDouble(fb -> fb.bits)
+		.sum());
 	}
 
 	private static List<Biome> getFossilBiomeSelection() {
@@ -61,8 +58,16 @@ public class DungeonTab extends AbstractTab {
 			.addTextField("Y", "y")
 			.addTextField("Z", "z")
 			.addComponent(this.biomeSelector)
-			.addButton("crack", (panel, button, event) -> {
-				List<Long> structureSeeds = this.parseDungeon().crack();
+			.addButton("from String", () -> {
+				String floor = this.floorString.getText();
+				if(!floor.matches("[0-2]+") ||
+					floor.length() != this.sizeSelector.getSelected().x * this.sizeSelector.getSelected().z)
+					return;
+				this.floorPanel.fromString(floor);
+			})
+			.addButton("to String", () -> this.floorString.setText(this.floorPanel.toString()))
+			.addButton("crack", () -> {
+				List<Long> structureSeeds = this.parseDungeon().reverseStructureSeeds();
 				if(structureSeeds.isEmpty()) this.dungeonOutput.setText("no results");
 				else this.setOutput(structureSeeds);
 			})
@@ -72,8 +77,7 @@ public class DungeonTab extends AbstractTab {
 	private Dungeon parseDungeon() {
 		return new Dungeon(
 			new BPos(this.userEntry.getInt("x"), this.userEntry.getInt("y"), this.userEntry.getInt("z")),
-			this.sizeSelector.getSelected(),
-			this.floorString.getText(),
+			new Dungeon.Floor(this.sizeSelector.getSelected(), this.floorPanel.getPattern()),
 			this.getVersion(),
 			this.biomeSelector.getSelected()
 		);

@@ -1,12 +1,18 @@
 package wearblackallday.seedcandy.components.dungeontab;
 
-import wearblackallday.swing.Events;
-import wearblackallday.swing.components.GridPanel;
+import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.seedcandy.util.Dungeon;
 import wearblackallday.seedcandy.util.Icons;
+import wearblackallday.swing.Events;
+import wearblackallday.swing.components.GridPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import static javax.swing.SwingUtilities.isRightMouseButton;
 
 public class FloorPanel extends JComponent {
@@ -18,19 +24,19 @@ public class FloorPanel extends JComponent {
 		}
 	}
 
-	protected FloorInfo getInfo() {
-		float bits = 2f;
-		StringBuilder stringBuilder = new StringBuilder();
-		var floor = this.getFloor();
+	protected List<Dungeon.FloorBlock> getPattern() {
+		List<Dungeon.FloorBlock> pattern = new ArrayList<>(82);
+		this.forEach(button -> pattern.add(button.getBlock()));
+		return pattern;
+	}
 
-		for(int col = 0; col < floor.getGridWidth(); col++) {
-			for(int row = 0; row < floor.getGridHeight(); row++) {
-				var info = floor.getComponent(col, row).getInfo();
-				bits += info.bits;
-				stringBuilder.append(info.stringRep);
-			}
-		}
-		return new FloorInfo((int)bits, stringBuilder.toString());
+	protected void fromString(String floor) {
+		CharacterIterator blocks = new StringCharacterIterator(floor);
+		this.forEach(button -> {
+			button.setEnabled(blocks.current() != '2');
+			button.setSelected(blocks.current() == '0');
+			blocks.next();
+		});
 	}
 
 	protected void setFloor(Dungeon.Size size) {
@@ -44,11 +50,21 @@ public class FloorPanel extends JComponent {
 		return null;
 	}
 
-	private static class FloorButton extends JToggleButton {
-		private static final ButtonInfo COBBLE = new ButtonInfo(2f, '0');
-		private static final ButtonInfo MOSSY = new ButtonInfo(0.415f, '1');
-		private static final ButtonInfo UNKNOWN = new ButtonInfo(0f, '2');
+	private void forEach(Consumer<FloorButton> buttonAction) {
+		var floor = this.getFloor();
+		for(int col = 0; col < floor.getGridWidth(); col++) {
+			floor.forEachY(col, buttonAction);
+		}
+	}
 
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		this.forEach(button -> stringBuilder.append(button.getBlock().toString()));
+		return stringBuilder.toString();
+	}
+
+	private static class FloorButton extends JToggleButton {
 		private FloorButton() {
 			this.setPreferredSize(new Dimension(64, 64));
 			this.setIcon(Icons.MOSSY);
@@ -57,17 +73,16 @@ public class FloorPanel extends JComponent {
 			this.setDisabledSelectedIcon(Icons.UNKNOWN);
 			this.setFocusable(false);
 			this.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
-			this.addMouseListener(Events.Mouse.onPressed(e -> {
+			this.addMouseListener(Events.Mouse.onReleased(e -> {
 				if(isRightMouseButton(e)) this.setEnabled(!this.isEnabled());
+				SeedCandy.get().dungeonTab.updateBits();
 			}));
 		}
 
-		private ButtonInfo getInfo() {
-			return !this.isEnabled() ? UNKNOWN : this.isSelected() ? COBBLE : MOSSY;
+		private Dungeon.FloorBlock getBlock() {
+			return !this.isEnabled() ? Dungeon.FloorBlock.UNKNOWN : this.isSelected()
+				? Dungeon.FloorBlock.COBBLE
+				: Dungeon.FloorBlock.MOSSY;
 		}
-
-		private record ButtonInfo(float bits, char stringRep) {}
 	}
-
-	protected record FloorInfo(int bits, String floor) {}
 }
