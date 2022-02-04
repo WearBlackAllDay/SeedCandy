@@ -27,7 +27,7 @@ public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome
 
 		device.reverse()
 			.mapToObj(dungeonSeed -> LongStream.iterate(dungeonSeed, FAILED_DUNGEON::nextSeed).limit(8))
-			.reduce(LongStream::concat).get().parallel()
+			.reduce(LongStream::concat).orElse(LongStream.empty()).parallel()
 			.forEach(spawnAttempt -> structureSeeds.addAll(ChunkRandomReverser.reversePopulationSeed(
 				(spawnAttempt ^ LCG.JAVA.multiplier) - this.getSalt(),
 				chunkCorner.getX(), chunkCorner.getZ(), this.version)));
