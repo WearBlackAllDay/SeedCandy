@@ -13,6 +13,7 @@ import wearblackallday.swing.components.LMenuBar;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.util.Optional;
 
 public class SeedCandy extends JFrame {
 	private static final MCVersion[] SUPPORTED_VERSIONS = {
@@ -21,6 +22,11 @@ public class SeedCandy extends JFrame {
 		MCVersion.v1_15,
 		MCVersion.v1_14,
 		MCVersion.v1_13,
+		MCVersion.v1_12,
+		MCVersion.v1_11,
+		MCVersion.v1_10,
+		MCVersion.v1_9,
+		MCVersion.v1_8,
 	};
 
 	static {
@@ -31,8 +37,8 @@ public class SeedCandy extends JFrame {
 	private static final SeedCandy INSTANCE = new SeedCandy();
 	private final JTabbedPane tabSelection = SwingUtils.addSet(new JTabbedPane(), this.dungeonTab, new StructureTab(), new WorldTab());
 
+	public Optional<File> outputFile = Optional.empty();
 	public MCVersion version = SUPPORTED_VERSIONS[0];
-	public File outputFile;
 
 
 	public static void main(String[] args) {
@@ -47,7 +53,7 @@ public class SeedCandy extends JFrame {
 		fileChooser.setAcceptAllFileFilterUsed(false);
 		fileChooser.addActionListener(e -> {
 			if(fileChooser.getSelectedFile().getName().endsWith(".txt"))
-				this.outputFile = fileChooser.getSelectedFile();
+				this.outputFile = Optional.ofNullable(fileChooser.getSelectedFile());
 		});
 
 		JMenuBar menu = new LMenuBar()
@@ -70,11 +76,11 @@ public class SeedCandy extends JFrame {
 				.withCheckBox("use file", (parentMenu, checkBox, e) -> {
 					if(checkBox.isSelected()) {
 						fileChooser.showOpenDialog(this);
-						checkBox.setSelected(this.outputFile != null);
-					} else this.outputFile = null;
+						checkBox.setSelected(this.outputFile.isPresent());
+					} else this.outputFile = Optional.empty();
 
-					checkBox.setText("use file" + (this.outputFile == null
-						? "" : " (" + this.outputFile.getName() + ")"));
+					checkBox.setText("use file" + (this.outputFile.isEmpty()
+						? "" : " (" + this.outputFile.get().getName() + ")"));
 				}));
 
 		this.setJMenuBar(menu);

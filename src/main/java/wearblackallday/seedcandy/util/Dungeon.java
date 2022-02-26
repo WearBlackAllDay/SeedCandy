@@ -5,9 +5,9 @@ import com.seedfinding.latticg.reversal.calltype.java.JavaCalls;
 import com.seedfinding.latticg.util.LCG;
 import com.seedfinding.mcbiome.biome.Biome;
 import com.seedfinding.mcbiome.biome.Biomes;
+import com.seedfinding.mccore.util.math.Vec3i;
 import com.seedfinding.mccore.util.pos.BPos;
 import com.seedfinding.mccore.version.MCVersion;
-import com.seedfinding.mccore.version.UnsupportedVersion;
 import com.seedfinding.mcreversal.ChunkRandomReverser;
 
 import java.util.*;
@@ -17,27 +17,42 @@ import java.util.stream.LongStream;
 public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome) {
 	public static final Set<Biome> FOSSIL_BIOMES = Set.of(Biomes.DESERT, Biomes.SWAMP, Biomes.SWAMP_HILLS);
 	private static final LCG FAILED_DUNGEON = LCG.JAVA.combine(-5);
+	private static final LCG REVERSE = LCG.JAVA.invert();
+
+	public Dungeon(BPos position, Floor floor, MCVersion version, Biome biome) {
+		this.position = version.isNewerThan(MCVersion.v1_12) ? position : position.add(-8, 0, -8);
+		this.floor = floor;
+		this.version = version;
+		this.biome = biome;
+	}
 
 	public List<Long> reverseStructureSeeds() {
 		DynamicProgram device = this.getDungeonRand();
 		this.floor.pattern.forEach(block -> block.javaCall.accept(device));
+		boolean modernDungeon = this.version.isNewerThan(MCVersion.v1_12);
 
 		List<Long> structureSeeds = Collections.synchronizedList(new ArrayList<>());
-		BPos chunkCorner = this.position.toChunkCorner();
+
+		Vec3i chunk = modernDungeon
+			? this.position.toChunkCorner()
+			: this.position.toChunkPos();
 
 		device.reverse()
-			.mapToObj(dungeonSeed -> LongStream.iterate(dungeonSeed, FAILED_DUNGEON::nextSeed).limit(8))
+			.mapToObj(dungeonSeed -> LongStream.iterate(dungeonSeed, modernDungeon
+				? FAILED_DUNGEON::nextSeed
+				: REVERSE::nextSeed)
+				.limit(modernDungeon ? 8 : 2000))
 			.reduce(LongStream::concat).orElse(LongStream.empty()).parallel()
 			.forEach(spawnAttempt -> structureSeeds.addAll(ChunkRandomReverser.reversePopulationSeed(
 				(spawnAttempt ^ LCG.JAVA.multiplier) - this.getSalt(),
-				chunkCorner.getX(), chunkCorner.getZ(), this.version)));
+				chunk.getX(), chunk.getZ(), this.version)));
 		return structureSeeds;
 	}
 
 	private DynamicProgram getDungeonRand() {
 		DynamicProgram device = DynamicProgram.create(LCG.JAVA);
 		device.add(JavaCalls.nextInt(16).equalTo(this.position().getX() & 15));
-		if(this.version.isNewerOrEqualTo(MCVersion.v1_15)) {
+		if(this.version.isNewerThan(MCVersion.v1_14)) {
 			device.add(JavaCalls.nextInt(16).equalTo(this.position.getZ() & 15));
 			device.add(JavaCalls.nextInt(256).equalTo(this.position().getY()));
 		} else {
@@ -53,7 +68,7 @@ public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome
 		return switch(this.version) {
 			case v1_17, v1_16 -> FOSSIL_BIOMES.contains(this.biome) ? 30003L : 30002L;
 			case v1_15, v1_14, v1_13 -> 20003L;
-			default -> throw new UnsupportedVersion(this.version, "single-Dungeon reversal");
+			default -> 0L;
 		};
 	}
 
@@ -78,7 +93,7 @@ public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome
 
 	public enum FloorBlock {
 		COBBLE(2d, device -> device.add(JavaCalls.nextInt(4).equalTo(0))),
-		MOSSY(0.41503749927d, device -> device.add(JavaCalls.nextInt(4).notEqualTo(0))),
+		MOSSY(0.41503749927d, device -> device.filteredSkip(rand -> rand.nextInt(4) != 0, 1)),
 		UNKNOWN(0d, device -> device.skip(1));
 
 		public final double bits;

@@ -80,7 +80,7 @@ public abstract class SeedTab extends AbstractTab {
 						if(progress.get() == this.progressBar.getMaximum()) {
 							this.toggleComponents(true);
 							results.remove("");
-							this.setOutput(results);
+							this.setOutput(String.join("\n", results));
 						}
 					});
 				}

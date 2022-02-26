@@ -19,22 +19,17 @@ public abstract class AbstractTab extends JComponent {
 	public abstract void setOutputDefault(String output);
 
 	protected void setOutput(String output) {
-		if(SeedCandy.get().outputFile == null) this.setOutputDefault(output);
-		else {
+		SeedCandy.get().outputFile.ifPresentOrElse(file -> {
 			try {
-				new PrintStream(SeedCandy.get().outputFile).append(output).flush();
+				new PrintStream(file).append(output).flush();
 			} catch(FileNotFoundException ignored) {
 			}
-		}
+		}, () -> this.setOutputDefault(output));
 	}
 
-	protected void setOutput(Collection<String> outputCol) {
-		this.setOutput(String.join("\n", outputCol));
-	}
-
-	protected void setOutput(List<Long> seedList) {
+	protected void setOutput(Collection<Long> seeds) {
 		StringJoiner joiner = new StringJoiner("\n");
-		seedList.forEach(seed -> joiner.add(seed.toString()));
+		seeds.forEach(seed -> joiner.add(seed.toString()));
 		this.setOutput(joiner.toString());
 	}
 
