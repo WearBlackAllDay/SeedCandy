@@ -38,10 +38,7 @@ public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome
 			: this.position.toChunkPos();
 
 		device.reverse()
-			.mapToObj(dungeonSeed -> LongStream.iterate(dungeonSeed, modernDungeon
-				? FAILED_DUNGEON::nextSeed
-				: REVERSE::nextSeed)
-				.limit(modernDungeon ? 8 : 2000))
+			.mapToObj(this::toDecorators)
 			.reduce(LongStream::concat).orElse(LongStream.empty()).parallel()
 			.forEach(spawnAttempt -> structureSeeds.addAll(ChunkRandomReverser.reversePopulationSeed(
 				(spawnAttempt ^ LCG.JAVA.multiplier) - this.getSalt(),
@@ -62,6 +59,13 @@ public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome
 		device.add(JavaCalls.nextInt(2).equalTo(this.floor.size.x >> 3));
 		device.add(JavaCalls.nextInt(2).equalTo(this.floor.size.z >> 3));
 		return device;
+	}
+
+	private LongStream toDecorators(long dungeonSeed) {
+		if(this.version.isNewerThan(MCVersion.v1_12))
+			return LongStream.iterate(dungeonSeed, FAILED_DUNGEON::nextSeed).limit(8);
+		else
+			return LongStream.iterate(dungeonSeed, REVERSE::nextSeed).limit(2000);
 	}
 
 	private long getSalt() {

@@ -1,6 +1,6 @@
 package wearblackallday.seedcandy.components;
 
-import wearblackallday.util.ThreadPool;
+import wearblackallday.javautils.util.ThreadPool;
 
 import javax.swing.*;
 import java.awt.Container;

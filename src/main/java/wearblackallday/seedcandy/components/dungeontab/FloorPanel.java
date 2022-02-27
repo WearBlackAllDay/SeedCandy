@@ -1,10 +1,10 @@
 package wearblackallday.seedcandy.components.dungeontab;
 
+import wearblackallday.javautils.swing.Events;
+import wearblackallday.javautils.swing.components.GridPanel;
 import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.seedcandy.util.Dungeon;
 import wearblackallday.seedcandy.util.Icons;
-import wearblackallday.swing.Events;
-import wearblackallday.swing.components.GridPanel;
 
 import javax.swing.*;
 import java.awt.*;

@@ -2,12 +2,12 @@ package wearblackallday.seedcandy.components.dungeontab;
 
 import com.seedfinding.mcbiome.biome.Biome;
 import com.seedfinding.mccore.util.pos.BPos;
+import wearblackallday.javautils.swing.SwingUtils;
+import wearblackallday.javautils.swing.components.LPanel;
+import wearblackallday.javautils.swing.components.SelectionBox;
 import wearblackallday.seedcandy.components.AbstractTab;
 import wearblackallday.seedcandy.components.TextBox;
 import wearblackallday.seedcandy.util.Dungeon;
-import wearblackallday.swing.SwingUtils;
-import wearblackallday.swing.components.LPanel;
-import wearblackallday.swing.components.SelectionBox;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +19,7 @@ public class DungeonTab extends AbstractTab {
 	private final TextBox dungeonOutput = new TextBox(false);
 	private final JTextField floorString = new JTextField();
 	private final SelectionBox<Dungeon.Size> sizeSelector = new SelectionBox<>(Dungeon.Size.values());
-	private final SelectionBox<Biome> biomeSelector = new SelectionBox<>(Biome::getName, getFossilBiomeSelection());
+	public final SelectionBox<Biome> biomeSelector = new SelectionBox<>(Biome::getName, getFossilBiomeSelection());
 	private final JLabel bitLabel = new JLabel();
 	private final LPanel userEntry = this.buildUserEntry();
 

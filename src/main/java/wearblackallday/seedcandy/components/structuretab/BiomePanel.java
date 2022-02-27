@@ -4,10 +4,10 @@ import com.seedfinding.mcbiome.biome.Biome;
 import com.seedfinding.mcbiome.biome.Biomes;
 import com.seedfinding.mcbiome.source.OverworldBiomeSource;
 import com.seedfinding.mccore.state.Dimension;
+import wearblackallday.javautils.swing.SwingUtils;
+import wearblackallday.javautils.swing.components.SelectionBox;
+import wearblackallday.javautils.util.Filters;
 import wearblackallday.seedcandy.SeedCandy;
-import wearblackallday.swing.SwingUtils;
-import wearblackallday.swing.components.SelectionBox;
-import wearblackallday.util.Filters;
 
 import javax.swing.*;
 import java.util.Comparator;

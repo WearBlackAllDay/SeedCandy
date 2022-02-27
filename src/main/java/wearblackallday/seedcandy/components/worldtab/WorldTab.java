@@ -5,8 +5,8 @@ import com.seedfinding.mccore.rand.seed.ChunkSeeds;
 import com.seedfinding.mccore.rand.seed.WorldSeed;
 import com.seedfinding.mccore.util.pos.BPos;
 import com.seedfinding.mcfeature.misc.SpawnPoint;
+import wearblackallday.javautils.swing.components.LPanel;
 import wearblackallday.seedcandy.components.SeedTab;
-import wearblackallday.swing.components.LPanel;
 import wearblackallday.seedcandy.util.QuadHuts;
 
 import javax.swing.*;

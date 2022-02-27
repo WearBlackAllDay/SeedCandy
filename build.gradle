@@ -21,10 +21,9 @@ dependencies {
     implementation("com.seedfinding:mc_noise:1.0.0") {transitive(false)}
     implementation("com.seedfinding:latticg:1.06") {transitive(false)}
 
-    implementation "com.github.wearblackallday:JavaUtils:1b369d41cd"
-//    implementation "com.github.wearblackallday:JavaUtils:8d3cdcb12c"
-    implementation 'com.formdev:flatlaf:1.2'
-    implementation "com.formdev:flatlaf-intellij-themes:1.2"
+    implementation "com.github.Wearblackallday:Javautils:8d3cdcb12c"
+    implementation 'com.formdev:flatlaf:2.0.2'
+    implementation "com.formdev:flatlaf-intellij-themes:2.0.2"
 }
 application {
     mainClassName = "wearblackallday.seedcandy.SeedCandy"

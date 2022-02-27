@@ -1,8 +1,8 @@
 package wearblackallday.seedcandy.components;
 
 import com.seedfinding.mccore.version.MCVersion;
+import wearblackallday.javautils.data.Strings;
 import wearblackallday.seedcandy.SeedCandy;
-import wearblackallday.data.Strings;
 
 import javax.swing.*;
 import java.io.*;
@@ -21,7 +21,7 @@ public abstract class AbstractTab extends JComponent {
 	protected void setOutput(String output) {
 		SeedCandy.get().outputFile.ifPresentOrElse(file -> {
 			try {
-				new PrintStream(file).append(output).flush();
+				new PrintStream(file).println(output);
 			} catch(FileNotFoundException ignored) {
 			}
 		}, () -> this.setOutputDefault(output));
