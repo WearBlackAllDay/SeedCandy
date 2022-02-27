@@ -39,8 +39,9 @@ task fatJar(type: Jar) {
     }
     outputs.upToDateWhen { false }
     project.archivesBaseName = "SeedCandy"
-    exclude 'META-INF/LICENSE'
-    exclude 'META-INF/versions/**'
+    exclude "META-INF/LICENSE"
+    exclude "META-INF/versions/**"
+    exclude "module-info.class"
     from {
         configurations.runtimeClasspath.collect {
             it.isDirectory() ? it : zipTree(it)
