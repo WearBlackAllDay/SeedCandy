@@ -1,9 +1,9 @@
 package wearblackallday.seedcandy.components;
 
-import wearblackallday.javautils.data.Strings;
-
 import javax.swing.*;
 import java.awt.Dimension;
+import java.util.Arrays;
+import java.util.stream.LongStream;
 
 public class TextBox extends JScrollPane {
 	private final JTextArea textArea = new JTextArea();
@@ -21,8 +21,8 @@ public class TextBox extends JScrollPane {
 		return this.textArea.getText();
 	}
 
-	public long[] getLongs() {
-		return Strings.splitToLongs(this.getText());
+	public LongStream seeds() {
+		return Arrays.stream(this.getText().split("\n")).mapToLong(Long::parseLong);
 	}
 
 	public void setText(String text) {

@@ -52,7 +52,7 @@ public class SeedCandy extends JFrame {
 		this.setResizable(false);
 		this.pack();
 		this.setLocationRelativeTo(null);
-		this.loadLAF(this.theme);
+		this.loadTheme(this.theme);
 		this.addWindowListener(Events.Window.onClosing(e -> Config.save()));
 	}
 
@@ -97,7 +97,7 @@ public class SeedCandy extends JFrame {
 					var button = new JRadioButtonMenuItem(info.getName());
 					button.addActionListener(e -> {
 						try {
-							this.loadLAF(Class.forName(info.getClassName()));
+							this.loadTheme(Class.forName(info.getClassName()));
 						} catch(ClassNotFoundException classNotFoundException) {
 							classNotFoundException.printStackTrace();
 						}
@@ -114,7 +114,7 @@ public class SeedCandy extends JFrame {
 			});
 	}
 
-	private void loadLAF(Class<?> theme) {
+	private void loadTheme(Class<?> theme) {
 		try {
 			this.theme = theme;
 			theme.getDeclaredMethod("setup", null).invoke(null);

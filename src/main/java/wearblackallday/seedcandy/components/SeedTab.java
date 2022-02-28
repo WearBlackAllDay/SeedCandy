@@ -38,20 +38,15 @@ public abstract class SeedTab extends AbstractTab {
 	}
 
 	protected void mapSeeds(LongUnaryOperator mapper) {
-		var buffer = new StringBuilder();
-
-		for(long seed : this.input.getLongs()) {
-			buffer.append(mapper.applyAsLong(seed)).append("\n");
-		}
-		this.output.setText(buffer.toString());
+		this.setOutput(this.input.seeds()
+			.map(mapper).boxed().toList());
 	}
 
 	protected void mapToString(LongFunction<String> mapper) {
-		long[] seeds = this.input.getLongs();
+		long[] seeds = this.input.seeds().toArray();
 
 		if(seeds.length < this.pool.getThreadCount() << 2) {
 			StringJoiner joiner = new StringJoiner("\n");
-
 			for(long seed : seeds) {
 				joiner.add(mapper.apply(seed));
 			}

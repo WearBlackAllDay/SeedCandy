@@ -2,14 +2,13 @@ package wearblackallday.seedcandy.components.structuretab;
 
 import com.seedfinding.mccore.rand.seed.StructureSeed;
 import com.seedfinding.mccore.util.data.SeedIterator;
-import wearblackallday.javautils.data.Strings;
+import wearblackallday.javautils.data.ArrayUtils;
 import wearblackallday.javautils.swing.components.LPanel;
 import wearblackallday.seedcandy.components.SeedTab;
 
 import javax.swing.*;
 import java.awt.GridLayout;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class StructureTab extends SeedTab {
 	public StructureTab() {
@@ -18,24 +17,25 @@ public class StructureTab extends SeedTab {
 
 		JComponent buttons = new LPanel()
 			.withLayout(new GridLayout(0, 2))
-			.addButton("reverse to nextLong()", () -> this.setOutput(Arrays.stream(this.input.getLongs())
+			.addButton("reverse to nextLong()", () -> this.setOutput(this.input.seeds()
 				.mapToObj(StructureSeed::toRandomWorldSeeds)
 				.flatMap(List::stream)
 				.toList()
 			))
 			.addButton("crack with biomes", () -> {
-				long[] worldSeeds = Arrays.stream(this.input.getLongs())
+				long[] worldSeeds = this.input.seeds()
 					.mapToObj(StructureSeed::getWorldSeeds)
 					.flatMapToLong(SeedIterator::asStream)
 					.toArray();
 
 				this.threadedMap(worldSeeds, seed -> biomePanel.matchesSeed(seed) ? String.valueOf(seed) : "");
 			})
-			.addButton("verify WorldSeeds", () -> this.setOutput(Arrays.stream(this.input.getLongs())
+			.addButton("verify WorldSeeds", () -> this.setOutput(this.input.seeds()
 				.filter(biomePanel::matchesSeed)
 				.boxed().toList()
 			))
-			.addButton("copy Output", () -> Strings.clipboard(this.getOutput()));
+			.addButton("find dupes", () -> this.setOutput(String.join("\n",
+				ArrayUtils.getDupes(this.input.getText().split("\n")))));
 
 		this.addComponents(biomePanel, buttons);
 	}

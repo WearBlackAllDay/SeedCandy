@@ -27,7 +27,7 @@ public abstract class AbstractTab extends JComponent {
 		}, () -> this.setOutputDefault(output));
 	}
 
-	protected void setOutput(Collection<Long> seeds) {
+	protected void setOutput(List<Long> seeds) {
 		StringJoiner joiner = new StringJoiner("\n");
 		seeds.forEach(seed -> joiner.add(seed.toString()));
 		this.setOutput(joiner.toString());
