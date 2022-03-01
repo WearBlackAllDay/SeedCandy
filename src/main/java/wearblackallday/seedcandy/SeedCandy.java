@@ -1,7 +1,6 @@
 package wearblackallday.seedcandy;
 
 import com.seedfinding.mccore.version.MCVersion;
-import wearblackallday.javautils.swing.Events;
 import wearblackallday.javautils.swing.SwingUtils;
 import wearblackallday.javautils.swing.components.LMenuBar;
 import wearblackallday.javautils.util.Filters;
@@ -14,12 +13,13 @@ import wearblackallday.seedcandy.util.Icons;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.GridLayout;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Optional;
 import static com.formdev.flatlaf.intellijthemes.FlatAllIJThemes.FlatIJLookAndFeelInfo;
 import static com.formdev.flatlaf.intellijthemes.FlatAllIJThemes.INFOS;
+import static wearblackallday.seedcandy.util.Config.Theme;
 
 public class SeedCandy extends JFrame {
 	private static final MCVersion[] SUPPORTED_VERSIONS = Arrays.stream(MCVersion.values())
@@ -27,15 +27,15 @@ public class SeedCandy extends JFrame {
 		.filter(Filters.byInt(MCVersion::getSubVersion, 0))
 		.toArray(MCVersion[]::new);
 
-	public final DungeonTab dungeonTab = new DungeonTab();
 	private static final SeedCandy INSTANCE = new SeedCandy();
-	private final JTabbedPane tabSelection = SwingUtils.addSet(new JTabbedPane(), this.dungeonTab, new StructureTab(), new WorldTab());
+	public final DungeonTab dungeonTab = new DungeonTab();
 
 	public Optional<File> outputFile = Optional.empty();
 	public MCVersion version;
-	public Class<?> theme;
+	public Theme theme;
 
 	public static void main(String[] args) {
+		get().theme.load();
 		get().setVisible(true);
 	}
 
@@ -46,14 +46,12 @@ public class SeedCandy extends JFrame {
 		this.dungeonTab.biomeSelector.setEnabled(this.version.isNewerThan(MCVersion.v1_15));
 
 		this.setJMenuBar(this.buildMenuBar());
-		this.setContentPane(this.tabSelection);
+		this.setContentPane(SwingUtils.addSet(new JTabbedPane(), this.dungeonTab, new StructureTab(), new WorldTab()));
 		this.setIconImage(Icons.SEED);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
 		this.pack();
 		this.setLocationRelativeTo(null);
-		this.loadTheme(this.theme);
-		this.addWindowListener(Events.Window.onClosing(e -> Config.save()));
 	}
 
 	private JMenuBar buildMenuBar() {
@@ -75,12 +73,12 @@ public class SeedCandy extends JFrame {
 					});
 					buttonGroup.add(button);
 					versionMenu.add(button);
-					if(version == this.version) button.setSelected(true);
+					button.setSelected(version == this.version);
 				}
 			})
 			.addMenu("Output", outPutMenu -> outPutMenu
 				.withItem("copy to clipBoard", () ->
-					((AbstractTab)this.tabSelection.getSelectedComponent()).copyOutput())
+					((AbstractTab)((JTabbedPane)this.getContentPane()).getSelectedComponent()).copyOutput())
 				.withCheckBox("use file (none)", (parentMenu, checkBox, e) -> {
 					if(checkBox.isSelected()) {
 						fileChooser.showOpenDialog(this);
@@ -93,34 +91,22 @@ public class SeedCandy extends JFrame {
 				ButtonGroup themeButtons = new ButtonGroup();
 				JMenu darkThemes = new JMenu("dark");
 				JMenu lightThemes = new JMenu("light");
+				darkThemes.getPopupMenu().setLayout(new GridLayout(0, 2));
 				for(FlatIJLookAndFeelInfo info : INFOS) {
 					var button = new JRadioButtonMenuItem(info.getName());
 					button.addActionListener(e -> {
-						try {
-							this.loadTheme(Class.forName(info.getClassName()));
-						} catch(ClassNotFoundException classNotFoundException) {
-							classNotFoundException.printStackTrace();
-						}
+						this.theme = info::getClassName;
+						this.theme.load();
 					});
-					button.setFont(button.getFont().deriveFont(10F));
 					themeButtons.add(button);
 					if(info.isDark()) darkThemes.add(button);
 					else lightThemes.add(button);
 
-					if(info.getClassName().equals(this.theme.getName())) button.setSelected(true);
+					button.setSelected(info.getClassName().equals(this.theme.className()));
 				}
 				themeMenu.add(darkThemes);
 				themeMenu.add(lightThemes);
 			});
-	}
-
-	private void loadTheme(Class<?> theme) {
-		try {
-			this.theme = theme;
-			theme.getDeclaredMethod("setup", null).invoke(null);
-		} catch(IllegalAccessException | InvocationTargetException | NoSuchMethodException ignored) {
-		}
-		SwingUtilities.updateComponentTreeUI(this);
 	}
 
 	public static SeedCandy get() {

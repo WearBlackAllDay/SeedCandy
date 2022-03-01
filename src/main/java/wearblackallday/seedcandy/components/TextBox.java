@@ -22,7 +22,7 @@ public class TextBox extends JScrollPane {
 	}
 
 	public LongStream seeds() {
-		return Arrays.stream(this.getText().split("\n")).mapToLong(Long::parseLong);
+		return Arrays.stream(this.getText().trim().split("[\t\r\n\s]+")).mapToLong(Long::parseLong);
 	}
 
 	public void setText(String text) {

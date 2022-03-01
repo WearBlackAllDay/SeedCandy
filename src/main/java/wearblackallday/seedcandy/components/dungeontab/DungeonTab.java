@@ -38,7 +38,7 @@ public class DungeonTab extends AbstractTab {
 	}
 
 	protected void updateBits() {
-		this.bitLabel.setText("Bits: " + (int)this.floorPanel.getPattern().stream()
+		this.bitLabel.setText("Bits:\s" + (int)this.floorPanel.getPattern().stream()
 		.mapToDouble(fb -> fb.bits)
 		.sum());
 	}
