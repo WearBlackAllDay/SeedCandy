@@ -84,8 +84,8 @@ public class SeedCandy extends JFrame {
 						fileChooser.showOpenDialog(this);
 						checkBox.setSelected(this.outputFile.isPresent());
 					} else this.outputFile = Optional.empty();
-					checkBox.setText("use file" + "\s(" +
-						this.outputFile.map(File::getName).orElse("none") + ")");
+					checkBox.setText("use file (" +
+						this.outputFile.map(File::getName).orElse("none") + ')');
 				}))
 			.addMenu("Theme", themeMenu -> {
 				ButtonGroup themeButtons = new ButtonGroup();

@@ -5,8 +5,10 @@ import com.seedfinding.mccore.rand.seed.ChunkSeeds;
 import com.seedfinding.mccore.rand.seed.WorldSeed;
 import com.seedfinding.mccore.util.pos.BPos;
 import com.seedfinding.mcfeature.misc.SpawnPoint;
+import wearblackallday.javautils.swing.SwingUtils;
 import wearblackallday.javautils.swing.components.LPanel;
 import wearblackallday.seedcandy.components.SeedTab;
+import wearblackallday.seedcandy.util.Factory;
 import wearblackallday.seedcandy.util.QuadHuts;
 
 import javax.swing.*;
@@ -17,10 +19,9 @@ public class WorldTab extends SeedTab {
 	public WorldTab() {
 		super("WorldSeed");
 
-		LPanel selectionPanel = new LPanel()
-			.addTextField("X", "x")
-			.addTextField("Z", "z")
-			.addTextField("salt", "s");
+		JSpinner xPos = Factory.numberSelector("X");
+		JSpinner zPos = Factory.numberSelector("Z");
+		JSpinner saltSpinner = Factory.numberSelector("salt");
 
 		JComponent buttons = new LPanel()
 			.withLayout(new GridLayout(0, 2))
@@ -32,7 +33,7 @@ public class WorldTab extends SeedTab {
 				QuadHuts.find(worldSeed, this.getVersion()).toString()))
 			.addButton("show Spawnpoint", () -> this.mapToString(worldSeed -> {
 				BPos spawn = SpawnPoint.getApproximateSpawn(new OverworldBiomeSource(this.getVersion(), worldSeed));
-				return "{" + spawn.getX() + ", " + spawn.getZ() + "}";
+				return '{' + spawn.getX() + ",\s" + spawn.getZ() + '}';
 			}))
 			.addButton("convert to hash", () -> this.mapSeeds(WorldSeed::toHash))
 			.addButton("switch to ShadowSeed", () -> this.mapSeeds(WorldSeed::getShadowSeed))
@@ -42,13 +43,13 @@ public class WorldTab extends SeedTab {
 				.collect(Collectors.joining("\n"))))
 			.addButton("reduce to StructureSeed", () -> this.mapSeeds(WorldSeed::toStructureSeed))
 			.addButton("get PopulationSeed", () -> this.mapSeeds(worldSeed ->
-				ChunkSeeds.getPopulationSeed(worldSeed, selectionPanel.getInt("x"),
-					selectionPanel.getInt("z"), this.getVersion())))
+				ChunkSeeds.getPopulationSeed(worldSeed, (Integer)xPos.getValue(),
+					(Integer)zPos.getValue(), this.getVersion())))
 			.addButton("get RegionSeed", () -> this.mapSeeds(worldSeed ->
-				ChunkSeeds.getRegionSeed(worldSeed, selectionPanel.getInt("x"),
-					selectionPanel.getInt("z"), selectionPanel.getInt("s"), this.getVersion())))
+				ChunkSeeds.getRegionSeed(worldSeed, (Integer)xPos.getValue(),
+					(Integer)zPos.getValue(), (Integer)saltSpinner.getValue(), this.getVersion())))
 			.addButton("get PillarSeed", () -> this.mapSeeds(WorldSeed::toPillarSeed));
 
-		this.addComponents(buttons, selectionPanel);
+		this.addComponents(buttons, SwingUtils.addSet(new JPanel(), xPos, zPos, saltSpinner));
 	}
 }

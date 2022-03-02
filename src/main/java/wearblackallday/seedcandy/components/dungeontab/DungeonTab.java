@@ -8,6 +8,7 @@ import wearblackallday.javautils.swing.components.SelectionBox;
 import wearblackallday.seedcandy.components.AbstractTab;
 import wearblackallday.seedcandy.components.TextBox;
 import wearblackallday.seedcandy.util.Dungeon;
+import wearblackallday.seedcandy.util.Factory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,22 +18,23 @@ import java.util.*;
 public class DungeonTab extends AbstractTab {
 	private final FloorPanel floorPanel = new FloorPanel();
 	private final TextBox dungeonOutput = new TextBox(false);
-	private final JTextField floorString = new JTextField();
 	private final SelectionBox<Dungeon.Size> sizeSelector = new SelectionBox<>(Dungeon.Size.values());
+	private final JSpinner xPos = Factory.numberSelector("X");
+	private final JSpinner yPos = Factory.numberSelector("Y");
+	private final JSpinner zPos = Factory.numberSelector("Z");
 	public final SelectionBox<Biome> biomeSelector = new SelectionBox<>(Biome::getName, getFossilBiomeSelection());
 	private final JLabel bitLabel = new JLabel();
-	private final LPanel userEntry = this.buildUserEntry();
+	private final JTextField floorString = new JTextField();
 
 	public DungeonTab() {
 		this.setName("DungeonCracker");
-		this.floorString.setFont(this.floorString.getFont().deriveFont(16F));
 		this.floorString.setHorizontalAlignment(JTextField.CENTER);
 
 		this.sizeSelector.addActionListener(e -> this.floorPanel.setFloor(this.sizeSelector.getSelected()));
 
 		this.setLayout(new BorderLayout());
 		this.add(this.floorPanel, BorderLayout.CENTER);
-		this.add(SwingUtils.addSet(new Box(BoxLayout.Y_AXIS), this.userEntry, this.floorString), BorderLayout.SOUTH);
+		this.add(SwingUtils.addSet(new Box(BoxLayout.Y_AXIS), this.buildUserEntry(), this.floorString), BorderLayout.SOUTH);
 		this.add(this.dungeonOutput, BorderLayout.EAST);
 		this.updateBits();
 	}
@@ -45,8 +47,7 @@ public class DungeonTab extends AbstractTab {
 
 	private static List<Biome> getFossilBiomeSelection() {
 		List<Biome> biomes = new ArrayList<>(Dungeon.FOSSIL_BIOMES);
-		biomes.add(new Biome(null, null, -1, "other Biome", null,
-			null, Float.NaN, Float.NaN, Float.NaN, null, null));
+		biomes.add(Factory.namedBiome("other Biome"));
 		biomes.sort(Comparator.comparingInt(Biome::getId));
 		return biomes;
 	}
@@ -54,9 +55,9 @@ public class DungeonTab extends AbstractTab {
 	private LPanel buildUserEntry() {
 		return new LPanel()
 			.addComponent(this.sizeSelector)
-			.addTextField("X", "x")
-			.addTextField("Y", "y")
-			.addTextField("Z", "z")
+			.addComponent(this.xPos)
+			.addComponent(this.yPos)
+			.addComponent(this.zPos)
 			.addComponent(this.biomeSelector)
 			.addButton("from String", () -> {
 				String floor = this.floorString.getText();
@@ -76,7 +77,7 @@ public class DungeonTab extends AbstractTab {
 
 	private Dungeon parseDungeon() {
 		return new Dungeon(
-			new BPos(this.userEntry.getInt("x"), this.userEntry.getInt("y"), this.userEntry.getInt("z")),
+			new BPos((Integer)this.xPos.getValue(), (Integer)this.yPos.getValue(), (Integer)this.zPos.getValue()),
 			new Dungeon.Floor(this.sizeSelector.getSelected(), this.floorPanel.getPattern()),
 			this.getVersion(),
 			this.biomeSelector.getSelected()

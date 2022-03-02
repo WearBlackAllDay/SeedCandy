@@ -8,13 +8,16 @@ import wearblackallday.javautils.swing.SwingUtils;
 import wearblackallday.javautils.swing.components.SelectionBox;
 import wearblackallday.javautils.util.Filters;
 import wearblackallday.seedcandy.SeedCandy;
+import wearblackallday.seedcandy.util.Factory;
 
 import javax.swing.*;
 import java.util.Comparator;
+import java.util.stream.Stream;
 
 public class BiomePanel extends Box {
-	private static final Biome[] BIOMES = Biomes.REGISTRY.values().stream()
-		.filter(Filters.byKeyID(Biome::getDimension, Dimension.OVERWORLD))
+	private static final Biome[] BIOMES = Stream.concat(Biomes.REGISTRY.values().stream()
+			.filter(Filters.byKeyID(Biome::getDimension, Dimension.OVERWORLD)),
+			Stream.of(Factory.namedBiome("any Biome")))
 		.sorted(Comparator.comparing(Biome::getName))
 		.toArray(Biome[]::new);
 
@@ -27,36 +30,34 @@ public class BiomePanel extends Box {
 	}
 
 	protected boolean matchesSeed(long seed) {
-		var biomeSource = new OverworldBiomeSource(SeedCandy.get().version, seed);
-
 		for(var restriction : this.getComponents()) {
-			if(!((RestrictionSelector)restriction).matchesSource(biomeSource)) {
+			if(!((RestrictionSelector)restriction).matchesSeed(seed)) {
 				return false;
 			}
 		}
 		return true;
 	}
 
+	private static String biomeName(Biome biome) {
+		return biome.getName()
+			.replaceAll("_", "\s")
+			.replaceAll("modified", "mod");
+	}
+
 	private static class RestrictionSelector extends JPanel {
-		private final JTextField xCord = new JTextField();
-		private final JTextField zCord = new JTextField();
-		private final SelectionBox<Biome> biomeSelector = new SelectionBox<>(Biome::getName, BIOMES);
+		private final JSpinner xPos = Factory.numberSelector("X");
+		private final JSpinner zPos = Factory.numberSelector("Z");
+		private final SelectionBox<Biome> biomeSelector = new SelectionBox<>(BiomePanel::biomeName, BIOMES);
 
 		private RestrictionSelector() {
-			SwingUtils.setPrompt(this.xCord, "X");
-			SwingUtils.setPrompt(this.zCord, "Z");
-			SwingUtils.addSet(this, this.xCord, this.zCord, this.biomeSelector);
+			SwingUtils.addSet(this, this.xPos, this.zPos, this.biomeSelector);
 		}
 
-		private boolean matchesSource(OverworldBiomeSource biomeSource) {
-			try {
-				int xPos = Integer.parseInt(this.xCord.getText().trim());
-				int zPos = Integer.parseInt(this.zCord.getText().trim());
-				return biomeSource.getBiome(xPos, 0, zPos)
-					== this.biomeSelector.getSelected();
-			} catch(NumberFormatException exception) {
-				return true;
-			}
+		private boolean matchesSeed(long seed) {
+			if(this.biomeSelector.getSelected().getId() == -1) return true;
+			OverworldBiomeSource biomeSource = new OverworldBiomeSource(SeedCandy.get().version, seed);
+			return biomeSource.getBiome((Integer)this.xPos.getValue(), 0, (Integer)this.zPos.getValue())
+				== this.biomeSelector.getSelected();
 		}
 	}
 }
