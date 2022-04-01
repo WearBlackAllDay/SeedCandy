@@ -19,11 +19,8 @@ public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome
 	private static final LCG FAILED_DUNGEON = LCG.JAVA.combine(-5);
 	private static final LCG REVERSE = LCG.JAVA.invert();
 
-	public Dungeon(BPos position, Floor floor, MCVersion version, Biome biome) {
-		this.position = version.isNewerThan(MCVersion.v1_12) ? position : position.add(-8, 0, -8);
-		this.floor = floor;
-		this.version = version;
-		this.biome = biome;
+	public Dungeon {
+		if(version.isOlderThan(MCVersion.v1_13)) position = position.add(-8, 0, -8);
 	}
 
 	public List<Long> reverseStructureSeeds() {

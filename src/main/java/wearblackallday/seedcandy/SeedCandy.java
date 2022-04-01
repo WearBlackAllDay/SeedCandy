@@ -8,12 +8,12 @@ import wearblackallday.seedcandy.components.AbstractTab;
 import wearblackallday.seedcandy.components.dungeontab.DungeonTab;
 import wearblackallday.seedcandy.components.structuretab.StructureTab;
 import wearblackallday.seedcandy.components.worldtab.WorldTab;
-import wearblackallday.seedcandy.util.Config;
-import wearblackallday.seedcandy.util.Icons;
+import wearblackallday.seedcandy.util.*;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.GridLayout;
+import java.awt.Taskbar;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Optional;
@@ -35,7 +35,7 @@ public class SeedCandy extends JFrame {
 	public Theme theme;
 
 	public static void main(String[] args) {
-		get().theme.load();
+		get().theme.apply();
 		get().setVisible(true);
 	}
 
@@ -48,6 +48,8 @@ public class SeedCandy extends JFrame {
 		this.setJMenuBar(this.buildMenuBar());
 		this.setContentPane(SwingUtils.addSet(new JTabbedPane(), this.dungeonTab, new StructureTab(), new WorldTab()));
 		this.setIconImage(Icons.SEED);
+		if(Taskbar.isTaskbarSupported()) Taskbar.getTaskbar().setIconImage(Icons.SEED);
+
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
 		this.pack();
@@ -96,7 +98,7 @@ public class SeedCandy extends JFrame {
 					var button = new JRadioButtonMenuItem(info.getName());
 					button.addActionListener(e -> {
 						this.theme = info::getClassName;
-						this.theme.load();
+						this.theme.apply();
 					});
 					themeButtons.add(button);
 					if(info.isDark()) darkThemes.add(button);

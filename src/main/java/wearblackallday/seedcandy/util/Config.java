@@ -14,8 +14,8 @@ public class Config {
 	}
 
 	private static void save() {
-		ROOT.put("theme", SeedCandy.get().theme.className());
 		ROOT.put("mcversion", SeedCandy.get().version.name);
+		ROOT.put("theme", SeedCandy.get().theme.className());
 	}
 
 	public static MCVersion version() {
@@ -30,9 +30,9 @@ public class Config {
 	public interface Theme {
 		String className();
 
-		default void load() {
+		default void apply() {
 			try {
-				Class.forName(this.className()).getDeclaredMethod("setup").invoke(null);
+				Class.forName(this.className()).getMethod("setup").invoke(null);
 			} catch(ReflectiveOperationException ignored) {
 			}
 			SwingUtilities.updateComponentTreeUI(SeedCandy.get());

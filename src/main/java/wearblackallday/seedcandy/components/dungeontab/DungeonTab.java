@@ -18,12 +18,14 @@ import java.util.*;
 public class DungeonTab extends AbstractTab {
 	private final FloorPanel floorPanel = new FloorPanel();
 	private final TextBox dungeonOutput = new TextBox(false);
+
 	private final SelectionBox<Dungeon.Size> sizeSelector = new SelectionBox<>(Dungeon.Size.values());
 	private final JSpinner xPos = Factory.numberSelector("X");
 	private final JSpinner yPos = Factory.numberSelector("Y");
 	private final JSpinner zPos = Factory.numberSelector("Z");
 	public final SelectionBox<Biome> biomeSelector = new SelectionBox<>(Biome::getName, getFossilBiomeSelection());
 	private final JLabel bitLabel = new JLabel();
+
 	private final JTextField floorString = new JTextField();
 
 	public DungeonTab() {
@@ -47,8 +49,7 @@ public class DungeonTab extends AbstractTab {
 
 	private static List<Biome> getFossilBiomeSelection() {
 		List<Biome> biomes = new ArrayList<>(Dungeon.FOSSIL_BIOMES);
-		biomes.add(Factory.namedBiome("other Biome"));
-		biomes.sort(Comparator.comparingInt(Biome::getId));
+		biomes.add(0, Factory.namedBiome("other Biome"));
 		return biomes;
 	}
 

@@ -27,7 +27,7 @@ public class QuadHuts {
 
 		for(long regionSeed : REGION_SEEDS) {
 			for(QVector solution : REGION_LATTICE.findSolutionsInBox(regionSeed - worldSeed - swampHut.getSalt(),
-				-60000, -60000, 60000, 60000)) {
+				-60_000, -60_000, 60_000, 60_000)) {
 				if(!checkBiomes(biomeSource, solution, swampHut)) break;
 				solution.scaleAndSet(512);
 				quadHuts.add(new BPos(solution.get(0).intValue(), 0, solution.get(1).intValue()));
@@ -35,7 +35,6 @@ public class QuadHuts {
 		}
 		return quadHuts;
 	}
-
 
 	private static boolean checkBiomes(OverworldBiomeSource source, QVector solution, SwampHut hut) {
 		if(checkStructure(source, solution.get(0), solution.get(1), hut)) return false;
