@@ -35,7 +35,7 @@ public class StructureTab extends SeedTab {
 				.boxed().toList()
 			))
 			.addButton("find dupes", () -> this.setOutput(String.join("\n",
-				ArrayUtils.getDupes(this.input.getText().split("\n")))));
+				ArrayUtils.getDupes(this.input.getText().split("\\s+")))));
 
 		this.addComponents(biomePanel, buttons);
 	}

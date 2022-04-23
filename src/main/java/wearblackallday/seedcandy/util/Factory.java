@@ -3,6 +3,8 @@ package wearblackallday.seedcandy.util;
 import com.seedfinding.mcbiome.biome.Biome;
 
 import javax.swing.*;
+import java.util.List;
+import java.util.function.*;
 
 public class Factory {
 
@@ -15,5 +17,17 @@ public class Factory {
 		JSpinner spinner = new JSpinner(new SpinnerNumberModel());
 		spinner.setToolTipText(tooltip);
 		return spinner;
+	}
+
+	public static <T> void addSelection(JMenu menu, List<T> options, Function<T, String> buttonName, Predicate<T> selectCondition, Consumer<T> onSelected) {
+		ButtonGroup buttonGroup = new ButtonGroup();
+
+		for(T option : options) {
+			JRadioButtonMenuItem button = new JRadioButtonMenuItem(buttonName.apply(option));
+			button.addActionListener(e -> onSelected.accept(option));
+			menu.add(button);
+			buttonGroup.add(button);
+			button.setSelected(selectCondition.test(option));
+		}
 	}
 }

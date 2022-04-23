@@ -1,5 +1,6 @@
 package wearblackallday.seedcandy;
 
+import com.formdev.flatlaf.intellijthemes.FlatAllIJThemes;
 import com.seedfinding.mccore.version.MCVersion;
 import wearblackallday.javautils.swing.SwingUtils;
 import wearblackallday.javautils.swing.components.LMenuBar;
@@ -15,17 +16,17 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.GridLayout;
 import java.awt.Taskbar;
 import java.io.File;
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import static com.formdev.flatlaf.intellijthemes.FlatAllIJThemes.FlatIJLookAndFeelInfo;
-import static com.formdev.flatlaf.intellijthemes.FlatAllIJThemes.INFOS;
 import static wearblackallday.seedcandy.util.Config.Theme;
 
 public class SeedCandy extends JFrame {
-	private static final MCVersion[] SUPPORTED_VERSIONS = Arrays.stream(MCVersion.values())
+	private static final List<MCVersion> SUPPORTED_VERSIONS = Arrays.stream(MCVersion.values())
 		.filter(MCVersion.v1_8::isOlderOrEqualTo)
 		.filter(Filters.byInt(MCVersion::getSubVersion, 0))
-		.toArray(MCVersion[]::new);
+		.toList();
 
 	private static final SeedCandy INSTANCE = new SeedCandy();
 
@@ -60,20 +61,15 @@ public class SeedCandy extends JFrame {
 		fileChooser.setAcceptAllFileFilterUsed(false);
 		fileChooser.addActionListener(e -> this.setOutputFile(fileChooser.getSelectedFile()));
 
+		Map<Boolean, List<FlatIJLookAndFeelInfo>> themes = Arrays.stream(FlatAllIJThemes.INFOS)
+			.collect(Collectors.partitioningBy(FlatIJLookAndFeelInfo::isDark));
+
 		return new LMenuBar()
-			.addMenu(this.version.name, versionMenu -> {
-				ButtonGroup buttonGroup = new ButtonGroup();
-				for(MCVersion version : SUPPORTED_VERSIONS) {
-					var button = new JRadioButtonMenuItem(version.name);
-					button.addActionListener(e -> {
-						this.setVersion(version);
-						versionMenu.setText(version.name);
-					});
-					buttonGroup.add(button);
-					versionMenu.add(button);
-					button.setSelected(version == this.version);
-				}
-			})
+			.addMenu(this.version.name, versionMenu ->
+				Factory.addSelection(versionMenu, SUPPORTED_VERSIONS, MCVersion::toString, this.version::equals, version -> {
+					this.setVersion(version);
+					versionMenu.setText(version.name);
+			}))
 			.addMenu("Output", outPutMenu -> outPutMenu
 				.withItem("copy to clipBoard", () ->
 					((SeedCandyTab)((JTabbedPane)this.getContentPane()).getSelectedComponent()).copyOutput())
@@ -85,23 +81,17 @@ public class SeedCandy extends JFrame {
 					checkBox.setText("use file (" +
 						this.getOutputFile().map(File::getName).orElse("none") + ')');
 				}))
-			.addMenu("Theme", themeMenu -> {
-				ButtonGroup themeButtons = new ButtonGroup();
-				JMenu darkThemes = new JMenu("dark");
-				JMenu lightThemes = new JMenu("light");
-				darkThemes.getPopupMenu().setLayout(new GridLayout(0, 2));
-				for(FlatIJLookAndFeelInfo info : INFOS) {
-					var button = new JRadioButtonMenuItem(info.getName());
-					button.addActionListener(e -> this.setTheme(info::getClassName));
-					themeButtons.add(button);
-					if(info.isDark()) darkThemes.add(button);
-					else lightThemes.add(button);
-
-					button.setSelected(info.getClassName().equals(this.getTheme().className()));
-				}
-				themeMenu.add(darkThemes);
-				themeMenu.add(lightThemes);
-			});
+			.addMenu("Theme", themeMenu -> themeMenu
+					.subMenu("dark", darkThemes -> {
+						darkThemes.getPopupMenu().setLayout(new GridLayout(0, 2));
+						Factory.addSelection(darkThemes, themes.get(true), FlatIJLookAndFeelInfo::getName,
+							info -> info.getClassName().equals(this.getTheme().className()),
+							info -> this.setTheme(info::getClassName));
+					})
+					.subMenu("light", lightThemes -> Factory.addSelection(lightThemes, themes.get(false), FlatIJLookAndFeelInfo::getName,
+						info -> info.getClassName().equals(this.getTheme().className()),
+						info -> this.setTheme(info::getClassName)))
+			);
 	}
 
 	public MCVersion getVersion() {
