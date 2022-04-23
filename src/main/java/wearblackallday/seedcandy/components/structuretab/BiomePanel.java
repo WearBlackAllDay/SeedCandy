@@ -55,7 +55,7 @@ public class BiomePanel extends Box {
 
 		private boolean matchesSeed(long seed) {
 			if(this.biomeSelector.getSelected().getId() == -1) return true;
-			OverworldBiomeSource biomeSource = new OverworldBiomeSource(SeedCandy.get().version, seed);
+			OverworldBiomeSource biomeSource = new OverworldBiomeSource(SeedCandy.get().getVersion(), seed);
 			return biomeSource.getBiome((Integer)this.xPos.getValue(), 0, (Integer)this.zPos.getValue())
 				== this.biomeSelector.getSelected();
 		}

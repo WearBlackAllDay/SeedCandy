@@ -2,7 +2,6 @@ package wearblackallday.seedcandy.components.dungeontab;
 
 import wearblackallday.javautils.swing.Events;
 import wearblackallday.javautils.swing.components.GridPanel;
-import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.seedcandy.util.Dungeon;
 import wearblackallday.seedcandy.util.Icons;
 
@@ -24,8 +23,8 @@ public class FloorPanel extends JComponent {
 		}
 	}
 
-	protected List<Dungeon.FloorBlock> getPattern() {
-		List<Dungeon.FloorBlock> pattern = new ArrayList<>(82);
+	protected List<Dungeon.Floor.Block> getPattern() {
+		List<Dungeon.Floor.Block> pattern = new ArrayList<>(82);
 		this.forEach(button -> pattern.add(button.getBlock()));
 		return pattern;
 	}
@@ -59,8 +58,8 @@ public class FloorPanel extends JComponent {
 
 	@Override
 	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder();
-		this.forEach(button -> stringBuilder.append(button.getBlock().toString()));
+		StringBuilder stringBuilder = new StringBuilder(this.getFloor().getCount());
+		this.forEach(button -> stringBuilder.append(button.getBlock()));
 		return stringBuilder.toString();
 	}
 
@@ -73,16 +72,16 @@ public class FloorPanel extends JComponent {
 			this.setDisabledSelectedIcon(Icons.UNKNOWN);
 			this.setFocusable(false);
 			this.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
-			this.addMouseListener(Events.Mouse.onReleased(e -> {
+			this.addMouseListener(Events.Mouse.onClicked(e -> {
 				if(isRightMouseButton(e)) this.setEnabled(!this.isEnabled());
-				SeedCandy.get().dungeonTab.updateBits();
+				((DungeonTab)this.getParent().getParent().getParent()).updateBits();
 			}));
 		}
 
-		private Dungeon.FloorBlock getBlock() {
-			return !this.isEnabled() ? Dungeon.FloorBlock.UNKNOWN : this.isSelected()
-				? Dungeon.FloorBlock.COBBLE
-				: Dungeon.FloorBlock.MOSSY;
+		private Dungeon.Floor.Block getBlock() {
+			return !this.isEnabled() ? Dungeon.Floor.Block.UNKNOWN : this.isSelected()
+				? Dungeon.Floor.Block.COBBLE
+				: Dungeon.Floor.Block.MOSSY;
 		}
 	}
 }

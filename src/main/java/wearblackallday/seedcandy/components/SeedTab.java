@@ -1,5 +1,6 @@
 package wearblackallday.seedcandy.components;
 
+import com.seedfinding.mccore.version.MCVersion;
 import wearblackallday.javautils.util.ThreadPool;
 
 import javax.swing.*;
@@ -9,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.LongFunction;
 import java.util.function.LongUnaryOperator;
 
-public abstract class SeedTab extends AbstractTab {
+public abstract class SeedTab extends JComponent implements SeedCandyTab {
 	protected final TextBox input = new TextBox(true);
 	protected final TextBox output = new TextBox(false);
 	protected final JProgressBar progressBar = new JProgressBar(0, 1);
@@ -89,6 +90,10 @@ public abstract class SeedTab extends AbstractTab {
 				button.setEnabled(activated);
 			}
 		}
+	}
+
+	@Override
+	public void onVersionChanged(MCVersion newVersion) {
 	}
 
 	@Override

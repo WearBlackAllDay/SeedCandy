@@ -2,10 +2,12 @@ package wearblackallday.seedcandy.components.dungeontab;
 
 import com.seedfinding.mcbiome.biome.Biome;
 import com.seedfinding.mccore.util.pos.BPos;
+import com.seedfinding.mccore.version.MCVersion;
 import wearblackallday.javautils.swing.SwingUtils;
 import wearblackallday.javautils.swing.components.LPanel;
 import wearblackallday.javautils.swing.components.SelectionBox;
-import wearblackallday.seedcandy.components.AbstractTab;
+import wearblackallday.seedcandy.SeedCandy;
+import wearblackallday.seedcandy.components.SeedCandyTab;
 import wearblackallday.seedcandy.components.TextBox;
 import wearblackallday.seedcandy.util.Dungeon;
 import wearblackallday.seedcandy.util.Factory;
@@ -15,7 +17,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public class DungeonTab extends AbstractTab {
+public class DungeonTab extends JComponent implements SeedCandyTab {
 	private final FloorPanel floorPanel = new FloorPanel();
 	private final TextBox dungeonOutput = new TextBox(false);
 
@@ -23,7 +25,7 @@ public class DungeonTab extends AbstractTab {
 	private final JSpinner xPos = Factory.numberSelector("X");
 	private final JSpinner yPos = Factory.numberSelector("Y");
 	private final JSpinner zPos = Factory.numberSelector("Z");
-	public final SelectionBox<Biome> biomeSelector = new SelectionBox<>(Biome::getName, getFossilBiomeSelection());
+	private final SelectionBox<Biome> biomeSelector = new SelectionBox<>(Biome::getName, getFossilBiomeSelection());
 	private final JLabel bitLabel = new JLabel();
 
 	private final JTextField floorString = new JTextField();
@@ -80,9 +82,14 @@ public class DungeonTab extends AbstractTab {
 		return new Dungeon(
 			new BPos((Integer)this.xPos.getValue(), (Integer)this.yPos.getValue(), (Integer)this.zPos.getValue()),
 			new Dungeon.Floor(this.sizeSelector.getSelected(), this.floorPanel.getPattern()),
-			this.getVersion(),
+			SeedCandy.get().getVersion(),
 			this.biomeSelector.getSelected()
 		);
+	}
+
+	@Override
+	public void onVersionChanged(MCVersion newVersion) {
+		this.biomeSelector.setEnabled(MCVersion.v1_15.isOlderThan(newVersion));
 	}
 
 	@Override

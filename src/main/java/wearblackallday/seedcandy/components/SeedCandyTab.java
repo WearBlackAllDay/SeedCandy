@@ -4,36 +4,33 @@ import com.seedfinding.mccore.version.MCVersion;
 import wearblackallday.javautils.data.Strings;
 import wearblackallday.seedcandy.SeedCandy;
 
-import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
-public abstract class AbstractTab extends JComponent {
+public interface SeedCandyTab {
 
-	public MCVersion getVersion() {
-		return SeedCandy.get().version;
-	}
+	void onVersionChanged(MCVersion newVersion);
 
-	public abstract String getOutput();
+	String getOutput();
 
-	public abstract void setOutputDefault(String output);
+	void setOutputDefault(String output);
 
-	protected void setOutput(String output) {
-		SeedCandy.get().outputFile.ifPresentOrElse(file -> {
-			try {
-				new PrintStream(file).println(output);
+	 default void setOutput(String output) {
+		SeedCandy.get().getOutputFile().ifPresentOrElse(file -> {
+			try(PrintStream out = new PrintStream(file)) {
+				out.println(output);
 			} catch(FileNotFoundException ignored) {
 			}
 		}, () -> this.setOutputDefault(output));
 	}
 
-	protected void setOutput(List<Long> seeds) {
+	 default void setOutput(List<Long> seeds) {
 		StringJoiner joiner = new StringJoiner("\n");
 		seeds.forEach(seed -> joiner.add(seed.toString()));
 		this.setOutput(joiner.toString());
 	}
 
-	public void copyOutput() {
+	default void copyOutput() {
 		Strings.clipboard(this.getOutput());
 	}
 }

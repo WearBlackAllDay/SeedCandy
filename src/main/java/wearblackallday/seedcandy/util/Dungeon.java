@@ -92,25 +92,28 @@ public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome
 		}
 	}
 
-	public enum FloorBlock {
-		COBBLE(2d, device -> device.add(JavaCalls.nextInt(4).equalTo(0))),
-		MOSSY(0.41503749927d, device -> device.filteredSkip(rand -> rand.nextInt(4) != 0, 1)),
-		UNKNOWN(0d, device -> device.skip(1));
+	public record Floor(Size size, List<Block> pattern) {
+		public enum Block {
+			COBBLE(2d, device -> device.add(JavaCalls.nextInt(4).equalTo(0))),
+			MOSSY(0.41503749927d, device -> device.filteredSkip(rand -> rand.nextInt(4) != 0, 1)),
+			UNKNOWN(0d, device -> device.skip(1));
 
-		public final double bits;
-		public final Consumer<DynamicProgram> javaCall;
+			public final double bits;
+			public final Consumer<DynamicProgram> javaCall;
 
-		FloorBlock(double bits, Consumer<DynamicProgram> javaCall) {
-			this.bits = bits;
-			this.javaCall = javaCall;
+			Block(double bits, Consumer<DynamicProgram> javaCall) {
+				this.bits = bits;
+				this.javaCall = javaCall;
+			}
+
+			public static Block of(char stringRep) {
+				return Block.values()[stringRep - 48];
+			}
+
+			@Override
+			public String toString() {
+				return "" + this.ordinal();
+			}
 		}
-
-		@Override
-		public String toString() {
-			return this == COBBLE ? "0" : this == MOSSY ? "1" : "2";
-		}
-	}
-
-	public record Floor(Size size, List<FloorBlock> pattern) {
 	}
 }

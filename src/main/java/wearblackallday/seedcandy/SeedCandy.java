@@ -4,7 +4,7 @@ import com.seedfinding.mccore.version.MCVersion;
 import wearblackallday.javautils.swing.SwingUtils;
 import wearblackallday.javautils.swing.components.LMenuBar;
 import wearblackallday.javautils.util.Filters;
-import wearblackallday.seedcandy.components.AbstractTab;
+import wearblackallday.seedcandy.components.SeedCandyTab;
 import wearblackallday.seedcandy.components.dungeontab.DungeonTab;
 import wearblackallday.seedcandy.components.structuretab.StructureTab;
 import wearblackallday.seedcandy.components.worldtab.WorldTab;
@@ -28,25 +28,20 @@ public class SeedCandy extends JFrame {
 		.toArray(MCVersion[]::new);
 
 	private static final SeedCandy INSTANCE = new SeedCandy();
-	public final DungeonTab dungeonTab = new DungeonTab();
 
-	public Optional<File> outputFile = Optional.empty();
-	public MCVersion version;
-	public Theme theme;
+	private MCVersion version = Config.version();
+	private Theme theme = Config.theme();
+	private File outputFile;
 
 	public static void main(String[] args) {
-		get().theme.apply();
 		get().setVisible(true);
 	}
 
 	private SeedCandy() {
 		super("SeedCandy");
-		this.version = Config.version();
-		this.theme = Config.theme();
-		this.dungeonTab.biomeSelector.setEnabled(this.version.isNewerThan(MCVersion.v1_15));
 
 		this.setJMenuBar(this.buildMenuBar());
-		this.setContentPane(SwingUtils.addSet(new JTabbedPane(), this.dungeonTab, new StructureTab(), new WorldTab()));
+		this.setContentPane(SwingUtils.addSet(new JTabbedPane(), new DungeonTab(), new StructureTab(), new WorldTab()));
 		this.setIconImage(Icons.SEED);
 		if(Taskbar.isTaskbarSupported()) Taskbar.getTaskbar().setIconImage(Icons.SEED);
 
@@ -54,14 +49,16 @@ public class SeedCandy extends JFrame {
 		this.setResizable(false);
 		this.pack();
 		this.setLocationRelativeTo(null);
+
+		this.setVersion(this.version);
+		this.setTheme(this.theme);
 	}
 
 	private JMenuBar buildMenuBar() {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileFilter(new FileNameExtensionFilter("*.txt", "txt"));
 		fileChooser.setAcceptAllFileFilterUsed(false);
-		fileChooser.addActionListener(e -> this.outputFile = Optional.ofNullable(fileChooser.getSelectedFile())
-			.filter(file -> file.getName().endsWith(".txt")));
+		fileChooser.addActionListener(e -> this.setOutputFile(fileChooser.getSelectedFile()));
 
 		return new LMenuBar()
 			.addMenu(this.version.name, versionMenu -> {
@@ -69,9 +66,8 @@ public class SeedCandy extends JFrame {
 				for(MCVersion version : SUPPORTED_VERSIONS) {
 					var button = new JRadioButtonMenuItem(version.name);
 					button.addActionListener(e -> {
-						this.version = version;
+						this.setVersion(version);
 						versionMenu.setText(version.name);
-						this.dungeonTab.biomeSelector.setEnabled(version.isNewerThan(MCVersion.v1_15));
 					});
 					buttonGroup.add(button);
 					versionMenu.add(button);
@@ -80,14 +76,14 @@ public class SeedCandy extends JFrame {
 			})
 			.addMenu("Output", outPutMenu -> outPutMenu
 				.withItem("copy to clipBoard", () ->
-					((AbstractTab)((JTabbedPane)this.getContentPane()).getSelectedComponent()).copyOutput())
+					((SeedCandyTab)((JTabbedPane)this.getContentPane()).getSelectedComponent()).copyOutput())
 				.withCheckBox("use file (none)", (parentMenu, checkBox, e) -> {
 					if(checkBox.isSelected()) {
 						fileChooser.showOpenDialog(this);
-						checkBox.setSelected(this.outputFile.isPresent());
-					} else this.outputFile = Optional.empty();
+						checkBox.setSelected(this.getOutputFile().isPresent());
+					} else this.setOutputFile(null);
 					checkBox.setText("use file (" +
-						this.outputFile.map(File::getName).orElse("none") + ')');
+						this.getOutputFile().map(File::getName).orElse("none") + ')');
 				}))
 			.addMenu("Theme", themeMenu -> {
 				ButtonGroup themeButtons = new ButtonGroup();
@@ -96,19 +92,43 @@ public class SeedCandy extends JFrame {
 				darkThemes.getPopupMenu().setLayout(new GridLayout(0, 2));
 				for(FlatIJLookAndFeelInfo info : INFOS) {
 					var button = new JRadioButtonMenuItem(info.getName());
-					button.addActionListener(e -> {
-						this.theme = info::getClassName;
-						this.theme.apply();
-					});
+					button.addActionListener(e -> this.setTheme(info::getClassName));
 					themeButtons.add(button);
 					if(info.isDark()) darkThemes.add(button);
 					else lightThemes.add(button);
 
-					button.setSelected(info.getClassName().equals(this.theme.className()));
+					button.setSelected(info.getClassName().equals(this.getTheme().className()));
 				}
 				themeMenu.add(darkThemes);
 				themeMenu.add(lightThemes);
 			});
+	}
+
+	public MCVersion getVersion() {
+		return this.version;
+	}
+
+	private void setVersion(MCVersion version) {
+		this.version = version;
+		((SeedCandyTab)((JTabbedPane)this.getContentPane()).getSelectedComponent()).onVersionChanged(version);
+	}
+
+	public Theme getTheme() {
+		return this.theme;
+	}
+
+	private void setTheme(Theme theme) {
+		this.theme = theme;
+		theme.apply();
+		SwingUtilities.updateComponentTreeUI(this);
+	}
+
+	public Optional<File> getOutputFile() {
+		return Optional.ofNullable(this.outputFile).filter(file -> file.getName().endsWith(".txt"));
+	}
+
+	private void setOutputFile(File outputFile) {
+		this.outputFile = outputFile;
 	}
 
 	public static SeedCandy get() {
