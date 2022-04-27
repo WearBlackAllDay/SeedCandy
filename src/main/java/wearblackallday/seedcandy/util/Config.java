@@ -16,6 +16,7 @@ public class Config {
 	private static void save() {
 		ROOT.put("mcversion", SeedCandy.get().getVersion().name);
 		ROOT.put("theme", SeedCandy.get().getTheme().className());
+		ROOT.putInt("selectedTab", ((JTabbedPane)SeedCandy.get().getContentPane()).getSelectedIndex());
 	}
 
 	public static MCVersion version() {
@@ -24,6 +25,10 @@ public class Config {
 
 	public static Theme theme() {
 		return () -> ROOT.get("theme", "com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme");
+	}
+
+	public static int selectedTab() {
+		return ROOT.getInt("selectedTab", 0);
 	}
 
 	@FunctionalInterface

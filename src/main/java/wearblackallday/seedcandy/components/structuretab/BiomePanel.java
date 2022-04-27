@@ -15,10 +15,10 @@ import java.util.Comparator;
 import java.util.stream.Stream;
 
 public class BiomePanel extends Box {
-	private static final Biome[] BIOMES = Stream.concat(Biomes.REGISTRY.values().stream()
-			.filter(Filters.byKeyID(Biome::getDimension, Dimension.OVERWORLD)),
-			Stream.of(Factory.namedBiome("any Biome")))
-		.sorted(Comparator.comparing(Biome::getName))
+	private static final Biome[] BIOMES = Stream.concat(Stream.of(Factory.namedBiome("any Biome")),
+			Biomes.REGISTRY.values().stream()
+				.filter(Filters.byKeyID(Biome::getDimension, Dimension.OVERWORLD))
+				.sorted(Comparator.comparing(Biome::getName)))
 		.toArray(Biome[]::new);
 
 	protected BiomePanel() {

@@ -30,7 +30,7 @@ public class SeedCandy extends JFrame {
 	static {
 		// needs to be called prior to any Swing-components for darkMode to work on osx
 		// https://bugs.openjdk.java.net/browse/JDK-8235363
-		if(System.getProperty("os.name").toLowerCase().contains("mac"))
+		if(System.getProperty("os.name").startsWith("Mac OS"))
 			System.setProperty("apple.awt.application.appearance", "system");
 
 		if(Taskbar.isTaskbarSupported() && Taskbar.getTaskbar().isSupported(Taskbar.Feature.ICON_IMAGE))
@@ -61,6 +61,7 @@ public class SeedCandy extends JFrame {
 
 		this.setVersion(this.version);
 		this.setTheme(this.theme);
+		((JTabbedPane)this.getContentPane()).setSelectedIndex(Config.selectedTab());
 	}
 
 	private JMenuBar buildMenuBar() {

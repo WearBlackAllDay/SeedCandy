@@ -16,6 +16,10 @@ public class Factory {
 	public static JSpinner numberSelector(String tooltip) {
 		JSpinner spinner = new JSpinner(new SpinnerNumberModel());
 		spinner.setToolTipText(tooltip);
+		spinner.addMouseWheelListener(e -> {
+			int value = (e.isShiftDown() ? 10 : 1) * (e.isControlDown() ? 100 : 1);
+			spinner.setValue(((Integer)spinner.getValue() + e.getWheelRotation() * value));
+		});
 		return spinner;
 	}
 
