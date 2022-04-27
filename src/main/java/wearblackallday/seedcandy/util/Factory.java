@@ -21,7 +21,6 @@ public class Factory {
 
 	public static <T> void addSelection(JMenu menu, List<T> options, Function<T, String> buttonName, Predicate<T> selectCondition, Consumer<T> onSelected) {
 		ButtonGroup buttonGroup = new ButtonGroup();
-
 		for(T option : options) {
 			JRadioButtonMenuItem button = new JRadioButtonMenuItem(buttonName.apply(option));
 			button.addActionListener(e -> onSelected.accept(option));

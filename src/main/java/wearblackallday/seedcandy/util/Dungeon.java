@@ -99,7 +99,7 @@ public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome
 			UNKNOWN(0d, device -> device.skip(1));
 
 			public final double bits;
-			public final Consumer<DynamicProgram> javaCall;
+			private final Consumer<DynamicProgram> javaCall;
 
 			Block(double bits, Consumer<DynamicProgram> javaCall) {
 				this.bits = bits;

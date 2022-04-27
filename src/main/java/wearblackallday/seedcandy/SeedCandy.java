@@ -17,7 +17,6 @@ import java.awt.GridLayout;
 import java.awt.Taskbar;
 import java.io.File;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import static com.formdev.flatlaf.intellijthemes.FlatAllIJThemes.FlatIJLookAndFeelInfo;
 import static wearblackallday.seedcandy.util.Config.Theme;
@@ -27,6 +26,16 @@ public class SeedCandy extends JFrame {
 		.filter(MCVersion.v1_8::isOlderOrEqualTo)
 		.filter(Filters.byInt(MCVersion::getSubVersion, 0))
 		.toList();
+
+	static {
+		// needs to be called prior to any Swing-components for darkMode to work on osx
+		// https://bugs.openjdk.java.net/browse/JDK-8235363
+		if(System.getProperty("os.name").toLowerCase().contains("mac"))
+			System.setProperty("apple.awt.application.appearance", "system");
+
+		if(Taskbar.isTaskbarSupported() && Taskbar.getTaskbar().isSupported(Taskbar.Feature.ICON_IMAGE))
+			Taskbar.getTaskbar().setIconImage(Icons.SEED);
+	}
 
 	private static final SeedCandy INSTANCE = new SeedCandy();
 
@@ -44,7 +53,6 @@ public class SeedCandy extends JFrame {
 		this.setJMenuBar(this.buildMenuBar());
 		this.setContentPane(SwingUtils.addSet(new JTabbedPane(), new DungeonTab(), new StructureTab(), new WorldTab()));
 		this.setIconImage(Icons.SEED);
-		if(Taskbar.isTaskbarSupported()) Taskbar.getTaskbar().setIconImage(Icons.SEED);
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(false);
