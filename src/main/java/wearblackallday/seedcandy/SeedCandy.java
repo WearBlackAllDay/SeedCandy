@@ -13,10 +13,10 @@ import wearblackallday.seedcandy.util.*;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.GridLayout;
-import java.awt.Taskbar;
+import java.awt.*;
 import java.io.File;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 import static com.formdev.flatlaf.intellijthemes.FlatAllIJThemes.FlatIJLookAndFeelInfo;
 import static wearblackallday.seedcandy.util.Config.Theme;
@@ -61,7 +61,7 @@ public class SeedCandy extends JFrame {
 
 		this.setVersion(this.version);
 		this.setTheme(this.theme);
-		((JTabbedPane)this.getContentPane()).setSelectedIndex(Config.selectedTab());
+		this.getContentPane().setSelectedIndex(Config.selectedTab());
 	}
 
 	private JMenuBar buildMenuBar() {
@@ -81,7 +81,7 @@ public class SeedCandy extends JFrame {
 			}))
 			.addMenu("Output", outPutMenu -> outPutMenu
 				.withItem("copy to clipBoard", () ->
-					((SeedCandyTab)((JTabbedPane)this.getContentPane()).getSelectedComponent()).copyOutput())
+					((SeedCandyTab)this.getContentPane().getSelectedComponent()).copyOutput())
 				.withCheckBox("use file (none)", (parentMenu, checkBox, e) -> {
 					if(checkBox.isSelected()) {
 						fileChooser.showOpenDialog(this);
@@ -109,7 +109,9 @@ public class SeedCandy extends JFrame {
 
 	private void setVersion(MCVersion version) {
 		this.version = version;
-		((SeedCandyTab)((JTabbedPane)this.getContentPane()).getSelectedComponent()).onVersionChanged(version);
+		for(Component tab : this.getContentPane().getComponents()) {
+			((SeedCandyTab)tab).onVersionChanged(version);
+		}
 	}
 
 	public Theme getTheme() {
@@ -128,6 +130,11 @@ public class SeedCandy extends JFrame {
 
 	private void setOutputFile(File outputFile) {
 		this.outputFile = outputFile;
+	}
+
+	@Override
+	public JTabbedPane getContentPane() {
+		return (JTabbedPane)super.getContentPane();
 	}
 
 	public static SeedCandy get() {

@@ -16,7 +16,7 @@ public class Config {
 	private static void save() {
 		ROOT.put("mcversion", SeedCandy.get().getVersion().name);
 		ROOT.put("theme", SeedCandy.get().getTheme().className());
-		ROOT.putInt("selectedTab", ((JTabbedPane)SeedCandy.get().getContentPane()).getSelectedIndex());
+		ROOT.putInt("selectedTab", SeedCandy.get().getContentPane().getSelectedIndex());
 	}
 
 	public static MCVersion version() {
