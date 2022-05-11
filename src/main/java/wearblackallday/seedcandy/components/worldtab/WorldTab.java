@@ -3,7 +3,6 @@ package wearblackallday.seedcandy.components.worldtab;
 import com.seedfinding.mcbiome.source.OverworldBiomeSource;
 import com.seedfinding.mccore.rand.seed.ChunkSeeds;
 import com.seedfinding.mccore.rand.seed.WorldSeed;
-import com.seedfinding.mccore.util.pos.BPos;
 import com.seedfinding.mcfeature.misc.SpawnPoint;
 import wearblackallday.javautils.swing.SwingUtils;
 import wearblackallday.javautils.swing.components.LPanel;
@@ -46,6 +45,7 @@ public class WorldTab extends SeedTab {
 				(Integer)zPos.getValue(), (Integer)saltSpinner.getValue(), SeedCandy.get().getVersion())))
 			.addButton("get PillarSeed", () -> this.mapSeeds(WorldSeed::toPillarSeed));
 
-		this.addComponents(buttons, SwingUtils.addSet(new JPanel(), xPos, zPos, saltSpinner));
+		this.add(buttons);
+		this.add(SwingUtils.addSet(new JPanel(), xPos, zPos, saltSpinner));
 	}
 }

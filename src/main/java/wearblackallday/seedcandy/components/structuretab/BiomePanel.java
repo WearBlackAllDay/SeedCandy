@@ -14,7 +14,7 @@ import javax.swing.*;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
-public class BiomePanel extends Box {
+class BiomePanel extends Box {
 	private static final Biome[] BIOMES = Stream.concat(Stream.of(Factory.namedBiome("any Biome")),
 			Biomes.REGISTRY.values().stream()
 				.filter(Filters.byKeyID(Biome::getDimension, Dimension.OVERWORLD))

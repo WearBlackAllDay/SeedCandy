@@ -2,6 +2,7 @@ package wearblackallday.seedcandy.components.dungeontab;
 
 import wearblackallday.javautils.swing.Events;
 import wearblackallday.javautils.swing.components.GridPanel;
+import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.seedcandy.util.Dungeon;
 import wearblackallday.seedcandy.util.Icons;
 
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import static javax.swing.SwingUtilities.isRightMouseButton;
 
-public class FloorPanel extends JComponent {
+class FloorPanel extends JComponent {
 	protected FloorPanel() {
 		this.setLayout(new CardLayout());
 
@@ -29,7 +30,9 @@ public class FloorPanel extends JComponent {
 		return pattern;
 	}
 
-	protected void fromString(String floor) {
+	protected void setPattern(String floor) {
+		if(floor.length() != this.getFloor().getCount() || !floor.matches("[0-2]+"))
+			return;
 		CharacterIterator blocks = new StringCharacterIterator(floor);
 		this.forEach(button -> {
 			button.setEnabled(blocks.current() != '2');
@@ -38,15 +41,15 @@ public class FloorPanel extends JComponent {
 		});
 	}
 
-	protected void setFloor(Dungeon.Size size) {
-		((CardLayout)this.getLayout()).show(this, size.toString());
-	}
-
 	private GridPanel<FloorButton> getFloor() {
 		for(Component c : this.getComponents()) {
 			if(c.isVisible()) return (GridPanel<FloorButton>)c;
 		}
-		return null;
+		throw new AssertionError();
+	}
+
+	protected void setFloor(Dungeon.Size size) {
+		((CardLayout)this.getLayout()).show(this, size.toString());
 	}
 
 	private void forEach(Consumer<FloorButton> buttonAction) {
@@ -74,7 +77,7 @@ public class FloorPanel extends JComponent {
 			this.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
 			this.addMouseListener(Events.Mouse.onClicked(e -> {
 				if(isRightMouseButton(e)) this.setEnabled(!this.isEnabled());
-				((DungeonTab)this.getParent().getParent().getParent()).updateBits();
+				((DungeonTab)SeedCandy.get().getContentPane().getSelectedComponent()).updateBits();
 			}));
 		}
 

@@ -4,38 +4,42 @@ import com.seedfinding.mccore.version.MCVersion;
 import wearblackallday.javautils.util.ThreadPool;
 
 import javax.swing.*;
+import java.awt.Component;
 import java.awt.Container;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.LongFunction;
 import java.util.function.LongUnaryOperator;
+import java.util.stream.LongStream;
 
 public abstract class SeedTab extends JComponent implements SeedCandyTab {
-	protected final TextBox input = new TextBox(true);
-	protected final TextBox output = new TextBox(false);
-	protected final JProgressBar progressBar = new JProgressBar(0, 1);
+
+	private final TextBox input = new TextBox(true);
+	private final TextBox output = new TextBox(false);
+
 	private final Box mainPanel = new Box(BoxLayout.Y_AXIS);
+	private final JProgressBar progressBar = new JProgressBar(0, 1);
+
 	private final ThreadPool pool = new ThreadPool();
 
 	protected SeedTab(String title) {
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		this.setName(title);
-		this.add(this.input);
-		this.add(this.output);
-		this.add(this.mainPanel);
 
 		this.input.getVerticalScrollBar().addAdjustmentListener(e ->
 			this.output.getVerticalScrollBar().setValue(e.getValue()));
 
 		this.output.getVerticalScrollBar().addAdjustmentListener(e ->
 			this.input.getVerticalScrollBar().setValue(e.getValue()));
+
+		this.mainPanel.add(this.progressBar);
+		super.add(this.input);
+		super.add(this.output);
+		super.add(this.mainPanel);
 	}
 
-	protected void addComponents(JComponent... components) {
-		for(var component : components) {
-			this.mainPanel.add(component);
-		}
-		this.mainPanel.add(this.progressBar);
+	protected LongStream getInput() {
+		return this.input.seeds();
 	}
 
 	protected void mapSeeds(LongUnaryOperator mapper) {
@@ -84,7 +88,7 @@ public abstract class SeedTab extends JComponent implements SeedCandyTab {
 		}
 	}
 
-	protected void toggleComponents(boolean activated) {
+	private void toggleComponents(boolean activated) {
 		for(var panel : this.mainPanel.getComponents()) {
 			for(var button : ((Container)panel).getComponents()) {
 				button.setEnabled(activated);
@@ -93,16 +97,16 @@ public abstract class SeedTab extends JComponent implements SeedCandyTab {
 	}
 
 	@Override
+	public Component add(Component comp) {
+		return this.mainPanel.add(comp, this.mainPanel.getComponentCount() - 1);
+	}
+
+	@Override
 	public void onVersionChanged(MCVersion newVersion) {
 	}
 
 	@Override
-	public String getOutput() {
-		return this.output.getText();
-	}
-
-	@Override
-	public void setOutputDefault(String output) {
-		this.output.setText(output);
+	public TextBox get() {
+		return this.output;
 	}
 }

@@ -32,14 +32,15 @@ public class DungeonTab extends JComponent implements SeedCandyTab {
 
 	public DungeonTab() {
 		this.setName("DungeonCracker");
-		this.floorString.setHorizontalAlignment(JTextField.CENTER);
 
 		this.sizeSelector.addActionListener(e -> this.floorPanel.setFloor(this.sizeSelector.getSelected()));
+		this.floorString.setHorizontalAlignment(JTextField.CENTER);
 
 		this.setLayout(new BorderLayout());
 		this.add(this.floorPanel, BorderLayout.CENTER);
-		this.add(SwingUtils.addSet(new Box(BoxLayout.Y_AXIS), this.buildUserEntry(), this.floorString), BorderLayout.SOUTH);
+		this.add(SwingUtils.addSet(new Box(BoxLayout.Y_AXIS), this.createUserEntry(), this.floorString), BorderLayout.SOUTH);
 		this.add(this.dungeonOutput, BorderLayout.EAST);
+
 		this.updateBits();
 	}
 
@@ -55,26 +56,16 @@ public class DungeonTab extends JComponent implements SeedCandyTab {
 		return biomes;
 	}
 
-	private LPanel buildUserEntry() {
+	private JPanel createUserEntry() {
 		return new LPanel()
 			.addComponent(this.sizeSelector)
 			.addComponent(this.xPos)
 			.addComponent(this.yPos)
 			.addComponent(this.zPos)
 			.addComponent(this.biomeSelector)
-			.addButton("from String", () -> {
-				String floor = this.floorString.getText();
-				if(!floor.matches("[0-2]+") ||
-					floor.length() != this.sizeSelector.getSelected().x * this.sizeSelector.getSelected().z)
-					return;
-				this.floorPanel.fromString(floor);
-			})
+			.addButton("from String", () -> this.floorPanel.setPattern(this.floorString.getText()))
 			.addButton("to String", () -> this.floorString.setText(this.floorPanel.toString()))
-			.addButton("crack", () -> {
-				List<Long> structureSeeds = this.parseDungeon().reverseStructureSeeds();
-				if(structureSeeds.isEmpty()) this.dungeonOutput.setText("no results");
-				else this.setOutput(structureSeeds);
-			})
+			.addButton("crack", () -> this.setOutput(this.parseDungeon().reverseStructureSeeds()))
 			.addComponent(this.bitLabel);
 	}
 
@@ -93,12 +84,7 @@ public class DungeonTab extends JComponent implements SeedCandyTab {
 	}
 
 	@Override
-	public String getOutput() {
-		return this.dungeonOutput.getText();
-	}
-
-	@Override
-	public void setOutputDefault(String output) {
-		this.dungeonOutput.setText(output);
+	public TextBox get() {
+		return this.dungeonOutput;
 	}
 }

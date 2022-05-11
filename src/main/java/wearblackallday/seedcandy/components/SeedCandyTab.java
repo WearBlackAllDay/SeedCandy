@@ -6,31 +6,29 @@ import wearblackallday.seedcandy.SeedCandy;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.Supplier;
 
-public interface SeedCandyTab {
+public interface SeedCandyTab extends Supplier<TextBox> {
 
 	void onVersionChanged(MCVersion newVersion);
 
-	String getOutput();
-
-	void setOutputDefault(String output);
-
-	 default void setOutput(String output) {
+	default void setOutput(String output) {
 		SeedCandy.get().getOutputFile().ifPresentOrElse(file -> {
 			try(PrintStream out = new PrintStream(file)) {
 				out.println(output);
 			} catch(FileNotFoundException ignored) {
 			}
-		}, () -> this.setOutputDefault(output));
+		}, () -> this.get().setText(output));
 	}
 
 	 default void setOutput(List<Long> seeds) {
 		StringJoiner joiner = new StringJoiner("\n");
+		joiner.setEmptyValue("no results");
 		seeds.forEach(seed -> joiner.add(seed.toString()));
 		this.setOutput(joiner.toString());
 	}
 
 	default void copyOutput() {
-		Strings.clipboard(this.getOutput());
+		Strings.clipboard(this.get().getText());
 	}
 }

@@ -22,8 +22,7 @@ import static com.formdev.flatlaf.intellijthemes.FlatAllIJThemes.FlatIJLookAndFe
 import static wearblackallday.seedcandy.util.Config.Theme;
 
 public class SeedCandy extends JFrame {
-	private static final List<MCVersion> SUPPORTED_VERSIONS = Arrays.stream(MCVersion.values())
-		.filter(MCVersion.v1_8::isOlderOrEqualTo)
+	private static final List<MCVersion> SUPPORTED_VERSIONS = Arrays.stream(MCVersion.values(), MCVersion.v1_17.ordinal(), MCVersion.v1_8.older().ordinal())
 		.filter(Filters.byInt(MCVersion::getSubVersion, 0))
 		.toList();
 
@@ -32,9 +31,6 @@ public class SeedCandy extends JFrame {
 		// https://bugs.openjdk.java.net/browse/JDK-8235363
 		if(System.getProperty("os.name").startsWith("Mac OS"))
 			System.setProperty("apple.awt.application.appearance", "system");
-
-		if(Taskbar.isTaskbarSupported() && Taskbar.getTaskbar().isSupported(Taskbar.Feature.ICON_IMAGE))
-			Taskbar.getTaskbar().setIconImage(Icons.SEED);
 	}
 
 	private static final SeedCandy INSTANCE = new SeedCandy();
@@ -50,7 +46,7 @@ public class SeedCandy extends JFrame {
 	private SeedCandy() {
 		super("SeedCandy");
 
-		this.setJMenuBar(this.buildMenuBar());
+		this.setJMenuBar(this.createMenuBar());
 		this.setContentPane(SwingUtils.addSet(new JTabbedPane(), new DungeonTab(), new StructureTab(), new WorldTab()));
 		this.setIconImage(Icons.SEED);
 
@@ -64,7 +60,7 @@ public class SeedCandy extends JFrame {
 		this.getContentPane().setSelectedIndex(Config.selectedTab());
 	}
 
-	private JMenuBar buildMenuBar() {
+	private JMenuBar createMenuBar() {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileFilter(new FileNameExtensionFilter("*.txt", "txt"));
 		fileChooser.setAcceptAllFileFilterUsed(false);
@@ -135,6 +131,14 @@ public class SeedCandy extends JFrame {
 	@Override
 	public JTabbedPane getContentPane() {
 		return (JTabbedPane)super.getContentPane();
+	}
+
+	@Override
+	public void setIconImage(Image image) {
+		super.setIconImage(image);
+
+		if(Taskbar.isTaskbarSupported() && Taskbar.getTaskbar().isSupported(Taskbar.Feature.ICON_IMAGE))
+			Taskbar.getTaskbar().setIconImage(image);
 	}
 
 	public static SeedCandy get() {
