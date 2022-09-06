@@ -80,7 +80,7 @@ public class DungeonTab extends JComponent implements SeedCandyTab {
 
 	@Override
 	public void onVersionChanged(MCVersion newVersion) {
-		this.biomeSelector.setEnabled(MCVersion.v1_15.isOlderThan(newVersion));
+		this.biomeSelector.setEnabled(!newVersion.isOlderThan(MCVersion.v1_15));
 	}
 
 	@Override

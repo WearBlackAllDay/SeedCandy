@@ -22,14 +22,15 @@ dependencies {
     implementation("com.seedfinding:latticg:1.06") {transitive(false)}
 
     implementation "com.github.Wearblackallday:Javautils:9c6f3b4385"
-    implementation "com.formdev:flatlaf:2.2"
-    implementation "com.formdev:flatlaf-intellij-themes:2.2"
-}
-application {
-    mainClassName = "wearblackallday.seedcandy.SeedCandy"
+    implementation "com.formdev:flatlaf:2.4"
+    implementation "com.formdev:flatlaf-intellij-themes:2.4"
 }
 
-version "1.5.7"
+application {
+    mainClassName = "wearblackallday.seedcandy.SeedCandy"
+    archivesBaseName = "SeedCandy"
+    version = "1.5.8"
+}
 
 task fatJar(type: Jar) {
     manifest {
@@ -38,10 +39,7 @@ task fatJar(type: Jar) {
         )
     }
     outputs.upToDateWhen { false }
-    project.archivesBaseName = "SeedCandy"
-    exclude "META-INF/LICENSE"
-    exclude "META-INF/versions/**"
-    exclude "module-info.class"
+    exclude("META-INF/LICENSE", "META-INF/versions/**", "module-info.class")
     from {
         configurations.runtimeClasspath.collect {
             it.isDirectory() ? it : zipTree(it)

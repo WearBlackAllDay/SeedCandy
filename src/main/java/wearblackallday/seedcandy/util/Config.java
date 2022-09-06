@@ -3,7 +3,6 @@ package wearblackallday.seedcandy.util;
 import com.seedfinding.mccore.version.MCVersion;
 import wearblackallday.seedcandy.SeedCandy;
 
-import javax.swing.*;
 import java.util.prefs.Preferences;
 
 public class Config {

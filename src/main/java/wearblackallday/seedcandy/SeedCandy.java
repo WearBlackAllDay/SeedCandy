@@ -4,7 +4,6 @@ import com.formdev.flatlaf.intellijthemes.FlatAllIJThemes;
 import com.seedfinding.mccore.version.MCVersion;
 import wearblackallday.javautils.swing.SwingUtils;
 import wearblackallday.javautils.swing.components.LMenuBar;
-import wearblackallday.javautils.util.Filters;
 import wearblackallday.seedcandy.components.SeedCandyTab;
 import wearblackallday.seedcandy.components.dungeontab.DungeonTab;
 import wearblackallday.seedcandy.components.structuretab.StructureTab;
@@ -17,14 +16,14 @@ import java.awt.*;
 import java.io.File;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 import static com.formdev.flatlaf.intellijthemes.FlatAllIJThemes.FlatIJLookAndFeelInfo;
+import static java.util.stream.Collectors.*;
 import static wearblackallday.seedcandy.util.Config.Theme;
 
 public class SeedCandy extends JFrame {
-	private static final List<MCVersion> SUPPORTED_VERSIONS = Arrays.stream(MCVersion.values(), MCVersion.v1_17.ordinal(), MCVersion.v1_8.older().ordinal())
-		.filter(Filters.byInt(MCVersion::getSubVersion, 0))
-		.toList();
+	private static final List<MCVersion> SUPPORTED_VERSIONS = Arrays.stream(MCVersion.values(), MCVersion.v1_17.ordinal(), MCVersion.v1_0.older().ordinal())
+		.collect(groupingBy(MCVersion::getRelease, reducing(MCVersion.v1_0, (v0, v1) -> v1)))
+		.values().stream().sorted().toList();
 
 	static {
 		// needs to be called prior to any Swing-components for darkMode to work on osx
@@ -67,13 +66,13 @@ public class SeedCandy extends JFrame {
 		fileChooser.addActionListener(e -> this.setOutputFile(fileChooser.getSelectedFile()));
 
 		Map<Boolean, List<FlatIJLookAndFeelInfo>> themes = Arrays.stream(FlatAllIJThemes.INFOS)
-			.collect(Collectors.partitioningBy(FlatIJLookAndFeelInfo::isDark));
+			.collect(partitioningBy(FlatIJLookAndFeelInfo::isDark));
 
 		return new LMenuBar()
 			.addMenu(this.version.name, versionMenu ->
-				Factory.addSelection(versionMenu, SUPPORTED_VERSIONS, MCVersion::toString, this.version::equals, version -> {
+				Factory.addSelection(versionMenu, SUPPORTED_VERSIONS, ver -> "1." + ver.getRelease(), this.version::equals, version -> {
 					this.setVersion(version);
-					versionMenu.setText(version.name);
+					versionMenu.setText("1." + version.getRelease());
 			}))
 			.addMenu("Output", outPutMenu -> outPutMenu
 				.withItem("copy to clipBoard", () ->
