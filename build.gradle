@@ -21,7 +21,7 @@ dependencies {
     implementation("com.seedfinding:mc_noise:1.0.0") {transitive(false)}
     implementation("com.seedfinding:latticg:1.06") {transitive(false)}
 
-    implementation "com.github.Wearblackallday:Javautils:9c6f3b4385"
+    implementation "com.github.Wearblackallday:Javautils:bd48987e5f4d714d2e0cd267fea23970fd5e4776"
     implementation "com.formdev:flatlaf:2.4"
     implementation "com.formdev:flatlaf-intellij-themes:2.4"
 }

@@ -38,7 +38,7 @@ public class DungeonTab extends JComponent implements SeedCandyTab {
 
 		this.setLayout(new BorderLayout());
 		this.add(this.floorPanel, BorderLayout.CENTER);
-		this.add(SwingUtils.addSet(new Box(BoxLayout.Y_AXIS), this.createUserEntry(), this.floorString), BorderLayout.SOUTH);
+		this.add(SwingUtils.addAll(new Box(BoxLayout.Y_AXIS), this.createUserEntry(), this.floorString), BorderLayout.SOUTH);
 		this.add(this.dungeonOutput, BorderLayout.EAST);
 
 		this.updateBits();

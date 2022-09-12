@@ -1,16 +1,23 @@
 package wearblackallday.seedcandy.util;
 
 import com.seedfinding.mcbiome.biome.Biome;
+import com.seedfinding.mccore.version.MCVersion;
 
 import javax.swing.*;
-import java.util.List;
+import java.util.Collection;
 import java.util.function.*;
 
 public class Factory {
 
+	private Factory() {}
+
 	public static Biome namedBiome(String name) {
 		return new Biome(null, null, -1, name, null,
 			null, Float.NaN, Float.NaN, Float.NaN, null, null);
+	}
+
+	public static String shortVersionName(MCVersion version) {
+		return "1." + version.getRelease();
 	}
 
 	public static JSpinner numberSelector(String tooltip) {
@@ -23,7 +30,7 @@ public class Factory {
 		return spinner;
 	}
 
-	public static <T> void addSelection(JMenu menu, List<T> options, Function<T, String> buttonName, Predicate<T> selectCondition, Consumer<T> onSelected) {
+	public static <T> void addSelection(JMenu menu, Collection<T> options, Function<T, String> buttonName, Predicate<T> selectCondition, Consumer<T> onSelected) {
 		ButtonGroup buttonGroup = new ButtonGroup();
 		for(T option : options) {
 			JRadioButtonMenuItem button = new JRadioButtonMenuItem(buttonName.apply(option));

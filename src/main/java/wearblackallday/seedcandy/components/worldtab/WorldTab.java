@@ -46,6 +46,6 @@ public class WorldTab extends SeedTab {
 			.addButton("get PillarSeed", () -> this.mapSeeds(WorldSeed::toPillarSeed));
 
 		this.add(buttons);
-		this.add(SwingUtils.addSet(new JPanel(), xPos, zPos, saltSpinner));
+		this.add(SwingUtils.addAll(new JPanel(), xPos, zPos, saltSpinner));
 	}
 }

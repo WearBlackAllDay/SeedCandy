@@ -17,13 +17,14 @@ import java.io.File;
 import java.util.*;
 import java.util.List;
 import static com.formdev.flatlaf.intellijthemes.FlatAllIJThemes.FlatIJLookAndFeelInfo;
+import static com.seedfinding.mccore.version.MCVersion.*;
 import static java.util.stream.Collectors.*;
 import static wearblackallday.seedcandy.util.Config.Theme;
 
 public class SeedCandy extends JFrame {
-	private static final List<MCVersion> SUPPORTED_VERSIONS = Arrays.stream(MCVersion.values(), MCVersion.v1_17.ordinal(), MCVersion.v1_0.older().ordinal())
-		.collect(groupingBy(MCVersion::getRelease, reducing(MCVersion.v1_0, (v0, v1) -> v1)))
-		.values().stream().sorted().toList();
+	private static final Collection<MCVersion> SUPPORTED_VERSIONS = Arrays.stream(values(), v1_17.ordinal(), v1_0.ordinal() + 1)
+		.collect(groupingBy(MCVersion::getRelease, LinkedHashMap::new, reducing(v1_0, (v0, v1) -> v1)))
+		.values();
 
 	static {
 		// needs to be called prior to any Swing-components for darkMode to work on osx
@@ -46,7 +47,7 @@ public class SeedCandy extends JFrame {
 		super("SeedCandy");
 
 		this.setJMenuBar(this.createMenuBar());
-		this.setContentPane(SwingUtils.addSet(new JTabbedPane(), new DungeonTab(), new StructureTab(), new WorldTab()));
+		this.setContentPane(SwingUtils.addAll(new JTabbedPane(), new DungeonTab(), new StructureTab(), new WorldTab()));
 		this.setIconImage(Icons.SEED);
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,9 +71,9 @@ public class SeedCandy extends JFrame {
 
 		return new LMenuBar()
 			.addMenu(this.version.name, versionMenu ->
-				Factory.addSelection(versionMenu, SUPPORTED_VERSIONS, ver -> "1." + ver.getRelease(), this.version::equals, version -> {
+				Factory.addSelection(versionMenu, SUPPORTED_VERSIONS, Factory::shortVersionName, this.version::equals, version -> {
 					this.setVersion(version);
-					versionMenu.setText("1." + version.getRelease());
+					versionMenu.setText(Factory.shortVersionName(version));
 			}))
 			.addMenu("Output", outPutMenu -> outPutMenu
 				.withItem("copy to clipBoard", () ->

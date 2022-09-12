@@ -50,7 +50,7 @@ class BiomePanel extends Box {
 		private final SelectionBox<Biome> biomeSelector = new SelectionBox<>(BiomePanel::biomeName, BIOMES);
 
 		private RestrictionSelector() {
-			SwingUtils.addSet(this, this.xPos, this.zPos, this.biomeSelector);
+			SwingUtils.addAll(this, this.xPos, this.zPos, this.biomeSelector);
 		}
 
 		private boolean matchesSeed(long seed) {
