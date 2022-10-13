@@ -30,12 +30,12 @@ public class Factory {
 		return spinner;
 	}
 
-	public static <T> void addSelection(JMenu menu, Collection<T> options, Function<T, String> buttonName, Predicate<T> selectCondition, Consumer<T> onSelected) {
+	public static <T> void selectionGroup(JMenu parentMenu, Collection<T> options, Function<T, String> buttonName, Predicate<T> selectCondition, Consumer<T> onSelected) {
 		ButtonGroup buttonGroup = new ButtonGroup();
 		for(T option : options) {
 			JRadioButtonMenuItem button = new JRadioButtonMenuItem(buttonName.apply(option));
 			button.addActionListener(e -> onSelected.accept(option));
-			menu.add(button);
+			parentMenu.add(button);
 			buttonGroup.add(button);
 			button.setSelected(selectCondition.test(option));
 		}

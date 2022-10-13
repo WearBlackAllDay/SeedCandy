@@ -71,7 +71,7 @@ public class SeedCandy extends JFrame {
 
 		return new LMenuBar()
 			.addMenu(this.version.name, versionMenu ->
-				Factory.addSelection(versionMenu, SUPPORTED_VERSIONS, Factory::shortVersionName, this.version::equals, version -> {
+				Factory.selectionGroup(versionMenu, SUPPORTED_VERSIONS, Factory::shortVersionName, this.version::equals, version -> {
 					this.setVersion(version);
 					versionMenu.setText(Factory.shortVersionName(version));
 			}))
@@ -89,11 +89,11 @@ public class SeedCandy extends JFrame {
 			.addMenu("Theme", themeMenu -> themeMenu
 					.subMenu("dark", darkThemes -> {
 						darkThemes.getPopupMenu().setLayout(new GridLayout(0, 2));
-						Factory.addSelection(darkThemes, themes.get(true), FlatIJLookAndFeelInfo::getName,
+						Factory.selectionGroup(darkThemes, themes.get(true), FlatIJLookAndFeelInfo::getName,
 							info -> info.getClassName().equals(this.getTheme().className()),
 							info -> this.setTheme(info::getClassName));
 					})
-					.subMenu("light", lightThemes -> Factory.addSelection(lightThemes, themes.get(false), FlatIJLookAndFeelInfo::getName,
+					.subMenu("light", lightThemes -> Factory.selectionGroup(lightThemes, themes.get(false), FlatIJLookAndFeelInfo::getName,
 						info -> info.getClassName().equals(this.getTheme().className()),
 						info -> this.setTheme(info::getClassName)))
 			);
