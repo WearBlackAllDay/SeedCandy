@@ -45,14 +45,14 @@ public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome
 
 	private DynamicProgram getDungeonRand() {
 		DynamicProgram device = DynamicProgram.create(LCG.JAVA);
-		device.add(JavaCalls.nextInt(16).equalTo(this.position().getX() & 15));
+		device.add(JavaCalls.nextInt(16).equalTo(this.position.getX() & 15));
 		if(this.version.isOlderThan(MCVersion.v1_15)) {
 			int worldHeight = this.version.isOlderThan(MCVersion.v1_7_2) ? 128 : 256;
-			device.add(JavaCalls.nextInt(worldHeight).equalTo(this.position().getY()));
-			device.add(JavaCalls.nextInt(16).equalTo(this.position().getZ() & 15));
+			device.add(JavaCalls.nextInt(worldHeight).equalTo(this.position.getY()));
+			device.add(JavaCalls.nextInt(16).equalTo(this.position.getZ() & 15));
 		} else {
 			device.add(JavaCalls.nextInt(16).equalTo(this.position.getZ() & 15));
-			device.add(JavaCalls.nextInt(256).equalTo(this.position().getY()));
+			device.add(JavaCalls.nextInt(256).equalTo(this.position.getY()));
 		}
 		device.add(JavaCalls.nextInt(2).equalTo(this.floor.size.x >> 3));
 		device.add(JavaCalls.nextInt(2).equalTo(this.floor.size.z >> 3));
@@ -74,26 +74,30 @@ public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome
 		};
 	}
 
-	public enum Size {
-		_9x9(9, 9),
-		_9x7(9, 7),
-		_7x9(7, 9),
-		_7x7(7, 7);
-
-		public final int x, z;
-
-		Size(int x, int z) {
-			this.x = x;
-			this.z = z;
-		}
-
-		@Override
-		public String toString() {
-			return this.x + "x" + this.z;
-		}
-	}
-
 	public record Floor(Size size, List<Block> pattern) {
+		public enum Size {
+			_9x9(9, 9),
+			_9x7(9, 7),
+			_7x9(7, 9),
+			_7x7(7, 7);
+
+			public final int x, z;
+
+			Size(int x, int z) {
+				this.x = x;
+				this.z = z;
+			}
+
+			public int blockCount() {
+				return this.x * this.z;
+			}
+
+			@Override
+			public String toString() {
+				return this.name().substring(1);
+			}
+		}
+
 		public enum Block {
 			COBBLE(2d, device -> device.add(JavaCalls.nextInt(4).equalTo(0))),
 			MOSSY(0.4150374992788437d, device -> device.filteredSkip(rand -> rand.nextInt(4) != 0, 1)),

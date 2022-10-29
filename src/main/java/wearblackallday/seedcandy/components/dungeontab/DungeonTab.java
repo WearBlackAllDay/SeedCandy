@@ -3,8 +3,8 @@ package wearblackallday.seedcandy.components.dungeontab;
 import com.seedfinding.mcbiome.biome.Biome;
 import com.seedfinding.mccore.util.pos.BPos;
 import com.seedfinding.mccore.version.MCVersion;
+import wearblackallday.javautils.swing.Events;
 import wearblackallday.javautils.swing.SwingUtils;
-import wearblackallday.javautils.swing.components.LPanel;
 import wearblackallday.javautils.swing.components.SelectionBox;
 import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.seedcandy.components.SeedCandyTab;
@@ -21,10 +21,8 @@ public class DungeonTab extends JComponent implements SeedCandyTab {
 	private final FloorPanel floorPanel = new FloorPanel();
 	private final TextBox dungeonOutput = new TextBox(false);
 
-	private final SelectionBox<Dungeon.Size> sizeSelector = new SelectionBox<>(Dungeon.Size.values());
-	private final JSpinner xPos = Factory.numberSelector("X");
-	private final JSpinner yPos = Factory.numberSelector("Y");
-	private final JSpinner zPos = Factory.numberSelector("Z");
+	private final SelectionBox<Dungeon.Floor.Size> sizeSelector = new SelectionBox<>(Dungeon.Floor.Size.values());
+	private final PositionSelector positionSelector = new PositionSelector();
 	private final SelectionBox<Biome> biomeSelector = new SelectionBox<>(Biome::getName, getFossilBiomeSelection());
 	private final JLabel bitLabel = new JLabel();
 
@@ -33,21 +31,20 @@ public class DungeonTab extends JComponent implements SeedCandyTab {
 	public DungeonTab() {
 		this.setName("DungeonCracker");
 
-		this.sizeSelector.addActionListener(e -> this.floorPanel.setFloor(this.sizeSelector.getSelected()));
+		this.sizeSelector.addItemListener(e -> this.floorPanel.setFloorSize(this.sizeSelector.getSelected()));
+		this.floorPanel.addMouseListener(Events.Mouse.onClicked(e -> this.displayBits()));
 		this.floorString.setHorizontalAlignment(JTextField.CENTER);
 
 		this.setLayout(new BorderLayout());
 		this.add(this.floorPanel, BorderLayout.CENTER);
-		this.add(SwingUtils.addAll(new Box(BoxLayout.Y_AXIS), this.createUserEntry(), this.floorString), BorderLayout.SOUTH);
+		this.add(SwingUtils.addAll(Box.createVerticalBox(), this.createUserEntry(), this.floorString), BorderLayout.SOUTH);
 		this.add(this.dungeonOutput, BorderLayout.EAST);
 
-		this.updateBits();
+		this.displayBits();
 	}
 
-	protected void updateBits() {
-		this.bitLabel.setText("Bits:\s" + (int)this.floorPanel.getPattern().stream()
-		.mapToDouble(fb -> fb.bits)
-		.sum());
+	private void displayBits() {
+		this.bitLabel.setText("Bits:\s" + Math.round(this.floorPanel.getSelectedBits()));
 	}
 
 	private static List<Biome> getFossilBiomeSelection() {
@@ -57,22 +54,18 @@ public class DungeonTab extends JComponent implements SeedCandyTab {
 	}
 
 	private JPanel createUserEntry() {
-		return new LPanel()
-			.addComponent(this.sizeSelector)
-			.addComponent(this.xPos)
-			.addComponent(this.yPos)
-			.addComponent(this.zPos)
-			.addComponent(this.biomeSelector)
-			.addButton("from String", () -> this.floorPanel.setPattern(this.floorString.getText()))
-			.addButton("to String", () -> this.floorString.setText(this.floorPanel.toString()))
-			.addButton("crack", () -> this.setOutput(this.parseDungeon().reverseStructureSeeds()))
-			.addComponent(this.bitLabel);
+		return SwingUtils.addAll(new JPanel(), this.sizeSelector, this.positionSelector, this.biomeSelector,
+			Factory.actionButton("from String", () -> this.floorPanel.setPatternFromString(this.floorString.getText())),
+			Factory.actionButton("to String", () -> this.floorString.setText(this.floorPanel.toString())),
+			Factory.actionButton("crack", () -> this.setOutput(this.getDungeon().reverseStructureSeeds())),
+			this.bitLabel
+		);
 	}
 
-	private Dungeon parseDungeon() {
+	private Dungeon getDungeon() {
 		return new Dungeon(
-			new BPos((Integer)this.xPos.getValue(), (Integer)this.yPos.getValue(), (Integer)this.zPos.getValue()),
-			new Dungeon.Floor(this.sizeSelector.getSelected(), this.floorPanel.getPattern()),
+			this.positionSelector.getPosition(),
+			this.floorPanel.getFloor(),
 			SeedCandy.get().getVersion(),
 			this.biomeSelector.getSelected()
 		);
@@ -86,5 +79,22 @@ public class DungeonTab extends JComponent implements SeedCandyTab {
 	@Override
 	public TextBox get() {
 		return this.dungeonOutput;
+	}
+
+	private static class PositionSelector extends JPanel {
+
+		private PositionSelector() {
+			for(char c = 'X'; c <= 'Z'; c++) {
+				this.add(Factory.numberSelector(Character.toString(c)));
+			}
+		}
+
+		private BPos getPosition() {
+			return new BPos(this.getValue(0), this.getValue(1), this.getValue(2));
+		}
+
+		private int getValue(int index) {
+			return (Integer)((JSpinner)this.getComponent(index)).getValue();
+		}
 	}
 }

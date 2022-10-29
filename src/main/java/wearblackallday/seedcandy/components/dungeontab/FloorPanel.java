@@ -1,6 +1,7 @@
 package wearblackallday.seedcandy.components.dungeontab;
 
 import wearblackallday.javautils.swing.Events;
+import wearblackallday.javautils.swing.components.GridBagPanel;
 import wearblackallday.javautils.swing.components.GridPanel;
 import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.seedcandy.util.Dungeon;
@@ -10,59 +11,70 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 import static javax.swing.SwingUtilities.isRightMouseButton;
 
-class FloorPanel extends JComponent {
-	protected FloorPanel() {
-		this.setLayout(new CardLayout());
+class FloorPanel extends GridBagPanel {
 
-		for(Dungeon.Size dungeonSize : Dungeon.Size.values()) {
-			this.add(new GridPanel<>(dungeonSize.x, dungeonSize.z, FloorButton::new), dungeonSize.toString());
+	private final Map<Dungeon.Floor.Size, GridPanel<FloorButton>> floorLayouts = new EnumMap<>(Dungeon.Floor.Size.class);
+
+	private Dungeon.Floor.Size floorSize;
+
+	protected FloorPanel() {
+		for(Dungeon.Floor.Size dungeonSize : Dungeon.Floor.Size.values()) {
+			this.floorLayouts.put(dungeonSize, new GridPanel<>(dungeonSize.x, dungeonSize.z, FloorButton::new));
 		}
+		this.setFloorSize(Dungeon.Floor.Size.values()[0]);
 	}
 
-	protected List<Dungeon.Floor.Block> getPattern() {
-		List<Dungeon.Floor.Block> pattern = new ArrayList<>(82);
-		this.forEach(button -> pattern.add(button.getBlock()));
+	protected Dungeon.Floor getFloor() {
+		return new Dungeon.Floor(this.floorSize, this.getPattern());
+	}
+
+	protected double getSelectedBits() {
+		return this.floorLayouts.get(this.floorSize).stream()
+			.mapToDouble(floorButton -> floorButton.getBlock().bits)
+			.sum();
+	}
+
+	private List<Dungeon.Floor.Block> getPattern() {
+		List<Dungeon.Floor.Block> pattern = new ArrayList<>(this.floorSize.blockCount());
+		this.forEachOrdered(button -> pattern.add(button.getBlock()));
 		return pattern;
 	}
 
-	protected void setPattern(String floor) {
-		if(floor.length() != this.getFloor().getCount() || !floor.matches("[0-2]+"))
+	protected void setPatternFromString(String pattern) {
+		if(pattern.length() != this.floorSize.blockCount() || !pattern.matches("[0-2]+"))
 			return;
-		CharacterIterator blocks = new StringCharacterIterator(floor);
-		this.forEach(button -> {
+		CharacterIterator blocks = new StringCharacterIterator(pattern);
+		this.forEachOrdered(button -> {
 			button.setEnabled(blocks.current() != '2');
 			button.setSelected(blocks.current() == '0');
 			blocks.next();
 		});
 	}
 
-	private GridPanel<FloorButton> getFloor() {
-		for(Component c : this.getComponents()) {
-			if(c.isVisible()) return (GridPanel<FloorButton>)c;
-		}
-		throw new AssertionError();
+	protected void setFloorSize(Dungeon.Floor.Size size) {
+		this.floorSize = size;
+		this.removeAll();
+		this.add(this.floorLayouts.get(size));
+		this.revalidate();
+		this.repaint();
 	}
 
-	protected void setFloor(Dungeon.Size size) {
-		((CardLayout)this.getLayout()).show(this, size.toString());
-	}
-
-	private void forEach(Consumer<FloorButton> buttonAction) {
-		var floor = this.getFloor();
-		for(int col = 0; col < floor.getGridWidth(); col++) {
-			floor.forEachY(col, buttonAction);
+	private void forEachOrdered(Consumer<FloorButton> buttonAction) {
+		var selectedFloor = this.floorLayouts.get(this.floorSize);
+		for(int col = 0; col < selectedFloor.getGridWidth(); col++) {
+			selectedFloor.forEachY(col, buttonAction);
 		}
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder stringBuilder = new StringBuilder(this.getFloor().getCount());
-		this.forEach(button -> stringBuilder.append(button.getBlock()));
+		StringBuilder stringBuilder = new StringBuilder(this.floorSize.blockCount());
+		this.forEachOrdered(button -> stringBuilder.append(button.getBlock()));
 		return stringBuilder.toString();
 	}
 
@@ -77,7 +89,7 @@ class FloorPanel extends JComponent {
 			this.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
 			this.addMouseListener(Events.Mouse.onClicked(e -> {
 				if(isRightMouseButton(e)) this.setEnabled(!this.isEnabled());
-				((DungeonTab)SeedCandy.get().getContentPane().getSelectedComponent()).updateBits();
+				this.getParent().getParent().dispatchEvent(e);
 			}));
 		}
 

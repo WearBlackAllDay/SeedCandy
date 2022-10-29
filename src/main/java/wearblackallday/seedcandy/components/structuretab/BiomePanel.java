@@ -6,7 +6,7 @@ import com.seedfinding.mcbiome.source.OverworldBiomeSource;
 import com.seedfinding.mccore.state.Dimension;
 import wearblackallday.javautils.swing.SwingUtils;
 import wearblackallday.javautils.swing.components.SelectionBox;
-import wearblackallday.javautils.util.Filters;
+import wearblackallday.javautils.util.function.Filters;
 import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.seedcandy.util.Factory;
 

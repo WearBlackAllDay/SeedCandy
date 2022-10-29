@@ -2,12 +2,13 @@ package wearblackallday.seedcandy.util;
 
 import com.seedfinding.mcbiome.biome.Biome;
 import com.seedfinding.mccore.version.MCVersion;
+import wearblackallday.javautils.swing.Events;
 
 import javax.swing.*;
 import java.util.Collection;
 import java.util.function.*;
 
-public class Factory {
+public final class Factory {
 
 	private Factory() {}
 
@@ -18,6 +19,12 @@ public class Factory {
 
 	public static String shortVersionName(MCVersion version) {
 		return "1." + version.getRelease();
+	}
+
+	public static JButton actionButton(String title, Runnable action) {
+		JButton button = new JButton(title);
+		button.addMouseListener(Events.Mouse.onPressed(e -> action.run()));
+		return button;
 	}
 
 	public static JSpinner numberSelector(String tooltip) {

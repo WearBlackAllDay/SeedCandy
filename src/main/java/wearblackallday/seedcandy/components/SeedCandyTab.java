@@ -1,7 +1,7 @@
 package wearblackallday.seedcandy.components;
 
 import com.seedfinding.mccore.version.MCVersion;
-import wearblackallday.javautils.data.Strings;
+import wearblackallday.javautils.util.Strings;
 import wearblackallday.seedcandy.SeedCandy;
 
 import java.io.*;
@@ -21,9 +21,8 @@ public interface SeedCandyTab extends Supplier<TextBox> {
 		}, () -> this.get().setText(output));
 	}
 
-	 default void setOutput(List<Long> seeds) {
-		StringJoiner joiner = new StringJoiner("\n");
-		joiner.setEmptyValue("no results");
+	default void setOutput(List<Long> seeds) {
+		StringJoiner joiner = new StringJoiner("\n").setEmptyValue("no results");
 		seeds.forEach(seed -> joiner.add(seed.toString()));
 		this.setOutput(joiner.toString());
 	}
