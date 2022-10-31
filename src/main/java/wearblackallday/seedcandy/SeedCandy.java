@@ -1,26 +1,22 @@
 package wearblackallday.seedcandy;
 
-import com.formdev.flatlaf.intellijthemes.FlatAllIJThemes;
 import com.seedfinding.mccore.version.MCVersion;
 import wearblackallday.javautils.swing.SwingUtils;
-import wearblackallday.javautils.swing.components.LMenuBar;
 import wearblackallday.seedcandy.components.MenuBar;
-import wearblackallday.seedcandy.components.SeedCandyTab;
 import wearblackallday.seedcandy.components.dungeontab.DungeonTab;
 import wearblackallday.seedcandy.components.structuretab.StructureTab;
 import wearblackallday.seedcandy.components.worldtab.WorldTab;
-import wearblackallday.seedcandy.util.*;
+import wearblackallday.seedcandy.util.Config;
+import wearblackallday.seedcandy.util.Icons;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
+import java.awt.Image;
+import java.awt.Taskbar;
 import java.io.File;
 import java.util.*;
-import java.util.List;
-import static com.formdev.flatlaf.intellijthemes.FlatAllIJThemes.FlatIJLookAndFeelInfo;
-import static com.formdev.flatlaf.intellijthemes.FlatAllIJThemes.INFOS;
 import static com.seedfinding.mccore.version.MCVersion.*;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.reducing;
 
 public class SeedCandy extends JFrame {
 	public static final Collection<MCVersion> SUPPORTED_VERSIONS = Arrays.stream(values(), v1_17.ordinal(), v1_0.ordinal() + 1)
@@ -38,7 +34,7 @@ public class SeedCandy extends JFrame {
 
 	private static final SeedCandy INSTANCE = new SeedCandy();
 
-	private File outputFile;
+	private transient File outputFile;
 
 	public static void main(String[] args) {
 		INSTANCE.setVisible(true);
@@ -49,9 +45,9 @@ public class SeedCandy extends JFrame {
 
 		this.setJMenuBar(new MenuBar());
 		this.setContentPane(SwingUtils.addAll(new JTabbedPane(), new DungeonTab(), new StructureTab(), new WorldTab()));
-		this.setIconImage(Icons.SEED);
 
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setIconImage(Icons.SEED);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setResizable(false);
 		this.pack();
 		this.setLocationRelativeTo(null);

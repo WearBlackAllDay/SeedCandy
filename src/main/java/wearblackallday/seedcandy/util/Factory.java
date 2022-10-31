@@ -37,14 +37,16 @@ public final class Factory {
 		return spinner;
 	}
 
-	public static <T> void selectionGroup(JMenu parentMenu, Collection<T> options, Function<T, String> buttonName, Predicate<T> selectCondition, Consumer<T> onSelected) {
+	public static <T> JMenu selectionMenu(String title, Collection<T> options, Function<T, String> buttonName, Predicate<T> selectCondition, BiConsumer<JMenu, T> onSelected) {
+		JMenu parentMenu = new JMenu(title);
 		ButtonGroup buttonGroup = new ButtonGroup();
 		for(T option : options) {
 			JRadioButtonMenuItem button = new JRadioButtonMenuItem(buttonName.apply(option));
-			button.addActionListener(e -> onSelected.accept(option));
+			button.addActionListener(e -> onSelected.accept(parentMenu, option));
 			parentMenu.add(button);
 			buttonGroup.add(button);
 			button.setSelected(selectCondition.test(option));
 		}
+		return parentMenu;
 	}
 }

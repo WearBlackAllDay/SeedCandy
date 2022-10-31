@@ -1,7 +1,6 @@
 package wearblackallday.seedcandy.components;
 
-import com.formdev.flatlaf.intellijthemes.FlatAllIJThemes;
-import wearblackallday.javautils.swing.components.LMenuBar;
+import com.formdev.flatlaf.intellijthemes.FlatAllIJThemes.FlatIJLookAndFeelInfo;
 import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.seedcandy.util.Config;
 import wearblackallday.seedcandy.util.Factory;
@@ -29,11 +28,14 @@ public class MenuBar extends JMenuBar {
 	}
 
 	private void createVersionMenu() {
-		JMenu versionMenu = new JMenu(Config.get().getMcVersion().name);
-		Factory.selectionGroup(versionMenu, SeedCandy.SUPPORTED_VERSIONS, Factory::shortVersionName, Config.get().getMcVersion()::equals, version -> {
-			Config.get().setMcVersion(version);
-			versionMenu.setText(Factory.shortVersionName(version));
-		});
+		JMenu versionMenu = Factory.selectionMenu(Config.get().getMcVersion().name,
+			SeedCandy.SUPPORTED_VERSIONS,
+			Factory::shortVersionName,
+			Config.get().getMcVersion()::equals,
+			(menu, version) -> {
+				Config.get().setMcVersion(version);
+				menu.setText(Factory.shortVersionName(version));
+			});
 		this.add(versionMenu);
 	}
 
@@ -61,20 +63,22 @@ public class MenuBar extends JMenuBar {
 	private void createThemeMenu() {
 		JMenu themeMenu = new JMenu("Theme");
 
-		Map<Boolean, List<FlatAllIJThemes.FlatIJLookAndFeelInfo>> themes = Arrays.stream(INFOS)
-			.collect(partitioningBy(FlatAllIJThemes.FlatIJLookAndFeelInfo::isDark));
+		Map<Boolean, List<FlatIJLookAndFeelInfo>> themes = Arrays.stream(INFOS)
+			.collect(partitioningBy(FlatIJLookAndFeelInfo::isDark));
 
-		JMenu darkThemes = new JMenu("dark");
-		darkThemes.getPopupMenu().setLayout(new GridLayout(0, 2));
-		Factory.selectionGroup(darkThemes, themes.get(true), FlatAllIJThemes.FlatIJLookAndFeelInfo::getName,
+		JMenu darkThemes = Factory.selectionMenu("dark",
+			themes.get(true),
+			FlatIJLookAndFeelInfo::getName,
 			info -> info.getClassName().equals(Config.get().getTheme().className()),
-			info -> Config.get().setTheme(info::getClassName));
+			(menu, info) -> Config.get().setTheme(info::getClassName));
+		darkThemes.getPopupMenu().setLayout(new GridLayout(0, 2));
 		themeMenu.add(darkThemes);
 
-		JMenu lightThemes = new JMenu("light");
-		Factory.selectionGroup(lightThemes, themes.get(false), FlatAllIJThemes.FlatIJLookAndFeelInfo::getName,
+		JMenu lightThemes = Factory.selectionMenu("light",
+			themes.get(false),
+			FlatIJLookAndFeelInfo::getName,
 			info -> info.getClassName().equals(Config.get().getTheme().className()),
-			info -> Config.get().setTheme(info::getClassName));
+			(menu, info) -> Config.get().setTheme(info::getClassName));
 		themeMenu.add(lightThemes);
 
 		this.add(themeMenu);
