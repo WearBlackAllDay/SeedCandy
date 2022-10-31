@@ -8,8 +8,7 @@ import wearblackallday.javautils.swing.SwingUtils;
 import wearblackallday.javautils.swing.components.LPanel;
 import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.seedcandy.components.SeedTab;
-import wearblackallday.seedcandy.util.Factory;
-import wearblackallday.seedcandy.util.QuadHuts;
+import wearblackallday.seedcandy.util.*;
 
 import javax.swing.*;
 import java.awt.GridLayout;
@@ -29,9 +28,9 @@ public class WorldTab extends SeedTab {
 					(WorldSeed.isRandom(worldSeed)
 					? "\spossible nextLong()"
 					: "\sis NOT nextLong()")))
-			.addButton("locate Quadhuts", () -> this.mapSequential(worldSeed -> QuadHuts.find(worldSeed, SeedCandy.get().getVersion()).toString()))
+			.addButton("locate Quadhuts", () -> this.mapSequential(worldSeed -> QuadHuts.find(worldSeed, Config.get().getMcVersion()).toString()))
 			.addButton("show Spawnpoint", () -> this.mapSequential(worldSeed ->
-				SpawnPoint.getApproximateSpawn(new OverworldBiomeSource(SeedCandy.get().getVersion(), worldSeed)).toString()))
+				SpawnPoint.getApproximateSpawn(new OverworldBiomeSource(Config.get().getMcVersion(), worldSeed)).toString()))
 			.addButton("convert to hash", () -> this.map(WorldSeed::toHash))
 			.addButton("switch to ShadowSeed", () -> this.map(WorldSeed::getShadowSeed))
 			.addButton("get SisterSeeds", () -> this.mapSequential(worldSeed ->
@@ -40,9 +39,9 @@ public class WorldTab extends SeedTab {
 				.collect(Collectors.joining("\n"))))
 			.addButton("reduce to StructureSeed", () -> this.map(WorldSeed::toStructureSeed))
 			.addButton("get PopulationSeed", () -> this.map(worldSeed -> ChunkSeeds.getPopulationSeed(worldSeed, (Integer)xPos.getValue(),
-				(Integer)zPos.getValue(), SeedCandy.get().getVersion())))
+				(Integer)zPos.getValue(), Config.get().getMcVersion())))
 			.addButton("get RegionSeed", () -> this.map(worldSeed -> ChunkSeeds.getRegionSeed(worldSeed, (Integer)xPos.getValue(),
-				(Integer)zPos.getValue(), (Integer)saltSpinner.getValue(), SeedCandy.get().getVersion())))
+				(Integer)zPos.getValue(), (Integer)saltSpinner.getValue(), Config.get().getMcVersion())))
 			.addButton("get PillarSeed", () -> this.map(WorldSeed::toPillarSeed));
 
 		this.add(buttons);

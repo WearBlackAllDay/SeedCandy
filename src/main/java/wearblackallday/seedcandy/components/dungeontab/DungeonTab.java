@@ -9,8 +9,7 @@ import wearblackallday.javautils.swing.components.SelectionBox;
 import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.seedcandy.components.SeedCandyTab;
 import wearblackallday.seedcandy.components.TextBox;
-import wearblackallday.seedcandy.util.Dungeon;
-import wearblackallday.seedcandy.util.Factory;
+import wearblackallday.seedcandy.util.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,7 +65,7 @@ public class DungeonTab extends JComponent implements SeedCandyTab {
 		return new Dungeon(
 			this.positionSelector.getPosition(),
 			this.floorPanel.getFloor(),
-			SeedCandy.get().getVersion(),
+			Config.get().getMcVersion(),
 			this.biomeSelector.getSelected()
 		);
 	}

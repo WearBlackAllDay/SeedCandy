@@ -8,6 +8,7 @@ import wearblackallday.javautils.swing.SwingUtils;
 import wearblackallday.javautils.swing.components.SelectionBox;
 import wearblackallday.javautils.util.function.Filters;
 import wearblackallday.seedcandy.SeedCandy;
+import wearblackallday.seedcandy.util.Config;
 import wearblackallday.seedcandy.util.Factory;
 
 import javax.swing.*;
@@ -55,7 +56,7 @@ class BiomePanel extends Box {
 
 		private boolean matchesSeed(long seed) {
 			if(this.biomeSelector.getSelected().getId() == -1) return true;
-			OverworldBiomeSource biomeSource = new OverworldBiomeSource(SeedCandy.get().getVersion(), seed);
+			OverworldBiomeSource biomeSource = new OverworldBiomeSource(Config.get().getMcVersion(), seed);
 			return biomeSource.getBiome((Integer)this.xPos.getValue(), 0, (Integer)this.zPos.getValue())
 				== this.biomeSelector.getSelected();
 		}
