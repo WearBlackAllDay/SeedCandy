@@ -4,12 +4,12 @@ import com.seedfinding.mccore.version.MCVersion;
 import wearblackallday.javautils.util.ThreadPool;
 
 import javax.swing.*;
-import java.awt.Component;
-import java.awt.Container;
+import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.LongFunction;
-import java.util.function.LongUnaryOperator;
+import java.util.List;
+import java.util.function.*;
+import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 public abstract class SeedTab extends JComponent implements SeedCandyTab {
@@ -18,9 +18,10 @@ public abstract class SeedTab extends JComponent implements SeedCandyTab {
 	private final TextBox output = new TextBox(false);
 
 	private final Box mainPanel = new Box(BoxLayout.Y_AXIS);
-	private final JProgressBar progressBar = new JProgressBar(0, 1);
+	private final JProgressBar progressBar = new JProgressBar(0, 0);
 
 	private final ThreadPool pool = new ThreadPool();
+	private final Set<String> outputBuffer = Collections.synchronizedSet(new HashSet<>());
 
 	protected SeedTab(String title) {
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -32,68 +33,81 @@ public abstract class SeedTab extends JComponent implements SeedCandyTab {
 		this.output.getVerticalScrollBar().addAdjustmentListener(e ->
 			this.input.getVerticalScrollBar().setValue(e.getValue()));
 
+		Thread monitor = new Thread(this::awaitProgress);
+		monitor.setName(this.getClass().getSimpleName() + "\sMonitor");
+		monitor.start();
+
 		this.mainPanel.add(this.progressBar);
 		super.add(this.input);
 		super.add(this.output);
 		super.add(this.mainPanel);
 	}
 
+	private synchronized void awaitProgress() {
+		try {
+			while(true) {
+				this.wait();
+
+				EventQueue.invokeLater(() -> this.setEnabled(false));
+				while(this.pool.getActiveCount() > 0) {
+					EventQueue.invokeLater(() -> this.progressBar.setValue(this.progressBar.getMaximum() - this.pool.getActiveCount()));
+				}
+				this.outputBuffer.remove("");
+
+				EventQueue.invokeAndWait(() -> {
+					this.setOutput(String.join("\n", this.outputBuffer));
+					this.setEnabled(true);
+				});
+
+				this.outputBuffer.clear();
+			}
+		} catch(InterruptedException | InvocationTargetException ignored) {
+		}
+	}
+
 	protected LongStream getInput() {
 		return this.input.seeds();
 	}
 
-	protected void mapSeeds(LongUnaryOperator mapper) {
+	protected void map(LongUnaryOperator mapper) {
 		this.setOutput(this.input.seeds()
 			.map(mapper).boxed().toList());
 	}
 
-	protected void mapToString(LongFunction<String> mapper) {
-		long[] seeds = this.input.seeds().toArray();
-
-		if(seeds.length < this.pool.getThreadCount() << 2) {
-			StringJoiner joiner = new StringJoiner("\n");
-			for(long seed : seeds) {
-				joiner.add(mapper.apply(seed));
-			}
-			this.setOutput(joiner.toString());
-		} else {
-			this.threadedMap(seeds, mapper);
-		}
+	protected void flatMap(LongFunction<List<Long>> mapper) {
+		this.mapSequential(l -> mapper.apply(l).stream()
+			.map(String::valueOf)
+			.collect(Collectors.joining("\n")));
 	}
 
-	protected void threadedMap(long[] seeds, LongFunction<String> mapper) {
-		int threads = this.pool.getThreadCount();
-		Set<String> results = Collections.synchronizedSet(new HashSet<>());
-		AtomicInteger progress = new AtomicInteger(0);
+	protected void mapSequential(LongFunction<String> mapper) {
+		this.setOutput(this.input.seeds()
+			.mapToObj(mapper)
+			.filter(Predicate.not(String::isEmpty))
+			.collect(Collectors.joining("\n")));
+	}
+
+	protected synchronized void mapParallel(long[] seeds, LongFunction<String> mapper) {
 		this.progressBar.setMaximum(seeds.length);
-		this.toggleComponents(false);
+		this.progressBar.setValue(0);
+		this.pool.execute(seeds, seed -> this.outputBuffer.add(mapper.apply(seed)));
 
-		for(int i = 0; i < threads; i++) {
-			int start = i;
-			this.pool.execute(() -> {
-				int current = start;
-				while(current < seeds.length) {
-					results.add(mapper.apply(seeds[current]));
-					current += threads;
-					SwingUtilities.invokeLater(() -> {
-						this.progressBar.setValue(progress.incrementAndGet());
-						if(progress.get() == this.progressBar.getMaximum()) {
-							this.toggleComponents(true);
-							results.remove("");
-							this.setOutput(String.join("\n", results));
-						}
-					});
-				}
-			});
+		this.notify();
+	}
+
+	private static void deepSetEnabled(Component component, boolean enabled) {
+		component.setEnabled(enabled);
+
+		if(component instanceof Container parent) {
+			for(Component child : parent.getComponents()) {
+				deepSetEnabled(child, enabled);
+			}
 		}
 	}
 
-	private void toggleComponents(boolean activated) {
-		for(var panel : this.mainPanel.getComponents()) {
-			for(var button : ((Container)panel).getComponents()) {
-				button.setEnabled(activated);
-			}
-		}
+	@Override
+	public void setEnabled(boolean enabled) {
+		deepSetEnabled(this.mainPanel, enabled);
 	}
 
 	@Override

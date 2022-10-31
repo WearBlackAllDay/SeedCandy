@@ -3,16 +3,15 @@ package wearblackallday.seedcandy.components.dungeontab;
 import wearblackallday.javautils.swing.Events;
 import wearblackallday.javautils.swing.components.GridBagPanel;
 import wearblackallday.javautils.swing.components.GridPanel;
-import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.seedcandy.util.Dungeon;
 import wearblackallday.seedcandy.util.Icons;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.*;
-import java.util.List;
 import java.util.function.Consumer;
 import static javax.swing.SwingUtilities.isRightMouseButton;
 

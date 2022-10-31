@@ -5,7 +5,7 @@ import wearblackallday.seedcandy.SeedCandy;
 
 import java.util.prefs.Preferences;
 
-public class Config {
+public final class Config {
 	private static final Preferences ROOT = Preferences.userRoot().node("seedcandy");
 
 	static {

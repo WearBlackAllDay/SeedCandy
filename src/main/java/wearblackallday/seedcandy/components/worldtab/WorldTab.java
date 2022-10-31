@@ -24,26 +24,26 @@ public class WorldTab extends SeedTab {
 		JSpinner saltSpinner = Factory.numberSelector("salt");
 
 		JComponent buttons = new LPanel()
-			.withLayout(new GridLayout(0, 2))
-			.addButton("check for nextLong()", () -> this.mapToString(worldSeed ->
-				WorldSeed.isRandom(worldSeed)
-					? "possible nextLong()"
-					: "is NOT nextLong()"))
-			.addButton("locate Quadhuts", () -> this.mapToString(worldSeed -> QuadHuts.find(worldSeed, SeedCandy.get().getVersion()).toString()))
-			.addButton("show Spawnpoint", () -> this.mapToString(worldSeed ->
+			.withLayout(new GridLayout(0, 1))
+			.addButton("check for nextLong()", () -> this.mapSequential(worldSeed -> worldSeed +
+					(WorldSeed.isRandom(worldSeed)
+					? "\spossible nextLong()"
+					: "\sis NOT nextLong()")))
+			.addButton("locate Quadhuts", () -> this.mapSequential(worldSeed -> QuadHuts.find(worldSeed, SeedCandy.get().getVersion()).toString()))
+			.addButton("show Spawnpoint", () -> this.mapSequential(worldSeed ->
 				SpawnPoint.getApproximateSpawn(new OverworldBiomeSource(SeedCandy.get().getVersion(), worldSeed)).toString()))
-			.addButton("convert to hash", () -> this.mapSeeds(WorldSeed::toHash))
-			.addButton("switch to ShadowSeed", () -> this.mapSeeds(WorldSeed::getShadowSeed))
-			.addButton("get SisterSeeds", () -> this.mapToString(worldSeed ->
+			.addButton("convert to hash", () -> this.map(WorldSeed::toHash))
+			.addButton("switch to ShadowSeed", () -> this.map(WorldSeed::getShadowSeed))
+			.addButton("get SisterSeeds", () -> this.mapSequential(worldSeed ->
 				WorldSeed.getSisterSeeds(worldSeed).asStream()
 				.mapToObj(String::valueOf)
 				.collect(Collectors.joining("\n"))))
-			.addButton("reduce to StructureSeed", () -> this.mapSeeds(WorldSeed::toStructureSeed))
-			.addButton("get PopulationSeed", () -> this.mapSeeds(worldSeed -> ChunkSeeds.getPopulationSeed(worldSeed, (Integer)xPos.getValue(),
+			.addButton("reduce to StructureSeed", () -> this.map(WorldSeed::toStructureSeed))
+			.addButton("get PopulationSeed", () -> this.map(worldSeed -> ChunkSeeds.getPopulationSeed(worldSeed, (Integer)xPos.getValue(),
 				(Integer)zPos.getValue(), SeedCandy.get().getVersion())))
-			.addButton("get RegionSeed", () -> this.mapSeeds(worldSeed -> ChunkSeeds.getRegionSeed(worldSeed, (Integer)xPos.getValue(),
+			.addButton("get RegionSeed", () -> this.map(worldSeed -> ChunkSeeds.getRegionSeed(worldSeed, (Integer)xPos.getValue(),
 				(Integer)zPos.getValue(), (Integer)saltSpinner.getValue(), SeedCandy.get().getVersion())))
-			.addButton("get PillarSeed", () -> this.mapSeeds(WorldSeed::toPillarSeed));
+			.addButton("get PillarSeed", () -> this.map(WorldSeed::toPillarSeed));
 
 		this.add(buttons);
 		this.add(SwingUtils.addAll(new JPanel(), xPos, zPos, saltSpinner));

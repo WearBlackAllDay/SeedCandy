@@ -16,18 +16,14 @@ public class StructureTab extends SeedTab {
 
 		JComponent buttons = new LPanel()
 			.withLayout(new GridLayout(0, 2))
-			.addButton("reverse to nextLong()", () -> this.setOutput(this.getInput()
-				.mapToObj(StructureSeed::toRandomWorldSeeds)
-				.flatMap(List::stream)
-				.toList()
-			))
+			.addButton("reverse to nextLong()", () -> this.flatMap(StructureSeed::toRandomWorldSeeds))
 			.addButton("crack with biomes", () -> {
 				long[] worldSeeds = this.getInput()
 					.mapToObj(StructureSeed::getWorldSeeds)
 					.flatMapToLong(SeedIterator::asStream)
 					.toArray();
 
-				this.threadedMap(worldSeeds, seed -> biomePanel.matchesSeed(seed) ? String.valueOf(seed) : "");
+				this.mapParallel(worldSeeds, seed -> biomePanel.matchesSeed(seed) ? String.valueOf(seed) : "");
 			})
 			.addButton("verify WorldSeeds", () -> this.setOutput(this.getInput()
 				.filter(biomePanel::matchesSeed)
