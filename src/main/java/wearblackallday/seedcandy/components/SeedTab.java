@@ -33,9 +33,7 @@ public abstract class SeedTab extends JComponent implements SeedCandyTab {
 		this.output.getVerticalScrollBar().addAdjustmentListener(e ->
 			this.input.getVerticalScrollBar().setValue(e.getValue()));
 
-		Thread monitor = new Thread(this::awaitProgress);
-		monitor.setName(this.getClass().getSimpleName() + "\sMonitor");
-		monitor.start();
+		 new Thread(this::awaitProgress, this.getClass().getSimpleName() + "\sMonitor").start();
 
 		this.mainPanel.add(this.progressBar);
 		super.add(this.input);
@@ -88,8 +86,8 @@ public abstract class SeedTab extends JComponent implements SeedCandyTab {
 	}
 
 	protected synchronized void mapParallel(long[] seeds, LongFunction<String> mapper) {
-		this.progressBar.setMaximum(seeds.length);
 		this.progressBar.setValue(0);
+		this.progressBar.setMaximum(seeds.length);
 		this.pool.execute(seeds, seed -> this.outputBuffer.add(mapper.apply(seed)));
 
 		this.notify();

@@ -16,7 +16,8 @@ public interface SeedCandyTab extends Supplier<TextBox> {
 		SeedCandy.get().getOutputFile().ifPresentOrElse(file -> {
 			try(PrintStream out = new PrintStream(file)) {
 				out.println(output);
-			} catch(FileNotFoundException ignored) {
+			} catch(FileNotFoundException e) {
+				this.get().setText("selected file:\n" + file.getAbsolutePath() + "\ncould not be found");
 			}
 		}, () -> this.get().setText(output));
 	}

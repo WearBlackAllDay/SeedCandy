@@ -16,6 +16,7 @@ public final class Config {
 	private Theme theme = () -> ROOT.get("theme", "com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme");
 	private final int selectedTab = ROOT.getInt("selectedTab", 0);
 
+
 	private Config() {
 		Runtime.getRuntime().addShutdownHook(new Thread(this::save));
 	}
@@ -62,8 +63,8 @@ public final class Config {
 
 		default void apply() {
 			try {
-				Class.forName(this.className()).getMethod("setup").invoke(null);
-			} catch(ReflectiveOperationException ignored) {
+				UIManager.setLookAndFeel(this.className());
+			} catch(ReflectiveOperationException | UnsupportedLookAndFeelException ignored) {
 			}
 		}
 	}

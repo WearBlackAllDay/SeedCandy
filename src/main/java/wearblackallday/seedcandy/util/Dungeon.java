@@ -100,7 +100,7 @@ public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome
 
 		public enum Block {
 			COBBLE(2d, device -> device.add(JavaCalls.nextInt(4).equalTo(0))),
-			MOSSY(0.4150374992788437d, device -> device.filteredSkip(rand -> rand.nextInt(4) != 0, 1)),
+			MOSSY(Math.log(4d/3d) / Math.log(2), device -> device.filteredSkip(rand -> rand.nextInt(4) != 0, 1)),
 			UNKNOWN(0d, device -> device.skip(1));
 
 			public final double bits;

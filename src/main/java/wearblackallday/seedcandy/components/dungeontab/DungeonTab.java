@@ -6,7 +6,6 @@ import com.seedfinding.mccore.version.MCVersion;
 import wearblackallday.javautils.swing.Events;
 import wearblackallday.javautils.swing.SwingUtils;
 import wearblackallday.javautils.swing.components.SelectionBox;
-import wearblackallday.seedcandy.SeedCandy;
 import wearblackallday.seedcandy.components.SeedCandyTab;
 import wearblackallday.seedcandy.components.TextBox;
 import wearblackallday.seedcandy.util.*;

@@ -16,14 +16,16 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuadHuts {
+public final class QuadHuts {
 	private static final Lattice2D REGION_LATTICE = new Lattice2D(RegionSeed.A, RegionSeed.B, 1L << 48);
 	private static final long[] REGION_SEEDS = getQuadRegionSeeds();
+
+	private QuadHuts() {}
 
 	public static List<BPos> find(long worldSeed, MCVersion version) {
 		List<BPos> quadHuts = new ArrayList<>(2);
 		SwampHut swampHut = new SwampHut(version);
-		var biomeSource = new OverworldBiomeSource(version, worldSeed);
+		OverworldBiomeSource biomeSource = new OverworldBiomeSource(version, worldSeed);
 
 		for(long regionSeed : REGION_SEEDS) {
 			for(QVector solution : REGION_LATTICE.findSolutionsInBox(regionSeed - worldSeed - swampHut.getSalt(),

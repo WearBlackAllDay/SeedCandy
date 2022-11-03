@@ -8,7 +8,6 @@ import wearblackallday.seedcandy.util.Factory;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.GridLayout;
-import java.io.File;
 import java.util.*;
 import static com.formdev.flatlaf.intellijthemes.FlatAllIJThemes.INFOS;
 import static java.util.stream.Collectors.partitioningBy;
@@ -20,7 +19,6 @@ public class MenuBar extends JMenuBar {
 	public MenuBar() {
 		this.fileChooser.setFileFilter(new FileNameExtensionFilter("*.txt", "txt"));
 		this.fileChooser.setAcceptAllFileFilterUsed(false);
-		this.fileChooser.addActionListener(e -> SeedCandy.get().setOutputFile(this.fileChooser.getSelectedFile()));
 
 		this.createVersionMenu();
 		this.createFileMenu();
@@ -29,6 +27,7 @@ public class MenuBar extends JMenuBar {
 
 	private void createVersionMenu() {
 		JMenu versionMenu = Factory.selectionMenu(Config.get().getMcVersion().name,
+			new ButtonGroup(),
 			SeedCandy.SUPPORTED_VERSIONS,
 			Factory::shortVersionName,
 			Config.get().getMcVersion()::equals,
@@ -46,14 +45,15 @@ public class MenuBar extends JMenuBar {
 		copyButton.addActionListener(e -> ((SeedCandyTab)SeedCandy.get().getContentPane().getSelectedComponent()).copyOutput());
 		fileMenu.add(copyButton);
 
-		JCheckBoxMenuItem fileSelection = new JCheckBoxMenuItem("use file (none)");
+		String defaultName = "output to file...";
+		JCheckBoxMenuItem fileSelection = new JCheckBoxMenuItem(defaultName);
 		fileSelection.addActionListener(e -> {
-			if(fileSelection.isSelected()) {
-				this.fileChooser.showOpenDialog(SeedCandy.get());
-				fileSelection.setSelected(SeedCandy.get().getOutputFile().isPresent());
-			} else SeedCandy.get().setOutputFile(null);
-			fileSelection.setText("use file (" +
-				SeedCandy.get().getOutputFile().map(File::getName).orElse("none") + ')');
+			int selectedOption = this.fileChooser.showOpenDialog(SeedCandy.get());
+			boolean fileSelected = selectedOption == JFileChooser.APPROVE_OPTION;
+
+			SeedCandy.get().setOutputFile(fileSelected ? this.fileChooser.getSelectedFile() : null);
+			fileSelection.setSelected(fileSelected);
+			fileSelection.setText(fileSelected ? this.fileChooser.getSelectedFile().getName() : defaultName);
 		});
 		fileMenu.add(fileSelection);
 
@@ -63,10 +63,12 @@ public class MenuBar extends JMenuBar {
 	private void createThemeMenu() {
 		JMenu themeMenu = new JMenu("Theme");
 
+		ButtonGroup themeGroup = new ButtonGroup();
 		Map<Boolean, List<FlatIJLookAndFeelInfo>> themes = Arrays.stream(INFOS)
 			.collect(partitioningBy(FlatIJLookAndFeelInfo::isDark));
 
 		JMenu darkThemes = Factory.selectionMenu("dark",
+			themeGroup,
 			themes.get(true),
 			FlatIJLookAndFeelInfo::getName,
 			info -> info.getClassName().equals(Config.get().getTheme().className()),
@@ -75,10 +77,12 @@ public class MenuBar extends JMenuBar {
 		themeMenu.add(darkThemes);
 
 		JMenu lightThemes = Factory.selectionMenu("light",
+			themeGroup,
 			themes.get(false),
 			FlatIJLookAndFeelInfo::getName,
 			info -> info.getClassName().equals(Config.get().getTheme().className()),
 			(menu, info) -> Config.get().setTheme(info::getClassName));
+		lightThemes.setToolTipText("You´re not using one of these are you?");
 		themeMenu.add(lightThemes);
 
 		this.add(themeMenu);

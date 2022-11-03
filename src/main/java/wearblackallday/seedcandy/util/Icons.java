@@ -18,7 +18,7 @@ public final class Icons {
 			return ImageIO.read(Icons.class.getResource(path));
 		} catch(IOException e) {
 			e.printStackTrace();
-			throw new RuntimeException();
+			return null;
 		}
 	}
 }
