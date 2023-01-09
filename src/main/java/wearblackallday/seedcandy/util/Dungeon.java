@@ -112,7 +112,7 @@ public record Dungeon(BPos position, Floor floor, MCVersion version, Biome biome
 			}
 
 			public static Block of(char stringRep) {
-				return Block.values()[stringRep - 48];
+				return Block.values()[stringRep - '0'];
 			}
 
 			@Override

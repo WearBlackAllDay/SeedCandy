@@ -29,7 +29,7 @@ public class SeedCandy extends JFrame {
 		if(System.getProperty("os.name").startsWith("Mac OS"))
 			System.setProperty("apple.awt.application.appearance", "system");
 
-		Config.get().getTheme().apply();
+		System.setProperty("swing.defaultlaf", Config.get().getTheme().className());
 	}
 
 	private static final SeedCandy INSTANCE = new SeedCandy();

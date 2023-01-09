@@ -67,6 +67,10 @@ public class MenuBar extends JMenuBar {
 		Map<Boolean, List<FlatIJLookAndFeelInfo>> themes = Arrays.stream(INFOS)
 			.collect(partitioningBy(FlatIJLookAndFeelInfo::isDark));
 
+		//TEMP
+		themes.get(true).add(new FlatIJLookAndFeelInfo("macOS dark", "com.formdev.flatlaf.themes.FlatMacDarkLaf", true));
+		themes.get(false).add(new FlatIJLookAndFeelInfo("macOS light", "com.formdev.flatlaf.themes.FlatMacLightLaf", false));
+
 		JMenu darkThemes = Factory.selectionMenu("dark",
 			themeGroup,
 			themes.get(true),

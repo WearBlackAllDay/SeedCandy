@@ -3,6 +3,12 @@ plugins {
     id "application"
 }
 
+application {
+    mainClassName = "wearblackallday.seedcandy.SeedCandy"
+    archivesBaseName = "SeedCandy"
+    version = "1.5.9"
+}
+
 repositories {
     mavenCentral()
     maven { url "https://maven.seedfinding.com" }
@@ -20,17 +26,11 @@ dependencies {
     implementation("com.seedfinding:mc_seed:1.171.1") {transitive(false)}
     implementation("com.seedfinding:latticg:1.06") {transitive(false)}
 
-    implementation "com.github.WearBlackAllDay:JavaUtils:0.0.2"
-    implementation "com.formdev:flatlaf:2.6"
-    implementation "com.formdev:flatlaf-intellij-themes:2.6"
+    implementation "com.github.WearBlackAllDay:JavaUtils:0.0.3"
+    implementation "com.formdev:flatlaf:3.0"
+    implementation "com.formdev:flatlaf-intellij-themes:3.0"
 
     testImplementation "org.junit.jupiter:junit-jupiter:5.9.0"
-}
-
-application {
-    mainClassName = "wearblackallday.seedcandy.SeedCandy"
-    archivesBaseName = "SeedCandy"
-    version = "1.5.8"
 }
 
 task fatJar(type: Jar) {

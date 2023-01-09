@@ -16,7 +16,6 @@ public final class Config {
 	private Theme theme = () -> ROOT.get("theme", "com.formdev.flatlaf.intellijthemes.FlatOneDarkIJTheme");
 	private final int selectedTab = ROOT.getInt("selectedTab", 0);
 
-
 	private Config() {
 		Runtime.getRuntime().addShutdownHook(new Thread(this::save));
 	}

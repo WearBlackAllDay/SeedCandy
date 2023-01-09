@@ -22,9 +22,6 @@ class FloorPanel extends GridBagPanel {
 	private Dungeon.Floor.Size floorSize;
 
 	protected FloorPanel() {
-		for(Dungeon.Floor.Size dungeonSize : Dungeon.Floor.Size.values()) {
-			this.floorLayouts.put(dungeonSize, new GridPanel<>(dungeonSize.x, dungeonSize.z, FloorButton::new));
-		}
 		this.setFloorSize(Dungeon.Floor.Size.values()[0]);
 	}
 
@@ -58,7 +55,7 @@ class FloorPanel extends GridBagPanel {
 	protected void setFloorSize(Dungeon.Floor.Size size) {
 		this.floorSize = size;
 		this.removeAll();
-		this.add(this.floorLayouts.get(size));
+		this.add(this.floorLayouts.computeIfAbsent(size, s -> new GridPanel<>(s.x, s.z, FloorButton::new)));
 		this.revalidate();
 		this.repaint();
 	}

@@ -10,15 +10,28 @@ import com.seedfinding.mcfeature.structure.SwampHut;
 import com.seedfinding.mcmath.arithmetic.Rational;
 import com.seedfinding.mcmath.component.vector.QVector;
 import com.seedfinding.mcreversal.Lattice2D;
+import wearblackallday.javautils.io.ByteSlice;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class QuadHuts {
 	private static final Lattice2D REGION_LATTICE = new Lattice2D(RegionSeed.A, RegionSeed.B, 1L << 48);
-	private static final long[] REGION_SEEDS = getQuadRegionSeeds();
+	private static final long[] REGION_SEEDS;
+
+	static {
+		try(ByteSlice in = new ByteSlice(QuadHuts.class.getResourceAsStream("/regionSeeds"))) {
+			REGION_SEEDS = new long[in.available() / Long.BYTES];
+
+			for(int i = 0; i < REGION_SEEDS.length; i++) {
+				REGION_SEEDS[i] = in.readLong();
+			}
+
+		} catch(IOException e) {
+			throw new RuntimeException();
+		}
+	}
 
 	private QuadHuts() {}
 
@@ -49,10 +62,5 @@ public final class QuadHuts {
 	private static boolean checkStructure(OverworldBiomeSource source, Rational x, Rational z, SwampHut structure) {
 		CPos chunk = structure.getInRegion(source.getWorldSeed(), x.intValue(), z.intValue(), new ChunkRand());
 		return !structure.canSpawn(chunk.getX(), chunk.getZ(), source);
-	}
-
-	private static long[] getQuadRegionSeeds() {
-		return new BufferedReader(new InputStreamReader(QuadHuts.class.getResourceAsStream("/regionSeeds.txt")))
-			.lines().mapToLong(Long::parseLong).toArray();
 	}
 }
